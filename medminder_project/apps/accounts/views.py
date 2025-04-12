@@ -30,13 +30,13 @@ def signup(request):
             user = form.save()
             print(f"User {user.username} saved with ID {user.id}")  # Debug
             login(request, user)
-            return JsonResponse({'success': True, 'redirect': reverse('core')})  # Return JSON on success
+            return JsonResponse({'success': True, 'redirect': reverse('core:home')})  # Return JSON on success
         else:
             print("Form invalid:", form.errors)  # Debug
             return JsonResponse({'success': False, 'errors': form.errors})  # Return JSON on error
     else:
         print("GET request to signup, redirecting")  # Debug
-        return redirect('landing')
+        return redirect('core:home')  # Redirect to the landing page if not a POST request
     
 def login_user(request):
     """

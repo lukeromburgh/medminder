@@ -17,7 +17,7 @@ class LandingPageView(TemplateView):
             return redirect(settings.LOGIN_REDIRECT_URL)
         return super().get(request, *args, **kwargs)
     
-def core (request):
+def home (request):
     """
     Render the core page.
     """

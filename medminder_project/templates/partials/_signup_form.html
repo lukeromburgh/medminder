@@ -4,7 +4,7 @@
         <h2 class="text-xl font-bold text-gray-700 text-center">Sign Up</h2>
 
         <!-- Add form tag with CSRF token -->
-        <form id="signup-form" method="post" action="{% url 'signup' %}">
+        <form id="signup-form" method="post" action="{% url 'accounts:signup' %}">
             {% csrf_token %}
 
             <!-- Name (mapped to username) -->
@@ -46,10 +46,10 @@
             </div>
 
             <!-- Submit Button -->
-            {% include "components/button.html" with label='Sign up' type='submit' %}
+            {% include "partials/_button.html" with label='Sign up' type='submit' %}
         </form>
 
-            <p class="mt-4 text-sm text-center text-gray-600">Already have an account? <a href="{% url 'login-page' %}" class="text-blue-500 hover:underline">Log in</a></p>
+            <p class="mt-4 text-sm text-center text-gray-600">Already have an account? <a href="{% url 'accounts:login' %}" class="text-blue-500 hover:underline">Log in</a></p>
 
 
         <!-- success Alert -->
