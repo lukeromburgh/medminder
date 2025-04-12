@@ -1,4 +1,4 @@
-{% extends "base.html" %} {# Assumes you have a base.html in project templates/ #}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}MedMinder - Never Miss a Dose{% endblock %}
@@ -8,9 +8,9 @@
 
   {# --- Navbar --- #}
   <nav class="bg-white shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-7xl md:w-full mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
-        <div class="flex-shrink-0 flex items-center font-bold text-xl text-blue-600">
+        <div class="flex-shrink-0 flex items-center font-bold text-xl text-black">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -28,9 +28,9 @@
 
   {# --- Hero Section --- #}
   <main class="flex-grow">
-    <div class="max-w-4xl mx-auto pt-16 pb-24 px-4 sm:px-6 lg:px-8 text-center">
-      {# Optional: You could add a small icon/image above the headline #}
-      {# <img src="{% static 'images/medminder-icon.svg' %}" alt="MedMinder Icon" class="mx-auto h-12 w-auto mb-4"> #}
+    <div class="max-w-4xl mx-auto pt-16 px-4 sm:px-6 lg:px-8 text-center">
+
+      <img src="{% static 'images/medminder.png' %}" alt="MedMinder Icon" class="mx-auto h-8 w-auto my-20"> 
 
       <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight">
         Never Miss a Dose Again.
@@ -39,32 +39,33 @@
         MedMinder helps you manage your medications, set reminders, and stay on track. Invite family or caregivers to view your schedule.
       </p>
       <div class="mt-8 flex justify-center">
-        <div class="inline-flex rounded-md shadow">
-           <a href="{% url 'accounts:signup' %}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+        <div class="inline-flex rounded-md">
+           <a href="{% url 'accounts:signup' %}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700">
             Get Started Free
           </a> 
         </div>
-        <div class="ml-3 inline-flex rounded-md shadow">
-          <a href="#features" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200">
+        <div class="ml-3 inline-flex rounded-md">
+          <a href="#features" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-blue-700 bg-blue-100 hover:bg-blue-200">
             Learn More
           </a>
         </div>
+      </div>
 
       </div>
        {# Optional: Placeholder for an image/illustration below the CTA #}
-       <div class="mt-12">
+       <div class="mt-20 mb-10">
          {# Example: Replace with an actual image or illustration #}
-         <div class="aspect-w-16 aspect-h-9 max-w-3xl mx-auto bg-gray-200 rounded-lg flex items-center justify-center">
-            <p class="text-gray-500 italic">App visual coming soon!</p>
+         <div class="aspect-w-16 aspect-h-9 rounded-2xl w-5/6 h-svh flex flex-col items-center justify-center justify-self-center bg-[#ffffff] bg-[radial-gradient(at_40%_20%,hsla(28,100%,74%,0.5)_0px,transparent_50%),radial-gradient(at_80%_0%,hsla(189,100%,56%,0.5)_0px,transparent_50%),radial-gradient(at_0%_50%,hsla(355,100%,93%,0.5)_0px,transparent_50%),radial-gradient(at_80%_50%,hsla(340,100%,76%,0.5)_0px,transparent_50%),radial-gradient(at_0%_100%,hsla(22,100%,77%,1)_0px,transparent_50%),radial-gradient(at_80%_100%,hsla(242,100%,70%,1)_0px,transparent_50%),radial-gradient(at_0%_0%,hsla(343,100%,76%,1)_0px,transparent_50%)]" >
+            <p class="text-black-500 italic text-2xl">App visual coming soon!</p>
          </div>
          {# <img class="mx-auto rounded-lg shadow-lg" src="{% static 'images/medminder-hero.png' %}" alt="MedMinder App Screenshot"> #}
        </div>
-    </div>
+
   </main>
 
   {# --- Footer --- #}
   <footer class="bg-gray-50">
-    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
       &copy; {% now "Y" %} MedMinder. All rights reserved.
       {# Add links to Terms, Privacy later #}
       {# <a href="#" class="ml-4 hover:text-gray-700">Terms</a>

@@ -1,0 +1,26 @@
+{% extends 'reminders/forms/wizard_form.html' %}
+
+{% block wizard_content %}
+    <p class="mb-4 text-gray-700">What would you like to be reminded?</p>
+    <div class="mb-4">
+        <label for="{{ wizard.form.repeat.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.repeat.label }}</label>
+        {{ wizard.form.repeat }}
+        {% if wizard.form.repeat.errors %}
+            <p class="text-red-500 text-xs italic">{{ wizard.form.repeat.errors }}</p>
+        {% endif %}
+    </div>
+    <div class="mb-4">
+        <label for="{{ wizard.form.at_time.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.at_time.label }}</label>
+        {{ wizard.form.at_time }}
+        {% if wizard.form.at_time.errors %}
+            <p class="text-red-500 text-xs italic">{{ wizard.form.at_time.errors }}</p>
+        {% endif %}
+    </div>
+    <div class="mb-4">
+        <label for="{{ wizard.form.until_date.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.until_date.label }} (Optional)</label>
+        {{ wizard.form.until_date }}
+        {% if wizard.form.until_date.errors %}
+            <p class="text-red-500 text-xs italic">{{ wizard.form.until_date.errors }}</p>
+        {% endif %}
+    </div>
+{% endblock %}

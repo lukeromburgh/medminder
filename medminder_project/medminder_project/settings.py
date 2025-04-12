@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'formtools',
     'apps.accounts',
     'apps.core',
     'apps.reminders',
@@ -57,7 +58,10 @@ ROOT_URLCONF = 'medminder_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'templates', 
+            '/Users/lukedawson/Downloads/medminder_project/venv/lib/python3.10/site-packages/formtools/templates'
+                 ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

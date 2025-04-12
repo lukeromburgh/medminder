@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.core.urls')),  # Include the URLs from the accounts app
     path('accounts/', include('apps.accounts.urls')),  # Include the URLs from the accounts app
+    path('medminder/', include('apps.reminders.urls')),
 ]

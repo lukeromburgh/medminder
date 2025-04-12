@@ -20,7 +20,7 @@ def login_page(request):
     print("Rendering login page")  # Debug
     return render(request, 'accounts/login_page.html')
 
-def signup(request):
+def signup_user(request):
     print("Signup view called")  # Debug
     if request.method == 'POST':
         print("POST request received")  # Debug
@@ -54,7 +54,7 @@ def login_user(request):
             if user is not None:
                 print(f"User {user.username} authenticated")
                 login(request, user)
-                return JsonResponse({'success': True, 'redirect': reverse('core')})  # Return JSON on success
+                return JsonResponse({'success': True, 'redirect': reverse('core:home')})  # Return JSON on success
             else:
                 # Authentication failed
                 print("Authentication failed")

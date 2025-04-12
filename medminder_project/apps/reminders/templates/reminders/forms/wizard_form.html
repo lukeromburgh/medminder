@@ -1,0 +1,41 @@
+{% load wizard_tags %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Reminder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+    <main class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-4 text-center">Add New Reminder</h2>
+        <h3 class="text-lg text-gray-700 mb-4 text-center">Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h3>
+
+        <form action="" method="post">{% csrf_token %}
+            {{ wizard.management_form }}
+
+            {% if wizard.form.errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Error!</strong>
+                    <span class="block sm:inline">{{ wizard.form.errors }}</span>
+                </div>
+            {% endif %}
+
+            {% block wizard_content %}
+                {{ wizard.form.as_p }}
+            {% endblock %}
+
+            <div class="flex justify-between mt-6">
+                {% if wizard.steps.prev %}
+                    <button name="{{ wizard.steps.prev }}" type="submit" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Previous</button>
+                {% endif %}
+                <input type="submit" value="{% if wizard.steps.last %}{% translate "Finish" %}{% else %}{% translate "Next" %}{% endif %}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"/>
+            </div>
+        </form>
+    </main>
+</body>
+</html>
