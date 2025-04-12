@@ -2,7 +2,7 @@
     <div class="w-full lg:w-full max-w-sm py-12 px-8 bg-white rounded-lg">
         <h2 class="text-xl font-bold text-gray-700 text-center">Log In</h2>
 
-        <form id='login-form' method="post" ">
+        <form id='login-form' method="post"">
             {% csrf_token %}
 
             <div class="flex w-full max-w-xs flex-col py-2 gap-1 text-neutral-600">
@@ -32,10 +32,10 @@
                 {% endif %}
             </div>
 
-            {% include "partials/_button.html" with label='Log in' type='submit' %}
+            {% include "components/button.html" with label='Log in' type='submit' %}
         </form>
 
-        <p class="mt-4 text-sm text-center text-gray-600">Don’t have an account? <a  class="text-blue-500 hover:underline">Sign up</a></p>
+        <p class="mt-4 text-sm text-center text-gray-600">Don’t have an account? <a href="{% url 'signup' %}" class="text-blue-500 hover:underline">Sign up</a></p>
 
         <div id="login-alert" class="hidden relative w-full overflow-hidden rounded-md border mt-6 border-red-500 bg-white text-neutral-600" role="alert">
             <div class="flex w-full items-center gap-2 bg-red-500/10 p-4">
