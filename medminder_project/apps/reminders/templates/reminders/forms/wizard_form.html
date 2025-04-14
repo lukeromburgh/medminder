@@ -1,5 +1,4 @@
 {% load i18n %}
-
 {% load static %}
 
 <!DOCTYPE html>
@@ -12,11 +11,10 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="h-screen flex items-center justify-center flex-col">
-    <h3 class="text-lg text-gray-700 mb-4 text-center "> {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h3>
-    <main class="bg-white p-8 rounded shadow-md w-full max-w-md">
-        
-
+    <h3 class="text-lg text-gray-700 mb-4 text-center absolute top-32"> {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h3>
+    <main >
         <form action="" method="post">{% csrf_token %}
+            <div class="bg-white p-8 rounded-lg w-full max-w-md border border-gray-300 align-start">
             {{ wizard.management_form }}
 
             {% if wizard.form.errors %}
@@ -27,14 +25,27 @@
             {% endif %}
 
             {% block wizard_content %}
-                {{ wizard.form.as_p }}
+            <div class="space-y-4">
+                {% for field in wizard.form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="text-gray-500 text-xs mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <p class="text-red-500 text-xs italic mt-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
             {% endblock %}
+            </div>
 
-            <div class="flex justify-between mt-6">
-                {% if wizard.steps.prev %}
-                    <button name="{{ wizard.steps.prev }}" type="submit" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Previous</button>
-                {% endif %}
-                <input type="submit" value="{% if wizard.steps.last %}{% translate "Finish" %}{% else %}{% translate "Next" %}{% endif %}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"/>
+            <div class="flex justify-center justify-self-center mt-6">
+                <input type="submit" value="{% if wizard.steps.current == wizard.steps.count|add:'-1' %}{% translate "Finish" %}{% else %}{% translate "Next" %}{% endif %}" class="bg-gray-800 hover:bg-gray-600 text-white py-2 px-6 rounded-full focus:outline-none focus:shadow-outline"/>
             </div>
         </form>
     </main>
