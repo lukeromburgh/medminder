@@ -1,15 +1,40 @@
 {% extends 'reminders/forms/wizard_form.html' %}
 
 {% block wizard_content %}
-    <p class="mb-4 text-gray-700">Please confirm your reminder details:</p>
-    <ul class="list-disc pl-5 mb-4">
-        <li><strong>Medication:</strong> {{ all_data.medication_name }}</li>
-        <li><strong>Dosage:</strong> {{ all_data.dosage }}</li>
-        <li><strong>Repeat:</strong> {{ all_data.repeat }}</li>
-        <li><strong>At Time:</strong> {{ all_data.at_time }}</li>
+    <p class="mb-6 text-gray-700">Please confirm your reminder details:</p>
+
+    <div class="space-y-4"> {# Added space-y-4 like in wizard_form base block #}
+        {# Medication Name #}
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Medication Name:</label>
+            <p class="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 p-2 sm:text-sm text-gray-700">{{ all_data.medication_name|default:"Not provided" }}</p>
+        </div>
+
+        {# Dosage #}
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Dosage:</label>
+            <p class="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 p-2 sm:text-sm text-gray-700">{{ all_data.dosage|default:"Not provided" }}</p>
+        </div>
+
+        {# Repeat #}
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Repeat:</label>
+            {# Get display value for choice field #}
+            <p class="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 p-2 sm:text-sm text-gray-700">{{ all_data.get_repeat_display|default:all_data.repeat|capfirst|default:"Not provided" }}</p>
+        </div>
+
+        {# At Time #}
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">At Time:</label>
+            <p class="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 p-2 sm:text-sm text-gray-700">{{ all_data.at_time|time:"H:i"|default:"Not provided" }}</p> {# Format time #}
+        </div>
+
+        {# Until Date (Optional) #}
         {% if all_data.until_date %}
-            <li><strong>Until Date:</strong> {{ all_data.until_date }}</li>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Until Date:</label>
+                <p class="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 p-2 sm:text-sm text-gray-700">{{ all_data.until_date|date:"Y-m-d"|default:"Not specified" }}</p> {# Format date #}
+            </div>
         {% endif %}
-    </ul>
-    <p class="text-gray-700">Click "Finish" to create the reminder.</p>
+    </div>
 {% endblock %}

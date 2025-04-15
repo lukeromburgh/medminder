@@ -25,10 +25,18 @@ class Schedule(models.Model):
     def __str__(self):
         return f"{self.repeat} at {self.at_time}"
 
+from django.db import models
+from django.contrib.auth.models import User  # Import the User model
+
 class Reminder(models.Model):
+    id = models.AutoField(primary_key=True)  # Auto-incrementing ID
     medication = models.ForeignKey(Medication, on_delete=models.CASCADE)
     dosage = models.ForeignKey(Dosage, on_delete=models.CASCADE)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
+    def get_default_user():
+        return User.objects.get_or_create(username='default_reminder_user')[0].id
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=get_default_user)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

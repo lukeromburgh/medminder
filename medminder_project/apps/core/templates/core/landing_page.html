@@ -52,15 +52,36 @@
       </div>
 
       </div>
-       {# Optional: Placeholder for an image/illustration below the CTA #}
        <div class="mt-20 mb-10">
-         {# Example: Replace with an actual image or illustration #}
-         <div class="aspect-w-16 aspect-h-9 rounded-2xl w-5/6 h-svh flex flex-col items-center justify-center justify-self-center bg-[#ffffff] bg-[radial-gradient(at_40%_20%,hsla(28,100%,74%,0.5)_0px,transparent_50%),radial-gradient(at_80%_0%,hsla(189,100%,56%,0.5)_0px,transparent_50%),radial-gradient(at_0%_50%,hsla(355,100%,93%,0.5)_0px,transparent_50%),radial-gradient(at_80%_50%,hsla(340,100%,76%,0.5)_0px,transparent_50%),radial-gradient(at_0%_100%,hsla(22,100%,77%,1)_0px,transparent_50%),radial-gradient(at_80%_100%,hsla(242,100%,70%,1)_0px,transparent_50%),radial-gradient(at_0%_0%,hsla(343,100%,76%,1)_0px,transparent_50%)]" >
+         <div class=" rounded-2xl px-10 py-10 lg:py-32 w-5/6 h-fit flex flex-col items-center justify-center justify-self-center bg-[#ffffff] bg-[radial-gradient(at_40%_20%,hsla(28,100%,74%,0.5)_0px,transparent_50%),radial-gradient(at_80%_0%,hsla(189,100%,56%,0.5)_0px,transparent_50%),radial-gradient(at_0%_50%,hsla(355,100%,93%,0.5)_0px,transparent_50%),radial-gradient(at_80%_50%,hsla(340,100%,76%,0.5)_0px,transparent_50%),radial-gradient(at_0%_100%,hsla(22,100%,77%,1)_0px,transparent_50%),radial-gradient(at_80%_100%,hsla(242,100%,70%,1)_0px,transparent_50%),radial-gradient(at_0%_0%,hsla(343,100%,76%,1)_0px,transparent_50%)]" >
           <img class="mx-auto rounded-lg shadow-lg" src="{% static 'images/hero-mock.png' %}" alt="MedMinder App Screenshot">
          </div>
          
        </div>
 
+ <article class="flex flex-col lg:flex-row gap-10 justify-center"> 
+      <div class="w-3/4 lg:h-auto lg:w-1/4 my-6 p-12  lg:px-8 justify-self-center bg-yellow-100 text-yellow-700 rounded-lg border border-yellow-300">
+        <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4" id="features">💬  Smart Medication Reminders</h2>
+        <p class="w-5/6 space-y-4 ml-4 text-lg text-yellow-600">Never miss a dose again. Set up personalized reminders via SMS or email to keep your routine on track—wherever you are, whenever it’s time. Peace of mind, right on schedule.</p>
+      </div>
+
+      <div class="w-3/4 lg:h-auto lg:w-1/4 my-6 p-12  lg:px-8 justify-self-center bg-green-100 text-green-700 rounded-lg border border-green-300">
+        <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4" id="features">📅  Medication History Tracking</h2>
+        <p class="w-5/6 space-y-4 ml-4 text-lg text-green-600">Stay informed and in control. Easily review your past doses, see what you’ve taken and when, and keep your health records organized in one place.</p>
+      </div>
+</article>
+
+<article class="flex flex-col lg:flex-row gap-10 mb-10 justify-center"> 
+  <div class="w-3/4 lg:h-auto lg:w-1/4 my-6 p-12  lg:px-8 justify-self-center bg-blue-100 text-blue-700 rounded-lg border border-blue-300">
+    <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4" id="features">👨‍👩‍👧 Share with Family or Caregivers</h2>
+    <p class="w-5/6 space-y-4 ml-4 text-lg text-blue-600">You’re not in this alone. Share your schedule with trusted loved ones or caregivers so they can support you when it matters most. Everyone stays in the loop.</p>
+  </div>
+
+  <div class="w-3/4 lg:h-auto lg:w-1/4 my-6 p-12  lg:px-8 justify-self-center bg-purple-100 text-purple-700 rounded-lg border border-purple-300">
+    <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4" id="features">🧭 Effortless, User-Friendly Design</h2>
+    <p class="w-5/6 space-y-4 ml-4 text-lg text-purple-600">No tech headaches here. Our clean, intuitive interface is designed to make setting up and managing your meds simple—even if you're not super tech-savvy.</p>
+  </div>
+</article>
   </main>
 
   {# --- Footer --- #}

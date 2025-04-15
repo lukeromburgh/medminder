@@ -2,7 +2,6 @@
 {% load i18n %}
 {% load static %}
 
-{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,10 +46,11 @@
             </div>
 
             <div class="flex justify-center justify-self-center mt-6">
-                <input type="submit" value="{% if wizard.steps.current == wizard.steps.count|add:'-1' %}{% translate "Finish" %}{% else %}{% translate "Next" %}{% endif %}" class="bg-gray-800 hover:bg-gray-600 text-white py-2 px-6 rounded-full focus:outline-none focus:shadow-outline"/>
+                <input type="submit" 
+                       value="{% if wizard.steps.current == "confirmation" %}{% translate "Create Reminder" %}{% else %}{% translate "Next" %}{% endif %}" 
+                       class="{% if wizard.steps.current == "confirmation" %}bg-green-500 hover:bg-green-600{% else %}bg-gray-800 hover:bg-gray-600{% endif %} text-white py-2 px-6 rounded-full focus:outline-none focus:shadow-outline" />
             </div>
         </form>
     </main>
 </body>
 </html>
-{% endblock %}
