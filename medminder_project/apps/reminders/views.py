@@ -105,7 +105,7 @@ def dashboard (request):
     """
     # This is a placeholder for the core page view
     # You can add your logic here
-    return render(request, 'base_dashboard.html')
+    return render(request, 'reminders/dashboard.html')
 
 # def create_reminder(request):
 #     if request.method == 'POST':

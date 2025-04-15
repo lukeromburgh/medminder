@@ -1,0 +1,28 @@
+{% extends 'base_dashboard.html' %}
+
+{% load static %}
+
+{% block title %}Dashboard - MedMinder{% endblock %}
+
+{% block content %}
+<article class="flex flex-col lg:flex-row gap-4 space-between justify-center"> 
+    <div class="w-3/5 lg:h-xs lg:w-1/4 my-6 p-10  lg:px-8 justify-self-center bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-300">
+      <h2 class=" text-2xl font-medium mb-6 " id="features"> Total Medications</h2>
+      <p class="text-3xl w-5/6 space-y-4 font-bold text-yellow-900">5</p>
+    </div>
+
+    <div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-10  lg:px-8 justify-self-center bg-green-50 text-green-700 rounded-lg border border-green-300">
+      <h2 class=" text-2xl font-medium mb-6 " id="features">Next Reminder</h2>
+      <p class="w-5/6 space-y-4 font-bold  text-3xl text-green-900">8:00pm</p>
+    </div>
+<div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-10  lg:px-8 justify-self-center bg-blue-50 text-blue-700 rounded-lg border border-blue-300">
+  <h2 class=" text-2xl font-medium mb-6 " id="features">Weekly Adherence</h2>
+  <p class="w-5/6 space-y-4 font-bold text-3xl text-blue-900">92%</p>
+</div>
+
+<div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-10  lg:px-8 justify-self-center bg-purple-50 text-purple-700 rounded-lg border border-purple-300">
+  <h2 class=" text-2xl font-medium mb-6 " id="features">Achievement Points</h2>
+  <p class="w-5/6 space-y-4 font-bold text-3xl text-purple-900">800</p>
+</div>
+</article>
+{% endblock %}
