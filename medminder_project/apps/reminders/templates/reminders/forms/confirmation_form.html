@@ -1,15 +1,14 @@
 {% extends 'reminders/forms/wizard_form.html' %}
 
-
 {% block wizard_content %}
     <p class="mb-4 text-gray-700">Please confirm your reminder details:</p>
     <ul class="list-disc pl-5 mb-4">
-        <li><strong>Medication:</strong> {{ wizard.get_cleaned_data_for_step "medication" 'medication_name' }}</li>
-        <li><strong>Dosage:</strong> {{ wizard.get_cleaned_data_for_step "dosage" 'dosage' }}</li>
-        <li><strong>Repeat:</strong> {{ wizard.get_cleaned_data_for_step "schedule" 'repeat' }}</li>
-        <li><strong>At Time:</strong> {{ wizard.get_cleaned_data_for_step "schedule" 'at_time' }}</li>
-        {% if wizard.get_cleaned_data_for_step "schedule" 'until_date' %}
-            <li><strong>Until Date:</strong> {{ wizard.get_cleaned_data_for_step "schedule" 'until_date' }}</li>
+        <li><strong>Medication:</strong> {{ all_data.medication_name }}</li>
+        <li><strong>Dosage:</strong> {{ all_data.dosage }}</li>
+        <li><strong>Repeat:</strong> {{ all_data.repeat }}</li>
+        <li><strong>At Time:</strong> {{ all_data.at_time }}</li>
+        {% if all_data.until_date %}
+            <li><strong>Until Date:</strong> {{ all_data.until_date }}</li>
         {% endif %}
     </ul>
     <p class="text-gray-700">Click "Finish" to create the reminder.</p>

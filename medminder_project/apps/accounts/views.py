@@ -30,7 +30,7 @@ def signup_user(request):
             user = form.save()
             print(f"User {user.username} saved with ID {user.id}")  # Debug
             login(request, user)
-            return JsonResponse({'success': True, 'redirect': reverse('core:home')})  # Return JSON on success
+            return JsonResponse({'success': True, 'redirect': reverse('medminder:dashboard')})  # Return JSON on success
         else:
             print("Form invalid:", form.errors)  # Debug
             return JsonResponse({'success': False, 'errors': form.errors})  # Return JSON on error
@@ -54,7 +54,7 @@ def login_user(request):
             if user is not None:
                 print(f"User {user.username} authenticated")
                 login(request, user)
-                return JsonResponse({'success': True, 'redirect': reverse('core:home')})  # Return JSON on success
+                return JsonResponse({'success': True, 'redirect': reverse('medminder:dashboard')})  # Return JSON on success
             else:
                 # Authentication failed
                 print("Authentication failed")

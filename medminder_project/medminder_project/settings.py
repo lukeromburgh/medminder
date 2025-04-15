@@ -65,7 +65,6 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'templates', 
-            '/Users/lukedawson/Downloads/medminder_project/venv/lib/python3.10/site-packages/formtools/templates'
                  ],
         'APP_DIRS': True,
         'OPTIONS': {
