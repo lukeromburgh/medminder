@@ -1,0 +1,14 @@
+{% extends 'reminders/forms/wizard_form.html' %}
+
+{% block wizard_content %}
+
+    <p class="mb-4 text-gray-700">What is the name of your medication?</p>
+    <div class="mb-4">
+        <label for="{{ wizard.form.medication_name.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2 hidden">{{ wizard.form.medication_name.label }}</label>
+        {{ wizard.form.medication_name }}
+        {% if wizard.form.medication_name.errors %}
+            <p class="text-red-500 text-xs italic">{{ wizard.form.medication_name.errors }}</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
