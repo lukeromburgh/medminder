@@ -8,7 +8,7 @@
 
 {% block content %}
   <article class="flex flex-col lg:flex-row gap-4 space-between justify-center">
-    <div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-8 lg:px-8 justify-self-center bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-300">
+    <div class="sm:w-5/6 lg:w-3/5 lg:h-sm lg:w-1/4 my-1 lg:my-6 p-8 lg:px-8 justify-self-center bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-300">
       <h2 class="lg:text-xl font-medium mb-2" id="features">Total Medications</h2>
       <p class="text-2xl w-5/6 space-y-4 font-bold text-yellow-900">{{ total_medications }}</p>
       <p class="mt-4">
@@ -16,7 +16,7 @@
       </p>
     </div>
 
-    <div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-8 lg:px-8 justify-self-center bg-green-50 text-green-700 rounded-lg border border-green-300">
+    <div class="sm:w-5/6 lg:w-3/5 lg:h-sm lg:w-1/4 my-1 lg:my-6 p-8 lg:px-8 justify-self-center bg-green-50 text-green-700 rounded-lg border border-green-300">
       <h2 class="lg:text-xl font-medium mb-2" id="features">Next Reminder</h2>
       {% if next_reminder %}
         <p class="w-5/6 space-y-4 font-bold text-2xl text-green-900">{{ next_reminder.due_time|time:'H:i' }}</p>
@@ -28,7 +28,7 @@
       {% endif %}
     </div>
 
-    <div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-8 lg:px-8 justify-self-center bg-blue-50 text-blue-700 rounded-lg border border-blue-300">
+    <div class="sm:w-5/6 lg:w-3/5 lg:h-sm lg:w-1/4 my-1 lg:my-6 p-8 lg:px-8 justify-self-center bg-blue-50 text-blue-700 rounded-lg border border-blue-300">
       <h2 class="lg:text-xl font-medium mb-2" id="features">Weekly Adherence</h2>
       <p class="w-5/6 space-y-4 font-bold text-2xl text-blue-900">{{ weekly_adherence }}%</p>
       <p class="mt-4">
@@ -36,7 +36,7 @@
       </p>
     </div>
 
-    <div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-8 lg:px-8 justify-self-center bg-purple-50 text-purple-700 rounded-lg border border-purple-300">
+    <div class="sm:w-5/6 lg:w-3/5 lg:h-sm lg:w-1/4 my-1 lg:my-6 p-8 lg:px-8 justify-self-center bg-purple-50 text-purple-700 rounded-lg border border-purple-300">
       <h2 class="lg:text-xl font-medium mb-2" id="features">Achievement Points</h2>
       <p class="w-5/6 space-y-4 font-bold text-2xl text-purple-900">{{ achievement_points }}</p>
       <p class="mt-4">
@@ -45,7 +45,7 @@
     </div>
   </article>
 
-  <section class="p-8 rounded-xl border border-gray-300 bg-white" x-data="{ showAll: false, rowLimit: 3, reminders: {{ todays_reminders|length }} }">
+  <section class="p-8 my-4 rounded-xl border border-gray-300 bg-white" x-data="{ showAll: false, rowLimit: 3, reminders: {{ todays_reminders|length }} }">
     <h2 class="text-2xl font-semibold mb-4">Today's Medications</h2>
     <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
     {% if todays_reminders %}
