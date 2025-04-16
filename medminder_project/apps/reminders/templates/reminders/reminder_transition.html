@@ -2,51 +2,51 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Let's Get Started</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+      .gradient-bg {
+        background-image: linear-gradient(to bottom, rgb(250, 206, 149), rgb(255, 142, 167));
+        border-radius: 0 0 100% 100% / 0 0 40% 40%;
+      }
+      
+      .illustration-container {
+        position: relative;
+        z-index: 10;
+        margin-top: -275px; /* Makes image overhang more */
+        margin-bottom: 6rem; /* Adjusts bottom margin */
+      }
+      
+      @media (min-width: 768px) {
         .gradient-bg {
-            background-image: linear-gradient(to bottom,rgb(250, 206, 149),rgb(255, 142, 167));
-            border-radius: 0 0 100% 100% / 0 0 40% 40%;
+          border-radius: 0 0 100% 100% / 0 0 30% 30%;
         }
-        
+      
         .illustration-container {
-            position: relative;
-            z-index: 10;
-            margin-top: -275px; /* Makes image overhang more */
-            margin-bottom: 6rem; /* Adjusts bottom margin */
+          margin-top: -300px;
         }
-        
-        @media (min-width: 768px) {
-            .gradient-bg {
-                border-radius: 0 0 100% 100% / 0 0 30% 30%;
-            }
-            
-            .illustration-container {
-                margin-top: -300px;
-            }
-        }
+      }
     </style>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-start bg-white">
+  </head>
+  <body class="min-h-screen flex flex-col items-center justify-start bg-white">
     <!-- Gradient Background with Curve -->
     <div class="w-full gradient-bg max-h-[350px] lg:max-h-[450px]" style="height: 45vh;"></div>
-    
+
     <!-- Illustration that overhangs -->
     <div class="illustration-container w-full flex justify-center">
-        <img src="{% static 'images/plan-setup.png' %}" alt="Setup Illustration" class="w-80 lg:w-96 h-auto" />
+      <img src="{% static 'images/plan-setup.png' %}" alt="Setup Illustration" class="w-80 lg:w-96 h-auto" />
     </div>
 
     <!-- Main Content -->
     <main class="text-center px-4 mt-6">
-        <h1 class="text-gray-500 text-lg mb-2">Hey username,</h1>
-        <p class="text-4xl font-medium text-black mb-12">Let's get <br> you set up!</p>
-        <a href="{% url 'medminder:add_reminder' %}" class="bg-gray-800 hover:bg-gray-700 text-white py-3 px-6 rounded-full">
-            Add a plan
-        </a>
+      <h1 class="text-gray-500 text-lg mb-2">Hey {{ user }},</h1>
+      <p class="text-4xl font-medium text-black mb-12">
+        Let's get <br /> you set up!
+      </p>
+      <a href="{% url 'medminder:add_reminder' %}" class="bg-gray-800 hover:bg-gray-700 text-white py-3 px-6 rounded-full">Add a plan</a>
     </main>
-</body>
+  </body>
 </html>

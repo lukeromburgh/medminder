@@ -1,0 +1,186 @@
+{% extends 'base_dashboard.html' %}
+
+{% load static %}
+
+{% block title %}
+  Dashboard - MedMinder
+{% endblock %}
+
+{% block content %}
+  <article class="flex flex-col lg:flex-row gap-4 space-between justify-center">
+    <div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-8 lg:px-8 justify-self-center bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-300">
+      <h2 class="lg:text-xl font-medium mb-2" id="features">Total Medications</h2>
+      <p class="text-2xl w-5/6 space-y-4 font-bold text-yellow-900">{{ total_medications }}</p>
+      <p class="mt-4">
+        <a class="text-xs text-yellow-600 hover:text-yellow-800">View Medications</a>
+      </p>
+    </div>
+
+    <div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-8 lg:px-8 justify-self-center bg-green-50 text-green-700 rounded-lg border border-green-300">
+      <h2 class="lg:text-xl font-medium mb-2" id="features">Next Reminder</h2>
+      {% if next_reminder %}
+        <p class="w-5/6 space-y-4 font-bold text-2xl text-green-900">{{ next_reminder.due_time|time:'H:i' }}</p>
+        <p class="mt-4">
+          <a class="text-xs text-green-600 hover:text-green-800">{{ next_reminder.medication }}</a>
+        </p>
+      {% else %}
+        <p class="w-5/6 space-y-4 font-bold text-2xl text-green-900">No Reminders</p>
+      {% endif %}
+    </div>
+
+    <div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-8 lg:px-8 justify-self-center bg-blue-50 text-blue-700 rounded-lg border border-blue-300">
+      <h2 class="lg:text-xl font-medium mb-2" id="features">Weekly Adherence</h2>
+      <p class="w-5/6 space-y-4 font-bold text-2xl text-blue-900">{{ weekly_adherence }}%</p>
+      <p class="mt-4">
+        <a class="text-xs text-blue-600 hover:text-blue-800">Last 7 days</a>
+      </p>
+    </div>
+
+    <div class="w-3/5 lg:h-sm lg:w-1/4 my-6 p-8 lg:px-8 justify-self-center bg-purple-50 text-purple-700 rounded-lg border border-purple-300">
+      <h2 class="lg:text-xl font-medium mb-2" id="features">Achievement Points</h2>
+      <p class="w-5/6 space-y-4 font-bold text-2xl text-purple-900">{{ achievement_points }}</p>
+      <p class="mt-4">
+        <a class="text-xs text-purple-600 hover:text-purple-800">{{ user_tier }}</a>
+      </p>
+    </div>
+  </article>
+
+  <section class="p-8 rounded-xl border border-gray-300 bg-white" x-data="{ showAll: false, rowLimit: 3, reminders: {{ todays_reminders|length }} }">
+    <h2 class="text-2xl font-semibold mb-4">Today's Medications</h2>
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+    {% if todays_reminders %}
+      <table class="min-w-full bg-white border border-gray-200">
+        <thead>
+          <tr>
+            <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Medication</th>
+            <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Dosage</th>
+            <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Time</th>
+            <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reminder in todays_reminders %}
+            <tr class="border-b border-gray-200" :style="showAll || {{ forloop.counter0 }} < rowLimit ? '' : 'display: none;'" :id="'reminder-row-' + {{ reminder.id }}">
+              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if reminder.completed %}line-through{% endif %}" :id="'medication-' + {{ reminder.id }}">{{ reminder.medication }}</td>
+              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if reminder.completed %}line-through{% endif %}" :id="'dosage-' + {{ reminder.id }}">{{ reminder.dosage }}</td>
+              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if reminder.completed %}line-through{% endif %}" :id="'due_time-' + {{ reminder.id }}">{{ reminder.due_time|time:'H:i' }}</td>
+              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900" :id="'action-cell-' + {{ reminder.id }}">
+                {% if not reminder.completed %}
+                  <form method="post" action="{% url 'medminder:complete_reminder' reminder.id %}" class="complete-form">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Complete</button>
+                  </form>
+                {% else %}
+                  Completed
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button x-show="reminders > rowLimit" @click="showAll = !showAll" class="mt-4 text-blue-600 hover:text-blue-800">
+        <span x-text="showAll ? 'Collapse' : 'See More'"></span>
+        <span :class="showAll ? 'rotate-180' : ''" class="inline-block transition-transform">⬇️</span>
+      </button>
+    {% else %}
+      <p>No reminders for today.</p>
+    {% endif %}
+
+    <div class="mt-8">
+      <a href="{% url 'medminder:new_plan' %}" class="bg-gray-800 hover:bg-black text-white py-2 px-5 rounded-full">Add new plan</a>
+    </div>
+  </section>
+
+  <style>
+    .toast {
+      background-color: #4caf50;
+      color: white;
+      padding: 16px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      transition-duration: 0.3s;
+    }
+    
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const completeForms = document.querySelectorAll('.complete-form');
+      const toastContainer = document.getElementById('toast-container');
+
+      function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.add('show');
+          setTimeout(() => {
+            toast.remove();
+          }, 8300);
+        }, 100);
+      }
+    
+      completeForms.forEach((form) => {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          const formData = new FormData(this);
+    
+          fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.json();
+              } else {
+                throw new Error('Network response was not ok.');
+              }
+            })
+            .then((data) => {
+              if (data.points) {
+                showToast(data.message);
+
+                // Update the UI dynamically
+                const reminderId = form.action.split('/').pop();
+                const medicationCell = document.getElementById('medication-' + reminderId);
+                const dosageCell = document.getElementById('dosage-' + reminderId);
+                const dueTimeCell = document.getElementById('due_time-' + reminderId);
+                const actionCell = document.getElementById('action-cell-' + reminderId);
+                const reminderRow = document.getElementById('reminder-row-' + reminderId);
+                if (medicationCell) {
+                  medicationCell.classList.add('line-through');
+                }
+                if (dosageCell) {
+                  dosageCell.classList.add('line-through');
+                }
+                if (dueTimeCell) {
+                  dueTimeCell.classList.add('line-through');
+                }
+                if (actionCell) {
+                  actionCell.innerHTML = 'Completed';
+                }
+                if (reminderRow) {
+                  reminderRow.classList.add('border-green-300');
+                }
+              }
+
+            })
+            .catch((error) => {
+              console.error('There has been a problem with your fetch operation:', error);
+            });
+        });
+      });
+    });
+  </script>
+{% endblock %}

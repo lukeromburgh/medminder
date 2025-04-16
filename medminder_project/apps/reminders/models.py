@@ -67,6 +67,7 @@ class UserStats(models.Model):
     reminders_skipped = models.IntegerField(default=0)
     average_compliance = models.FloatField(default=0.0)
     other_stats = models.JSONField(null=True, blank=True)
+    achievement_points = models.IntegerField(default=0)  # Add achievement_points field
 
     def __str__(self):
         return f"{self.user.username} stats - {self.date}"
