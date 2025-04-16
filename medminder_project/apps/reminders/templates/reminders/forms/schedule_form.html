@@ -1,26 +1,204 @@
 {% extends 'reminders/forms/wizard_form.html' %}
+{% load static %} {# Make sure you have {% load static %} if using static files #}
+
+{% block extra_head %}
+  {# Add a block for CSS/JS includes in your base template if needed #}
+  {# Flatpickr CSS #}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  {# Custom CSS for selected buttons (optional) #}
+  <style>
+    .day-button.selected {
+      background-color: #4a90e2; /* Example blue background */
+      color: white;
+      border-color: #357abd;
+    }
+    /* Ensure inline calendar displays correctly */
+    .flatpickr-calendar.inline {
+      box-shadow: none;
+      width: 100%; /* Make it responsive */
+    }
+  </style>
+{% endblock %}
 
 {% block wizard_content %}
-    <p class="mb-4 text-gray-700">What would you like to be reminded?</p>
-    <div class="mb-4">
-        <label for="{{ wizard.form.repeat.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.repeat.label }}</label>
-        {{ wizard.form.repeat }}
-        {% if wizard.form.repeat.errors %}
-            <p class="text-red-500 text-xs italic">{{ wizard.form.repeat.errors }}</p>
-        {% endif %}
+  <p class="mb-4 text-gray-700">Set the schedule for your reminder.</p>
+
+  {# Repeat Field #}
+  <div class="mb-4">
+    <label for="{{ wizard.form.repeat.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.repeat.label }}</label>
+    {{ wizard.form.repeat }} {# Renders the select dropdown #}
+    {% if wizard.form.repeat.errors %}
+      <p class="text-red-500 text-xs italic">{{ wizard.form.repeat.errors|join:', ' }}</p>
+    {% endif %}
+  </div>
+
+  {# --- Conditional Sections --- #}
+
+  {# Weekly Day Selector (Initially Hidden) #}
+  <div id="weekly-options" class="mb-4 hidden">
+    {# Use 'hidden' Tailwind class #}
+    <label class="block text-gray-700 text-sm font-bold mb-2">On which days?</label>
+    <div class="flex space-x-1 justify-center">
+      {# Use form's constant to generate buttons #}
+      {% for value, label in wizard.form.DAYS_OF_WEEK %}
+        <button type="button" data-day-value="{{ value }}" class="day-button p-2 border rounded-md w-10 h-10 text-center font-semibold text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">{{ label }}</button>
+      {% endfor %}
     </div>
-    <div class="mb-4">
-        <label for="{{ wizard.form.at_time.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.at_time.label }}</label>
-        {{ wizard.form.at_time }}
-        {% if wizard.form.at_time.errors %}
-            <p class="text-red-500 text-xs italic">{{ wizard.form.at_time.errors }}</p>
-        {% endif %}
-    </div>
-    <div class="mb-4">
-        <label for="{{ wizard.form.until_date.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.until_date.label }} (Optional)</label>
-        {{ wizard.form.until_date }}
-        {% if wizard.form.until_date.errors %}
-            <p class="text-red-500 text-xs italic">{{ wizard.form.until_date.errors }}</p>
-        {% endif %}
-    </div>
+    {{ wizard.form.weekly_days }} {# Render the hidden input #}
+    {% if wizard.form.weekly_days.errors %}
+      <p class="text-red-500 text-xs italic mt-1">{{ wizard.form.weekly_days.errors|join:', ' }}</p>
+    {% endif %}
+  </div>
+
+  {# Monthly Date Selector (Initially Hidden) #}
+  <div id="monthly-options" class="mb-4 hidden">
+    {# Use 'hidden' Tailwind class #}
+    <label class="block text-gray-700 text-sm font-bold mb-2">On which dates?</label>
+    {# Placeholder for Flatpickr inline calendar #}
+    <div id="monthly-calendar" class="border rounded-md p-2"></div>
+    {{ wizard.form.monthly_dates }} {# Render the hidden input #}
+    {% if wizard.form.monthly_dates.errors %}
+      <p class="text-red-500 text-xs italic mt-1">{{ wizard.form.monthly_dates.errors|join:', ' }}</p>
+    {% endif %}
+  </div>
+
+  {# --- Always Visible Fields --- #}
+
+  {# At Time Field #}
+  <div class="mb-4">
+    <label for="{{ wizard.form.at_time.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.at_time.label }}</label>
+    {{ wizard.form.at_time }}
+    {% if wizard.form.at_time.errors %}
+      <p class="text-red-500 text-xs italic">{{ wizard.form.at_time.errors|join:', ' }}</p>
+    {% endif %}
+  </div>
+
+  {# Until Date Field #}
+  <div class="mb-4">
+    <label for="{{ wizard.form.until_date.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.until_date.label }} (Optional)</label>
+    {{ wizard.form.until_date }}
+    {% if wizard.form.until_date.errors %}
+      <p class="text-red-500 text-xs italic">{{ wizard.form.until_date.errors|join:', ' }}</p>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+  {# Add a block for JS includes in your base template if needed #}
+  {# Flatpickr JS #}
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const repeatSelect = document.getElementById('{{ wizard.form.repeat.auto_id }}') // Use Django's auto_id
+      const weeklyOptionsDiv = document.getElementById('weekly-options')
+      const monthlyOptionsDiv = document.getElementById('monthly-options')
+      const weeklyDaysHiddenInput = document.getElementById('{{ wizard.form.weekly_days.auto_id }}')
+      const monthlyDatesHiddenInput = document.getElementById('{{ wizard.form.monthly_dates.auto_id }}')
+      const dayButtons = weeklyOptionsDiv.querySelectorAll('.day-button')
+      const calendarContainer = document.getElementById('monthly-calendar')
+    
+      let flatpickrInstance = null // To hold the calendar instance
+    
+      // --- Helper Functions ---
+      function updateWeeklyHiddenInput() {
+        const selectedDays = []
+        dayButtons.forEach((button) => {
+          if (button.classList.contains('selected')) {
+            selectedDays.push(button.getAttribute('data-day-value'))
+          }
+        })
+        weeklyDaysHiddenInput.value = selectedDays.join(',') // Comma-separated integers
+      }
+    
+      function initFlatpickr() {
+        // Destroy previous instance if exists
+        if (flatpickrInstance) {
+          flatpickrInstance.destroy()
+        }
+        // Get existing dates from hidden input (if any - e.g., navigating back)
+        const existingDates = monthlyDatesHiddenInput.value ? monthlyDatesHiddenInput.value.split(',') : []
+    
+        flatpickrInstance = flatpickr(calendarContainer, {
+          mode: 'multiple',
+          dateFormat: 'Y-m-d', // Format expected by Django DateField and our clean method
+          inline: true, // Show calendar directly
+          defaultDate: existingDates, // Pre-select dates if navigating back
+          onChange: function (selectedDates, dateStr, instance) {
+            // Update hidden input when dates change
+            // selectedDates is an array of Date objects
+            // We need to format them back to YYYY-MM-DD strings
+            const formattedDates = selectedDates.map((date) => {
+              const year = date.getFullYear()
+              const month = String(date.getMonth() + 1).padStart(2, '0')
+              const day = String(date.getDate()).padStart(2, '0')
+              return `${year}-${month}-${day}`
+            })
+            monthlyDatesHiddenInput.value = formattedDates.join(',')
+          }
+        })
+      }
+    
+      // --- Event Listeners ---
+      // Listener for the main Repeat dropdown
+      repeatSelect.addEventListener('change', function () {
+        const selectedValue = this.value
+    
+        // Hide both sections initially
+        weeklyOptionsDiv.classList.add('hidden')
+        monthlyOptionsDiv.classList.add('hidden')
+    
+        if (selectedValue === 'weekly') {
+          weeklyOptionsDiv.classList.remove('hidden')
+          // Clear monthly selection when switching TO weekly
+          if (flatpickrInstance) flatpickrInstance.clear()
+          monthlyDatesHiddenInput.value = ''
+        } else if (selectedValue === 'monthly') {
+          monthlyOptionsDiv.classList.remove('hidden')
+          initFlatpickr() // Initialize or re-initialize the calendar
+          // Clear weekly selection when switching TO monthly
+          dayButtons.forEach((btn) => btn.classList.remove('selected'))
+          weeklyDaysHiddenInput.value = ''
+        } else {
+          // Clear both selections if switched to Daily or empty
+          if (flatpickrInstance) flatpickrInstance.clear()
+          monthlyDatesHiddenInput.value = ''
+          dayButtons.forEach((btn) => btn.classList.remove('selected'))
+          weeklyDaysHiddenInput.value = ''
+        }
+      })
+    
+      // Listeners for Weekly Day Buttons
+      dayButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+          this.classList.toggle('selected') // Add/remove selected class
+          updateWeeklyHiddenInput() // Update the hidden field
+        })
+      })
+    
+      // --- Initial State ---
+      // Trigger change on load to show/hide sections based on initial value (e.g., if form redisplayed with errors)
+      // Also handles pre-selecting days/dates if navigating back/forth
+      function setInitialState() {
+        const initialRepeatValue = repeatSelect.value
+    
+        // Pre-select weekly buttons if navigating back
+        if (initialRepeatValue === 'weekly' && weeklyDaysHiddenInput.value) {
+          const selectedDays = weeklyDaysHiddenInput.value.split(',')
+          dayButtons.forEach((button) => {
+            if (selectedDays.includes(button.getAttribute('data-day-value'))) {
+              button.classList.add('selected')
+            } else {
+              button.classList.remove('selected')
+            }
+          })
+        }
+    
+        // Trigger the change handler to show correct section and init calendar if needed
+        repeatSelect.dispatchEvent(new Event('change'))
+      }
+    
+      setInitialState() // Run on page load
+    })
+  </script>
 {% endblock %}
