@@ -32,6 +32,16 @@
     {% endif %}
   </div>
 
+  {# --- Add Start Date Field Here --- #}
+  <div class="mb-4">
+    <label for="{{ wizard.form.start_date.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ wizard.form.start_date.label }}</label>
+    {{ wizard.form.start_date }} {# Renders the date input #}
+    {% if wizard.form.start_date.errors %}
+      <p class="text-red-500 text-xs italic">{{ wizard.form.start_date.errors|join:', ' }}</p>
+    {% endif %}
+  </div>
+  {# --- End Start Date Field --- #}
+
   {# --- Conditional Sections --- #}
 
   {# Weekly Day Selector (Initially Hidden) #}

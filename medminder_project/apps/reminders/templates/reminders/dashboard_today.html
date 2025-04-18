@@ -12,16 +12,18 @@
       <h2 class="lg:text-xl font-medium mb-2" id="features">Total Medications</h2>
       <p class="text-2xl w-5/6 space-y-4 font-bold text-yellow-900">{{ total_medications }}</p>
       <p class="mt-4">
-        <a class="text-xs text-yellow-600 hover:text-yellow-800">View Medications</a>
+        <a class="text-xs text-yellow-600 hover:text-yellow-800" href="#">View Medications</a>{# Add actual URL here #}
       </p>
     </div>
 
     <div class="sm:w-5/6 lg:w-3/5 lg:h-sm lg:w-1/4 my-1 lg:my-4 p-8 lg:px-8 justify-self-center bg-green-50 text-green-700 rounded-lg border border-green-300">
       <h2 class="lg:text-xl font-medium mb-2" id="features">Next Reminder</h2>
+      {# next_reminder is expected to be a DailyReminderLog instance #}
       {% if next_reminder %}
         <p class="w-5/6 space-y-4 font-bold text-2xl text-green-900">{{ next_reminder.due_time|time:'H:i' }}</p>
         <p class="mt-4">
-          <a class="text-xs text-green-600 hover:text-green-800">{{ next_reminder.medication }}</a>
+          {# Access medication through the reminder relationship #}
+          <a class="text-xs text-green-600 hover:text-green-800" href="#">{{ next_reminder.reminder.medication }}</a> {# Add actual URL here, maybe to reminder details? #}
         </p>
       {% else %}
         <p class="w-5/6 space-y-4 font-bold text-2xl text-green-900">No Reminders</p>
@@ -32,7 +34,7 @@
       <h2 class="lg:text-xl font-medium mb-2" id="features">Weekly Adherence</h2>
       <p class="w-5/6 space-y-4 font-bold text-2xl text-blue-900">{{ weekly_adherence }}%</p>
       <p class="mt-4">
-        <a class="text-xs text-blue-600 hover:text-blue-800">Last 7 days</a>
+        <a class="text-xs text-blue-600 hover:text-blue-800" href="#">Last 7 days</a>{# Add actual URL here #}
       </p>
     </div>
 
@@ -40,12 +42,13 @@
       <h2 class="lg:text-xl font-medium mb-2" id="features">Achievement Points</h2>
       <p class="w-5/6 space-y-4 font-bold text-2xl text-purple-900">{{ achievement_points }}</p>
       <p class="mt-4">
-        <a class="text-xs text-purple-600 hover:text-purple-800">{{ user_tier }}</a>
+        <a class="text-xs text-purple-600 hover:text-purple-800" href="#">{{ user_tier }}</a>{# Add actual URL here #}
       </p>
     </div>
   </article>
 
-  <section class="p-8 my-4 lg:my-0 rounded-xl border border-gray-300 bg-white" x-data="{ showAll: false, rowLimit: 3, reminders: {{ todays_reminders|length }} }">
+  {# reminders variable in x-data should reflect the count of todays_reminders #}
+  <section class="p-8 my-4 lg:my-0 rounded-xl border border-gray-300 bg-white" x-data="{ showAll: false, rowLimit: 3, remindersCount: {{ todays_reminders|length }} }">
     <h2 class="text-2xl font-semibold mb-4">Today's Medications</h2>
     <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
     {% if todays_reminders %}
@@ -59,14 +62,20 @@
           </tr>
         </thead>
         <tbody>
-          {% for reminder in todays_reminders %}
-            <tr class="border-b border-gray-200" :style="showAll || {{ forloop.counter0 }} < rowLimit ? '' : 'display: none;'" :id="'reminder-row-' + {{ reminder.id }}">
-              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if reminder.completed %}line-through{% endif %}" :id="'medication-' + {{ reminder.id }}">{{ reminder.medication }}</td>
-              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if reminder.completed %}line-through{% endif %}" :id="'dosage-' + {{ reminder.id }}">{{ reminder.dosage }}</td>
-              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if reminder.completed %}line-through{% endif %}" :id="'due_time-' + {{ reminder.id }}">{{ reminder.due_time|time:'H:i' }}</td>
-              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900" :id="'action-cell-' + {{ reminder.id }}">
-                {% if not reminder.completed %}
-                  <form method="post" action="{% url 'medminder:complete_reminder' reminder.id %}" class="complete-form">
+          {# Iterate through DailyReminderLog instances, let's name the variable log_entry #}
+          {% for log_entry in todays_reminders %}
+            {# Use log_entry.id for the row and cell IDs #}
+            <tr class="border-b border-gray-200" :style="showAll || {{ forloop.counter0 }} < rowLimit ? '' : 'display: none;'" :id="'reminder-row-' + {{ log_entry.id }}">
+              {# Access medication and dosage via the reminder relationship #}
+              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if log_entry.status == 'completed' %}line-through{% endif %}" :id="'medication-' + {{ log_entry.id }}">{{ log_entry.reminder.medication }}</td>
+              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if log_entry.status == 'completed' %}line-through{% endif %}" :id="'dosage-' + {{ log_entry.id }}">{{ log_entry.reminder.dosage }}</td>
+              {# Time is directly on the log entry #}
+              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if log_entry.status == 'completed' %}line-through{% endif %}" :id="'due_time-' + {{ log_entry.id }}">{{ log_entry.due_time|time:'H:i' }}</td>
+              <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900" :id="'action-cell-' + {{ log_entry.id }}">
+                {# Check status: show form if not completed #}
+                {% if log_entry.status != 'completed' %}
+                  {# Form action should use the log_entry.id #}
+                  <form method="post" action="{% url 'medminder:complete_reminder' log_entry.id %}" class="complete-form">
                     {% csrf_token %}
                     <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Complete</button>
                   </form>
@@ -78,7 +87,8 @@
           {% endfor %}
         </tbody>
       </table>
-      <button x-show="reminders > rowLimit" @click="showAll = !showAll" class="mt-4 text-blue-600 hover:text-blue-800">
+      {# Use remindersCount from x-data #}
+      <button x-show="remindersCount > rowLimit" @click="showAll = !showAll" class="mt-4 text-blue-600 hover:text-blue-800">
         <span x-text="showAll ? 'Collapse' : 'See More'"></span>
         <span :class="showAll ? 'rotate-180' : ''" class="inline-block transition-transform">⬇️</span>
       </button>
@@ -104,7 +114,7 @@
       transition-duration: 0.3s;
       box-shadow: 0 2px 4px rgba(31, 178, 68, 0.1);
     }
-    
+
     .toast.show {
       opacity: 1;
     }
@@ -125,15 +135,15 @@
           toast.classList.add('show');
           setTimeout(() => {
             toast.remove();
-          }, 8300);
-        }, 100);
+          }, 8300); // Hide toast after 8.3 seconds
+        }, 100); // Allow slight delay for DOM attachment
       }
-    
+
       completeForms.forEach((form) => {
         form.addEventListener('submit', function (event) {
           event.preventDefault();
           const formData = new FormData(this);
-    
+
           fetch(this.action, {
             method: 'POST',
             body: formData,
@@ -145,20 +155,31 @@
               if (response.ok) {
                 return response.json();
               } else {
-                throw new Error('Network response was not ok.');
+                // Handle non-2xx responses
+                 return response.json().then(error_data => {
+                    console.error('Error response:', error_data);
+                    showToast('Error completing reminder: ' + (error_data.message || 'Unknown error'));
+                    throw new Error('Server responded with status ' + response.status);
+                 });
               }
             })
             .then((data) => {
-              if (data.points) {
+              // Assuming the server returns JSON with a 'message' and 'points' on success
+              if (data.message) {
                 showToast(data.message);
 
                 // Update the UI dynamically
-                const reminderId = form.action.split('/').pop();
-                const medicationCell = document.getElementById('medication-' + reminderId);
-                const dosageCell = document.getElementById('dosage-' + reminderId);
-                const dueTimeCell = document.getElementById('due_time-' + reminderId);
-                const actionCell = document.getElementById('action-cell-' + reminderId);
-                const reminderRow = document.getElementById('reminder-row-' + reminderId);
+                // The ID extracted from the URL is the DailyReminderLog ID
+                const logEntryId = form.action.split('/').filter(Boolean).pop(); // Use filter(Boolean) to handle trailing slashes
+
+                // Get the specific cells and row using the logEntryId
+                const medicationCell = document.getElementById('medication-' + logEntryId);
+                const dosageCell = document.getElementById('dosage-' + logEntryId);
+                const dueTimeCell = document.getElementById('due_time-' + logEntryId);
+                const actionCell = document.getElementById('action-cell-' + logEntryId);
+                const reminderRow = document.getElementById('reminder-row-' + logEntryId);
+
+                // Add line-through class
                 if (medicationCell) {
                   medicationCell.classList.add('line-through');
                 }
@@ -168,17 +189,27 @@
                 if (dueTimeCell) {
                   dueTimeCell.classList.add('line-through');
                 }
-                if (actionCell) {
-                  actionCell.innerHTML = 'Completed';
-                }
-                if (reminderRow) {
-                  reminderRow.classList.add('border-green-300');
-                }
-              }
 
+                // Update the action cell content
+                if (actionCell) {
+                  actionCell.innerHTML = 'Completed'; // Or data.status if your backend sends it
+                }
+
+                // Optional: Change row styling on completion
+                if (reminderRow) {
+                  reminderRow.classList.add('border-green-300', 'bg-green-50'); // Example: add background color too
+                  reminderRow.classList.remove('border-b'); // Remove bottom border if desired
+                }
+                 // Note: If you implement "skip", you might handle that status differently here
+              }
             })
             .catch((error) => {
-              console.error('There has been a problem with your fetch operation:', error);
+              console.error('Fetch operation failed:', error);
+              // The error handling in the .then(response => ...) already showed a toast for server errors.
+              // This catch is for network errors or errors thrown from the .then blocks.
+              if (!toastContainer.querySelector('.toast.show')) { // Avoid showing multiple error toasts
+                 showToast('A network error occurred.'); // Generic network error message
+              }
             });
         });
       });

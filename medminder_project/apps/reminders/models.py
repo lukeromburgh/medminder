@@ -17,38 +17,85 @@ class Dosage(models.Model):
 
 class Schedule(models.Model):
     REPEAT_CHOICES = [
+        ('', 'Never'),
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
         ('monthly', 'Monthly'),
+        
     ]
-    repeat = models.CharField(max_length=10, choices=REPEAT_CHOICES, verbose_name='Repeat')
-    at_time = models.TimeField(verbose_name='At')
-    until_date = models.DateField(null=True, blank=True, verbose_name='Until')
+    repeat_type = models.CharField(max_length=10, choices=REPEAT_CHOICES, default='')
+    # For weekly: comma-separated integers (0=Mon, 6=Sun)
+    weekly_days = models.CharField(max_length=20, blank=True, null=True)
+    # For monthly: comma-separated integers (1-31)
+    monthly_dates = models.CharField(max_length=100, blank=True, null=True)
+    # Time of day for the reminder
+    time_of_day = models.TimeField(default=timezone.now)
+    # When the recurring plan starts
+    start_date = models.DateField(default=timezone.now)
+    # Optional end date for the recurring plan
+    end_date = models.DateField(blank=True, null=True)
+    # Add an interval? e.g., every 2 days, every 3 weeks
+    # repeat_interval = models.PositiveIntegerField(default=1)
+
 
     def __str__(self):
-        return f"{self.repeat} at {self.at_time}"
+        # Basic representation, you can make this more detailed
+        if self.repeat_type == 'daily':
+            return f"Daily at {self.time_of_day}"
+        elif self.repeat_type == 'weekly':
+             days = self.weekly_days.split(',') if self.weekly_days else []
+             day_names = [dict(self.day_choices()).get(int(d)) for d in days]
+             return f"Weekly on {', '.join(day_names or ['No days selected'])} at {self.time_of_day}"
+        # ... add logic for monthly/yearly
+        return f"{self.repeat_type.capitalize()} schedule"
+
+    # Helper for weekly day names (optional, could be in form too)
+    def day_choices(self):
+         # This should match your form's DAYS_OF_WEEK
+         return [(0, 'Mon'), (1, 'Tue'), (2, 'Wed'), (3, 'Thu'), (4, 'Fri'), (5, 'Sat'), (6, 'Sun')]
+
 
 class Reminder(models.Model):
-    id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Removed default argument
+    # id is automatically added by Django
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) # Use settings.AUTH_USER_MODEL
     medication = models.ForeignKey(Medication, on_delete=models.CASCADE)
     dosage = models.ForeignKey(Dosage, on_delete=models.CASCADE)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
-    due_date = models.DateField()
-    due_time = models.TimeField()
-    completed = models.BooleanField(default=False)
+    # Fields like due_date, due_time, completed are NOT here, they are on the log
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True) # To easily pause/resume a plan
 
     def __str__(self):
-        return f"Reminder for {self.medication} - {self.dosage} - {self.schedule} - Due: {self.due_date} {self.due_time}"
+        return f"Plan for {self.user.username}: {self.medication} - {self.dosage} ({self.schedule})"
 
-    def save(self, *args, **kwargs):
-        """Override save to calculate due_date and due_time."""
-        if not self.id:  # Only calculate on creation
-            today = timezone.now().date()
-            self.due_date = today
-            self.due_time = self.schedule.at_time
-        super().save(*args, **kwargs)
+# DailyReminderLog represents a specific occurrence of a reminder on a given day
+class DailyReminderLog(models.Model):
+    # log_id is automatically added by Django
+    reminder = models.ForeignKey(Reminder, on_delete=models.CASCADE, related_name='logs')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) # Denormalize user for easier querying
+    due_date = models.DateField(db_index=True) # The date this log applies to
+    due_time = models.TimeField() # The time it was due on that date
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('skipped', 'Skipped'),
+        # Add 'snoozed' or other states if needed
+    ]
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending', db_index=True)
+
+    completion_timestamp = models.DateTimeField(null=True, blank=True) # When it was marked completed/skipped
+
+    class Meta:
+        # Ensure only one log entry per reminder plan per date
+        unique_together = ('reminder', 'due_date')
+        # Order by due date and time by default for listings
+        ordering = ['due_date', 'due_time']
+
+    def __str__(self):
+        # More informative string representation
+        return f"Log for {self.reminder.medication} ({self.reminder.user.username}) on {self.due_date} at {self.due_time}: {self.status}"
+
 
 class Viewer(models.Model):
     viewer_id = models.AutoField(primary_key=True)
