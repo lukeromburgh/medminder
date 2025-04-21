@@ -115,6 +115,8 @@
     {# --- Table Layout (Visible when currentView is 'table') --- #}
     <div x-show="isCurrentView('table')">
        {% if all_reminders %}
+       <div class="overflow-x-auto"> {# Added overflow-x-auto for responsiveness #}
+        {# Applied table header styling #}
         {# Applied table styling #}
         <table class="min-w-full bg-white border border-gray-200">
           {# Applied thead styling #}
@@ -169,6 +171,7 @@
         {% else %}
           <p>You have no active medication plans.</p> {# Duplicate message, but keeps structure clean #}
         {% endif %}
+    </div>
     </div>
 
 
