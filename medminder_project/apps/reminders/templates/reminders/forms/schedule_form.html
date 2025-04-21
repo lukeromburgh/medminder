@@ -2,20 +2,39 @@
 {% load static %} {# Make sure you have {% load static %} if using static files #}
 
 {% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   {# Add a block for CSS/JS includes in your base template if needed #}
   {# Flatpickr CSS #}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   {# Custom CSS for selected buttons (optional) #}
   <style>
+    /* Day button styles */
     .day-button.selected {
-      background-color: #4a90e2; /* Example blue background */
+      background-color: #4a90e2; 
       color: white;
       border-color: #357abd;
     }
-    /* Ensure inline calendar displays correctly */
-    .flatpickr-calendar.inline {
+    
+    /* Minimally styled flatpickr that won't conflict with Tailwind */
+    #monthly-calendar .flatpickr-calendar {
+      background: #fff;
+      border-radius: 0.5rem;
+      border: 1px solid #e2e8f0;
       box-shadow: none;
-      width: 100%; /* Make it responsive */
+    }
+    
+    #monthly-calendar .flatpickr-calendar.inline {
+      width: 100%;
+    }
+    
+    #monthly-calendar .flatpickr-day.selected {
+      background: #4a90e2;
+      border-color: #4a90e2;
+      color: white;
+    }
+    
+    #monthly-calendar .flatpickr-day:hover {
+      background: #e2e8f0;
     }
   </style>
 {% endblock %}
@@ -96,22 +115,131 @@
 {% block extra_scripts %}
   {# Add a block for JS includes in your base template if needed #}
   {# Flatpickr JS #}
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
   <script>
+
+    const loadFlatpickr = async () => {
+      if (typeof flatpickr !== 'function') {
+        // If flatpickr is not loaded, load it dynamically
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js';
+        document.head.appendChild(script);
+        
+        // Wait for script to load
+        await new Promise(resolve => script.onload = resolve);
+        
+        // Also load CSS
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css';
+        document.head.appendChild(link);
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', async function () {
+      // Load Flatpickr first and wait for it to complete
+      await loadFlatpickr();
+    // Initialize flatpickr for date and time fields - use try/catch for better error handling
+    try {
+      flatpickr('input[name="schedule-start_date"]', {
+        dateFormat: 'Y-m-d',
+      });
+  
+      flatpickr('input[name="schedule-at_time"]', {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+      });
+  
+      flatpickr('input[name="schedule-until_date"]', {
+        dateFormat: 'Y-m-d',
+      });
+    } catch (e) {
+      console.error('Error initializing flatpickr:', e)
+    }
+    });
+    // --- JavaScript for the schedule form ---
+  
+    let flatpickrInstance = null // To hold the calendar instance
+    
+
     document.addEventListener('DOMContentLoaded', function () {
-      const repeatSelect = document.getElementById('{{ wizard.form.repeat.auto_id }}') // Use Django's auto_id
+      // Use the actual IDs as observed in the DOM
+      const repeatSelect = document.getElementById('id_repeat_select')
       const weeklyOptionsDiv = document.getElementById('weekly-options')
       const monthlyOptionsDiv = document.getElementById('monthly-options')
-      const weeklyDaysHiddenInput = document.getElementById('{{ wizard.form.weekly_days.auto_id }}')
-      const monthlyDatesHiddenInput = document.getElementById('{{ wizard.form.monthly_dates.auto_id }}')
+      
+      // Instead of using specific IDs, find the hidden inputs within their parent divs
+      const weeklyDaysHiddenInput = weeklyOptionsDiv.querySelector('input[type="hidden"]')
+      const monthlyDatesHiddenInput = monthlyOptionsDiv.querySelector('input[type="hidden"]')
+      
+      // Check if main elements exist
+      if (!repeatSelect) {
+        console.error('Could not find the repeat select element with ID: id_repeat_select')
+        return
+      }
+      
+      console.log('Found repeatSelect element:', repeatSelect)
+      
+      if (!weeklyOptionsDiv) {
+        console.error('Could not find weekly options div with ID: weekly-options')
+        return
+      }
+      
+      if (!monthlyOptionsDiv) {
+        console.error('Could not find monthly options div with ID: monthly-options')
+        return
+      }
+      
+      console.log('Weekly options div:', weeklyOptionsDiv)
+      console.log('Monthly options div:', monthlyOptionsDiv)
+      
+      // Check for hidden inputs
+      if (!weeklyDaysHiddenInput) {
+        console.error('Could not find weekly days hidden input within weekly-options div')
+        console.log('Creating hidden input for weekly days')
+        // Create the input if it doesn't exist
+        const newInput = document.createElement('input')
+        newInput.type = 'hidden'
+        newInput.name = 'schedule-weekly_days'
+        newInput.id = 'id_weekly_days_hidden'
+        weeklyOptionsDiv.appendChild(newInput)
+        // Now set the variable to the newly created input
+        weeklyDaysHiddenInput = weeklyOptionsDiv.querySelector('input[type="hidden"]')
+      }
+      
+      if (!monthlyDatesHiddenInput) {
+        console.error('Could not find monthly dates hidden input within monthly-options div')
+        console.log('Creating hidden input for monthly dates')
+        // Create the input if it doesn't exist
+        const newInput = document.createElement('input')
+        newInput.type = 'hidden'
+        newInput.name = 'schedule-monthly_dates'
+        newInput.id = 'id_monthly_dates_hidden'
+        monthlyOptionsDiv.appendChild(newInput)
+        // Now set the variable to the newly created input
+        monthlyDatesHiddenInput = monthlyOptionsDiv.querySelector('input[type="hidden"]')
+      }
+      
       const dayButtons = weeklyOptionsDiv.querySelectorAll('.day-button')
       const calendarContainer = document.getElementById('monthly-calendar')
     
-      let flatpickrInstance = null // To hold the calendar instance
+      // Fix CSS for selected buttons - add this to ensure style is applied
+      const styleEl = document.createElement('style')
+      styleEl.textContent = `
+        .day-button.selected {
+          background-color: #4a90e2 !important; 
+          color: white !important;
+          border-color: #357abd !important;
+        }
+      `
+      document.head.appendChild(styleEl)
     
+  
       // --- Helper Functions ---
       function updateWeeklyHiddenInput() {
+        if (!weeklyDaysHiddenInput) return;
+        
         const selectedDays = []
         dayButtons.forEach((button) => {
           if (button.classList.contains('selected')) {
@@ -119,6 +247,7 @@
           }
         })
         weeklyDaysHiddenInput.value = selectedDays.join(',') // Comma-separated integers
+        console.log('Updated weekly days input:', weeklyDaysHiddenInput.value)
       }
     
       function initFlatpickr() {
@@ -126,32 +255,42 @@
         if (flatpickrInstance) {
           flatpickrInstance.destroy()
         }
+        
+        if (!monthlyDatesHiddenInput) return;
+        
         // Get existing dates from hidden input (if any - e.g., navigating back)
         const existingDates = monthlyDatesHiddenInput.value ? monthlyDatesHiddenInput.value.split(',') : []
     
-        flatpickrInstance = flatpickr(calendarContainer, {
-          mode: 'multiple',
-          dateFormat: 'Y-m-d', // Format expected by Django DateField and our clean method
-          inline: true, // Show calendar directly
-          defaultDate: existingDates, // Pre-select dates if navigating back
-          onChange: function (selectedDates, dateStr, instance) {
-            // Update hidden input when dates change
-            // selectedDates is an array of Date objects
-            // We need to format them back to YYYY-MM-DD strings
-            const formattedDates = selectedDates.map((date) => {
-              const year = date.getFullYear()
-              const month = String(date.getMonth() + 1).padStart(2, '0')
-              const day = String(date.getDate()).padStart(2, '0')
-              return `${year}-${month}-${day}`
-            })
-            monthlyDatesHiddenInput.value = formattedDates.join(',')
-          }
-        })
+        try {
+          flatpickrInstance = flatpickr(calendarContainer, {
+            mode: 'multiple',
+            dateFormat: 'Y-m-d', // Format expected by Django DateField and our clean method
+            inline: true, // Show calendar directly
+            defaultDate: existingDates, // Pre-select dates if navigating back
+            onChange: function (selectedDates, dateStr, instance) {
+              if (!monthlyDatesHiddenInput) return;
+              
+              // Update hidden input when dates change
+              const formattedDates = selectedDates.map((date) => {
+                const year = date.getFullYear()
+                const month = String(date.getMonth() + 1).padStart(2, '0')
+                const day = String(date.getDate()).padStart(2, '0')
+                return `${year}-${month}-${day}`
+              })
+              monthlyDatesHiddenInput.value = formattedDates.join(',')
+              console.log('Updated monthly dates input:', monthlyDatesHiddenInput.value)
+            }
+          })
+          console.log('Flatpickr calendar initialized')
+        } catch (e) {
+          console.error('Error initializing flatpickr calendar:', e)
+        }
       }
     
       // --- Event Listeners ---
       // Listener for the main Repeat dropdown
       repeatSelect.addEventListener('change', function () {
+        console.log('Repeat selection changed to:', this.value)
         const selectedValue = this.value
     
         // Hide both sections initially
@@ -159,41 +298,43 @@
         monthlyOptionsDiv.classList.add('hidden')
     
         if (selectedValue === 'weekly') {
+          console.log('Showing weekly options')
           weeklyOptionsDiv.classList.remove('hidden')
           // Clear monthly selection when switching TO weekly
           if (flatpickrInstance) flatpickrInstance.clear()
-          monthlyDatesHiddenInput.value = ''
+          if (monthlyDatesHiddenInput) monthlyDatesHiddenInput.value = ''
         } else if (selectedValue === 'monthly') {
+          console.log('Showing monthly options')
           monthlyOptionsDiv.classList.remove('hidden')
           initFlatpickr() // Initialize or re-initialize the calendar
           // Clear weekly selection when switching TO monthly
           dayButtons.forEach((btn) => btn.classList.remove('selected'))
-          weeklyDaysHiddenInput.value = ''
+          if (weeklyDaysHiddenInput) weeklyDaysHiddenInput.value = ''
         } else {
           // Clear both selections if switched to Daily or empty
           if (flatpickrInstance) flatpickrInstance.clear()
-          monthlyDatesHiddenInput.value = ''
+          if (monthlyDatesHiddenInput) monthlyDatesHiddenInput.value = ''
           dayButtons.forEach((btn) => btn.classList.remove('selected'))
-          weeklyDaysHiddenInput.value = ''
+          if (weeklyDaysHiddenInput) weeklyDaysHiddenInput.value = ''
         }
       })
     
       // Listeners for Weekly Day Buttons
       dayButtons.forEach((button) => {
         button.addEventListener('click', function () {
+          console.log('Day button clicked:', this.textContent)
           this.classList.toggle('selected') // Add/remove selected class
           updateWeeklyHiddenInput() // Update the hidden field
         })
       })
     
       // --- Initial State ---
-      // Trigger change on load to show/hide sections based on initial value (e.g., if form redisplayed with errors)
-      // Also handles pre-selecting days/dates if navigating back/forth
+      // Trigger change on load to show/hide sections based on initial value
       function setInitialState() {
-        const initialRepeatValue = repeatSelect.value
-    
+        console.log('Setting initial state, repeat value:', repeatSelect.value)
+        
         // Pre-select weekly buttons if navigating back
-        if (initialRepeatValue === 'weekly' && weeklyDaysHiddenInput.value) {
+        if (repeatSelect.value === 'weekly' && weeklyDaysHiddenInput && weeklyDaysHiddenInput.value) {
           const selectedDays = weeklyDaysHiddenInput.value.split(',')
           dayButtons.forEach((button) => {
             if (selectedDays.includes(button.getAttribute('data-day-value'))) {

@@ -1,0 +1,191 @@
+{% extends 'base_dashboard.html' %}
+
+{% load static %}
+
+{% block title %}
+  All Medications - MedMinder
+{% endblock %}
+
+{% block content %}
+  {# Removed the top dashboard widgets article block #}
+
+  {# Section for displaying all active medication plans #}
+  {# all_reminders variable in x-data should reflect the count of all_reminders #}
+  <section
+    class="p-8 my-4 lg:my-0 rounded-xl border border-gray-300 bg-white"
+    x-data="{
+      currentView: localStorage.getItem('medsView') || 'cards', // Read from local storage or default to cards
+      showAll: false,
+      itemLimit: 6, // Number of items visible initially
+      remindersCount: {{ all_reminders|length }},
+      setView(viewType) {
+        this.currentView = viewType;
+        localStorage.setItem('medsView', viewType); // Save preference to local storage
+        this.showAll = false; // Reset 'showAll' when changing view
+      },
+      isCurrentView(viewType) {
+         return this.currentView === viewType;
+      }
+    }"
+  >
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold">All Active Medication Plans</h2>
+
+        {# View Type Selection Buttons #}
+        <div class="flex items-center space-x-2">
+            <span class="text-gray-600 text-sm hidden sm:inline">View:</span> {# Hide on small screens #}
+            <button
+                @click="setView('cards')"
+                class="px-3 py-1 rounded-md text-sm font-medium focus:outline-none transition"
+                :class="isCurrentView('cards') ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                aria-label="Show as cards"
+            >
+                Cards
+            </button>
+             <button
+                @click="setView('table')"
+                class="px-3 py-1 rounded-md text-sm font-medium focus:outline-none transition"
+                :class="isCurrentView('table') ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                aria-label="Show as table"
+            >
+                Table
+            </button>
+        </div>
+    </div>
+
+
+    {# --- Card Layout (Visible when currentView is 'cards') --- #}
+    <div x-show="isCurrentView('cards')">
+      {% if all_reminders %}
+        {# Use a responsive grid for the cards #}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {# Added gap between cards #}
+
+          {# Iterate through Reminder instances, each becoming a card #}
+          {% for reminder in all_reminders %}
+            {# Applied card styling and Alpine.js show/hide logic #}
+            <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm flex flex-col justify-between"
+                 :class="{ 'hidden': !(showAll || {{ forloop.counter0 }} < itemLimit) }">
+
+              {# Card Header: Medication Name and Dosage #}
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ reminder.medication }}</h3>
+                <p class="text-sm text-gray-700 mb-4">Dosage: <span class="font-medium">{{ reminder.dosage }}</span></p>
+              </div>
+
+              {# Card Body: Schedule Summary and Dates #}
+              <div class="text-sm text-gray-600 space-y-2 mb-6"> {# Added bottom margin #}
+                  <p>
+                      Schedule: <span class="font-medium">{{ reminder.schedule.get_repeat_type_display }}</span> at <span class="font-medium">{{ reminder.schedule.time_of_day|time:'H:i' }}</span>
+                      {# You might need a method on your Schedule model to get a better summary #}
+                      {% if reminder.schedule.repeat_type == 'weekly' and reminder.schedule.weekly_days %}
+                          on <span class="font-medium">{{ reminder.schedule.weekly_days }}</span>
+                      {% elif reminder.schedule.repeat_type == 'monthly' and reminder.schedule.monthly_dates %}
+                          on the <span class="font-medium">{{ reminder.schedule.monthly_dates }}</span> of the month
+                      {% endif %}
+                  </p>
+                  <p>
+                      Start Date: <span class="font-medium">{{ reminder.schedule.start_date|date:"M d, Y" }}</span>
+                  </p>
+                   <p>
+                    End Date:
+                    {% if reminder.schedule.end_date %}
+                        <span class="font-medium">{{ reminder.schedule.end_date|date:"M d, Y" }}</span>
+                    {% else %}
+                        <span class="font-medium text-green-700">Ongoing</span>
+                    {% endif %}
+                  </p>
+              </div>
+
+              {# Card Footer: Actions #}
+              <div class="flex justify-end gap-4 mt-auto"> {# Added mt-auto to push actions to bottom #}
+                {# Add links to manage the reminder plan #}
+                 <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View/Edit</a>
+                 <a href="#" class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</a>
+              </div>
+            </div>
+          {% endfor %}
+
+        </div> {# End grid #}
+      {% else %}
+        <p>You have no active medication plans.</p>
+      {% endif %}
+    </div>
+
+
+    {# --- Table Layout (Visible when currentView is 'table') --- #}
+    <div x-show="isCurrentView('table')">
+       {% if all_reminders %}
+        {# Applied table styling #}
+        <table class="min-w-full bg-white border border-gray-200">
+          {# Applied thead styling #}
+          <thead>
+            <tr>
+              {# Applied th styling #}
+              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Medication</th>
+              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Dosage</th>
+              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Schedule Summary</th>
+              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          {# Applied tbody styling #}
+          <tbody>
+            {# Iterate through Reminder instances #}
+            {% for reminder in all_reminders %}
+              {# Applied tr styling and Alpine.js show/hide logic #}
+              <tr class="border-b border-gray-200"
+                  :class="{ 'hidden': !(showAll || {{ forloop.counter0 }} < itemLimit) }"> {# Use hidden class #}
+                {# Applied td styling #}
+                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">{{ reminder.medication }}</td>
+                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">{{ reminder.dosage }}</td>
+                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
+                   {{ reminder.schedule.get_repeat_type_display }} at {{ reminder.schedule.time_of_day|time:'H:i' }}
+                   {% if reminder.schedule.repeat_type == 'weekly' and reminder.schedule.weekly_days %}
+                       on {{ reminder.schedule.weekly_days }}
+                   {% elif reminder.schedule.repeat_type == 'monthly' and reminder.schedule.monthly_dates %}
+                       on the {{ reminder.schedule.monthly_dates }} of the month
+                   {% endif %}
+                </td>
+                 <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
+                   {{ reminder.schedule.start_date|date:"M d, Y" }}
+                 </td>
+                  <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
+                   {% if reminder.schedule.end_date %}
+                       {{ reminder.schedule.end_date|date:"M d, Y" }}
+                   {% else %}
+                       Ongoing
+                   {% endif %}
+                 </td>
+                 {# Applied td styling for actions #}
+                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
+                   <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View/Edit</a>
+                   <a href="#" class="ml-4 text-red-600 hover:text-red-800 text-sm font-medium">Delete</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+          <p>You have no active medication plans.</p> {# Duplicate message, but keeps structure clean #}
+        {% endif %}
+    </div>
+
+
+    {# --- See More Button (Applies to whichever view is active) --- #}
+    {# Use remindersCount from x-data which now counts all_reminders #}
+    {# Only show "See More" if there are more reminders than the limit #}
+    {# Applied button styling #}
+    <button x-show="remindersCount > itemLimit" @click="showAll = !showAll" class="mt-8 text-blue-600 hover:text-blue-800 font-medium">
+      <span x-text="showAll ? 'Collapse' : 'See All Plans'"></span>
+      <span :class="showAll ? 'rotate-180' : ''" class="inline-block transition-transform">⬇️</span>
+    </button>
+
+
+    {# --- Add New Plan Button --- #}
+    <div class="mt-8 text-center"> {# Centered the button #}
+      <a href="{% url 'medminder:new_plan' %}" class="inline-block bg-gray-800 hover:bg-black text-white py-2 px-5 rounded-full font-medium">Add new plan</a> {# Added font-medium and inline-block #}
+    </div>
+  </section>
+
+{% endblock %}

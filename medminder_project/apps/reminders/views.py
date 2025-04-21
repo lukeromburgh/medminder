@@ -111,6 +111,27 @@ def new_plan(request):
     return render(request, 'reminders/reminder_transition.html', context)
 
 
+@login_required # Ensure the user is logged in
+def all_medications(request):
+    """Displays a list of all active medication plans for the user."""
+    user = request.user
+
+    # Fetch all active Reminder objects for the user
+    # Use select_related for efficiency to get related Medication, Dosage, Schedule
+    # Order by medication name and then time for better organization
+    all_reminders = Reminder.objects.filter(
+        user=user,
+        is_active=True # Assuming you have an is_active field on Reminder
+    ).select_related('medication', 'dosage', 'schedule').order_by('medication__medication_name', 'schedule__time_of_day')
+
+    context = {
+        'all_reminders': all_reminders, # Pass the list of all active reminders
+    }
+
+    # Render the new template
+    return render(request, 'reminders/medications.html', context)
+
+
 @login_required
 def dashboard_today(request):
     """Displays the user's dashboard with today's reminders and stats."""
