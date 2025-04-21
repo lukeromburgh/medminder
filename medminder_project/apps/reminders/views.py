@@ -44,130 +44,129 @@ class ReminderWizard(SessionWizardView):
         return context
 
     def done(self, form_list, **kwargs):
-        # print("Done method called")  # Debug
-        # This method runs *after* the confirmation step is submitted.
-        # It should process the data and redirect.
+        # --- Add these print statements ---
+        print("--- ReminderWizard done() method called ---")
         all_data = self.get_all_cleaned_data()
-        # print(f"All data: {all_data}")  # Debug
+        print(f"--- all_data: {all_data} ---")
 
         # Optional: Add validation/error handling if all_data is unexpectedly empty
         if not all_data:
-             # print("Error in done method: Cleaned data is empty. Check session storage and form validation.") # Debug
-             # Redirect to the start or an error page might be appropriate
-             # print("Redirecting to add_reminder due to empty data.") # Debug
-             return redirect('medminder:add_reminder') # Redirect to the start
+             print("--- Error in done method: Cleaned data is empty. Redirecting to add_reminder. ---")
+             return redirect('medminder:add_reminder') # Redirecting to the start
 
         # Create model instances using the collected data
         try:
-            # Check if Medication or Dosage with this exact name/value already exists
-            # This avoids creating duplicates in Medication/Dosage tables if not desired
+            print("--- Attempting to create model instances ---")
+
+            print("--- Getting/Creating Medication ---")
             medication, created_med = Medication.objects.get_or_create(
                 medication_name=all_data['medication_name']
             )
-            dosage, created_dos = Dosage.objects.get_or_create(
-                dosage=all_data['dosage'] # Assuming dosage is a string or exact value match
-            )
+            print(f"--- Medication: {medication}, Created: {created_med} ---")
 
-            # Handle weekly_days and monthly_dates storage based on form output
-            # Assuming they come from multi-selects and might be lists or comma-separated strings
+            print("--- Getting/Creating Dosage ---")
+            dosage, created_dos = Dosage.objects.get_or_create(
+                dosage=all_data['dosage']
+            )
+            print(f"--- Dosage: {dosage}, Created: {created_dos} ---")
+
+            # Handle weekly_days and monthly_dates storage...
             weekly_days_data = all_data.get('weekly_days')
             monthly_dates_data = all_data.get('monthly_dates')
 
-            # Convert lists to comma-separated strings for simpler storage if needed
-            # Assuming the form returns lists for weekly_days and monthly_dates
             if isinstance(weekly_days_data, list):
                  weekly_days_data = ','.join(map(str, weekly_days_data))
-            # Handle potential empty strings or None if no days/dates were selected
-            weekly_days_data = weekly_days_data if weekly_days_data else '' # Store empty string instead of None
-
+            weekly_days_data = weekly_days_data if weekly_days_data else ''
 
             if isinstance(monthly_dates_data, list):
                  monthly_dates_data = ','.join(map(str, monthly_dates_data))
-            # Handle potential empty strings or None if no days/dates were selected
-            monthly_dates_data = monthly_dates_data if monthly_dates_data else '' # Store empty string instead of None
+            monthly_dates_data = monthly_dates_data if monthly_dates_data else ''
 
-
+            print("--- Creating Schedule ---")
             schedule = Schedule.objects.create(
                 repeat_type=all_data['repeat'],
-                weekly_days=weekly_days_data, # Store as string
-                monthly_dates=monthly_dates_data, # Store as string
+                weekly_days=weekly_days_data,
+                monthly_dates=monthly_dates_data,
                 time_of_day=all_data['at_time'],
                 start_date=all_data['start_date'],
-                end_date=all_data.get('until_date'), # Use .get for optional fields
+                end_date=all_data.get('until_date'),
             )
+            print(f"--- Schedule created: {schedule} ---")
 
-            # Create the Reminder instance
+            print("--- Creating Reminder ---")
+            # Ensure the user is associated with the reminder.
+            # Assuming request.user is available and the user is logged in due to @login_required
             reminder = Reminder.objects.create(
-                medication=medication, # Link to the Medication instance
-                dosage=dosage,       # Link to the Dosage instance
-                schedule=schedule,     # Link to the Schedule instance
-                user=self.request.user # Associate the reminder with the logged-in user
+                medication=medication,
+                dosage=dosage,
+                schedule=schedule,
+                user=self.request.user # Make sure the user is being correctly assigned
             )
+            print(f"--- Reminder created: {reminder} ---")
 
-            # Optional: Immediately generate today's DailyReminderLog if the reminder starts today
-            # This prevents the user from having to wait for the dashboard load or cron job
+
+            # Optional: Immediately generate today's DailyReminderLog...
             today = timezone.localdate()
             # Check if reminder is active *and* starts today or earlier
             if reminder.is_active and reminder.schedule.start_date <= today and (reminder.schedule.end_date is None or today <= reminder.schedule.end_date):
-                 # Check if the schedule is due specifically today based on repeat type
-                 today_weekday = today.weekday() # 0=Monday, 6=Sunday
+                 today_weekday = today.weekday()
                  today_day_of_month = today.day
                  is_due_today = False
+                 # ... (repeat type checks for is_due_today) ... # Keep your existing logic here
 
                  if schedule.repeat_type == 'daily':
                       is_due_today = True
                  elif schedule.repeat_type == 'weekly' and schedule.weekly_days:
-                      # Attempt to parse weekly_days (comma-separated integers)
                       try:
                            weekly_days_list = [int(day.strip()) for day in schedule.weekly_days.split(',') if day.strip()]
                            if today_weekday in weekly_days_list:
                                 is_due_today = True
                       except ValueError:
-                           # Handle potential errors in stored data format - Treat as not due today
                            pass
-
                  elif schedule.repeat_type == 'monthly' and schedule.monthly_dates:
-                      # Attempt to parse monthly_dates (comma-separated integers)
                       try:
                            monthly_dates_list = [int(day.strip()) for day in schedule.monthly_dates.split(',') if day.strip()]
-                           # Ensure the day of the month is valid (e.g., prevent checking for day 31 in February)
                            if 1 <= today_day_of_month <= 31 and today_day_of_month in monthly_dates_list:
                                 is_due_today = True
                       except ValueError:
-                           # Handle potential errors in stored data format - Treat as not due today
                            pass
-                 # Add other repeat types like 'once' if needed
                  elif schedule.repeat_type == 'once' and schedule.start_date == today:
                      is_due_today = True
 
 
                  if is_due_today:
-                      # Create the DailyReminderLog entry for today if it doesn't exist
+                      print("--- Generating today's DailyReminderLog entry ---")
                       DailyReminderLog.objects.get_or_create(
                            user=self.request.user,
                            reminder=reminder,
                            due_date=today,
                            due_time=schedule.time_of_day,
-                           defaults={'status': 'pending'} # Set status to pending only on creation
+                           defaults={'status': 'pending'}
                       )
+                      print("--- DailyReminderLog entry generated ---")
 
 
         except KeyError as e:
-            # print(f"Error in done method: Missing key in all_data - {e}") # Debug
-            # Handle missing data (e.g., if a required form field was missing)
-            return redirect('medminder:add_reminder') # Redirect back to the start or a specific error page
+            print(f"--- KeyError in done method: Missing key - {e} ---")
+            # This means a form field name expected in all_data was not present.
+            print("--- Redirecting to add_reminder due to KeyError ---")
+            # Consider adding a message to the user indicating which field was missing.
+            return redirect('medminder:add_reminder')
         except Exception as e:
-            # Catch any other exceptions during model creation/saving
-            # print(f"Error saving reminder: {e}") # Debug
-            # Consider adding a message to the user using Django messages framework
-            # Redirect to a safe page, maybe add_reminder or an error page
+            print(f"--- General Exception in done method: {e} ---")
+            # Print the full traceback for debugging to see the exact error and line number
+            import traceback
+            traceback.print_exc()
+            print("--- Redirecting to add_reminder due to Exception ---")
+            # Consider adding a user-friendly error message using Django messages.
             return redirect('medminder:add_reminder')
 
 
         self.storage.reset() # Clear wizard data
+        print("--- Wizard storage reset ---")
 
         # Redirect to the success page after saving
-        # print("Redirecting to reminder_success")  # Debug
+        print("--- Redirecting to reminder_success ---")
         return redirect('medminder:reminder_success')
 
 
