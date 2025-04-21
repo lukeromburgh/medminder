@@ -75,6 +75,7 @@ class DailyReminderLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) # Denormalize user for easier querying
     due_date = models.DateField(db_index=True) # The date this log applies to
     due_time = models.TimeField() # The time it was due on that date
+    is_notified = models.BooleanField(default=False)
 
     STATUS_CHOICES = [
         ('pending', 'Pending'),
