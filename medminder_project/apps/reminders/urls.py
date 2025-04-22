@@ -12,6 +12,7 @@ urlpatterns = [
     path('reminder/success/', views.reminder_success, name='reminder_success'),
     path('complete/<int:reminder_id>/', views.complete_reminder, name='complete_reminder'),
     path('medications', views.all_medications, name='medications'),
+    path('dashboard/calendar/', views.dashboard_calendar, name='dashboard_calendar'), # New URL for the calendar
     # path('profile/', views.profile, name='profile'),
     # path('invite-viewer/', views.invite_viewer, name='invite_viewer'),
 ]

@@ -1,0 +1,151 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}
+  Upcoming Reminders - MedMinder
+{% endblock %}
+
+{% block content %}
+  <div class="p-8 bg-white rounded-md shadow-md">
+    <h2 class="text-xl font-semibold mb-6">Upcoming Reminders</h2>
+    <div id="calendar"></div>
+  </div>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+  <style>
+    /* Base Calendar Styles - Neutral and More Padding */
+    .fc {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 1rem;
+    }
+
+    .fc-header-toolbar {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1.1rem;
+      align-items: center;
+      margin-bottom: 2em; /* More bottom margin */
+      padding: 0 1em; /* Add some horizontal padding */
+    }
+
+    .fc-button {
+      background-color: #f8f9fa; /* Very light gray */
+      color: #495057; /* Neutral dark gray */
+      border: 1px solid #e0e0e0; /* Light gray border */
+      border-radius: 0.3rem;
+      padding: 0.75em 1.25em; /* Increased padding */
+      font-size: 0.9rem;
+      line-height: 1.5;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    }
+
+    .fc-button:hover {
+      background-color: #e9ecef;
+      border-color: #d1d1d1;
+    }
+
+    .fc-button:active {
+      background-color: #dee2e6;
+      border-color: #d1d1d1;
+    }
+
+    .fc-prev-button,
+    .fc-next-button {
+      padding: 0.75em 1em; /* Adjust padding for arrows */
+      font-size: 1em; /* Slightly larger arrows */
+    }
+
+    .fc-today-button {
+      font-weight: 500; /* Slightly less bold */
+    }
+
+    .fc-day-header {
+      background-color: #f8f9fa;
+      color: #6c757d; /* Muted gray */
+      border-bottom: 1px solid #e0e0e0;
+      padding: 1em 0.5em; /* Increased vertical padding */
+      text-align: center;
+      font-weight: normal; /* Less bold */
+      font-size: 0.9rem;
+    }
+
+    .fc-daygrid-day-number {
+      padding: 0.75em; /* Increased padding */
+      text-align: left;
+      color: #343a40; /* Darker neutral text */
+    }
+
+    .fc-daygrid-day-top {
+      padding: 0.75em; /* Increased padding */
+    }
+
+    .fc-daygrid-event {
+      background-color: #007bff; /* Still a recognizable blue, but can be changed */
+      color: white;
+      border: none;
+      border-radius: 0.3rem;
+      padding: 0.5em 0.75em; /* Increased padding */
+      margin-bottom: 0.3em; /* More bottom margin */
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .fc-daygrid-event:hover {
+      opacity: 0.9;
+      background-color:rgb(0, 90, 186);
+    }
+
+    .fc-daygrid-more-link {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.5em; /* Add padding to the link */
+    }
+
+    .fc-daygrid-more-link:hover {
+      text-decoration: underline;
+    }
+
+    .fc-col-header-cell {
+        border: none !important; /* Remove header cell borders */
+    }
+
+    .fc-daygrid-day {
+        border: 1px solid #f0f0f0 !important; /* Very light gray border for day cells */
+        padding: 0.5em; /* Add some padding to day cells */
+    }
+
+    .fc-today {
+        background-color: #e6f7ff !important; /* Very light blue for today */
+    }
+
+    /* Month View Specific Adjustments */
+    .fc-daygrid-day-events {
+      margin-top: 0.5em; /* More top margin for events */
+      padding: 0 0.5em; /* Add horizontal padding for events container */
+    }
+
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        events: JSON.parse('{{ events_json|escapejs }}'),
+        eventTimeFormat: {
+          hour: '2-digit',
+          minute: '2-digit',
+          meridiem: false
+        },
+        eventColor: '#007bff', // Default event color
+        // More options can be added here
+      });
+      calendar.render();
+    });
+  </script>
+{% endblock %}

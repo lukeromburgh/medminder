@@ -116,7 +116,7 @@
   </section>
 
     {# --- NEW MEDICATION ADHERENCE TRACKER WIDGET --- #}
-    <section class="w-1/2 p-4 sm:p-6 mt-6 rounded-xl border border-gray-300 bg-white"
+    <section class="w-full lg:w-1/2 p-4 sm:p-6 mt-6 rounded-xl border border-gray-300 bg-white"
            x-data="adherenceTracker()" {# <= REMOVE the argument here #}
            x-init="init()"> {# <= Keep x-init to trigger initialization #}
 
@@ -193,7 +193,6 @@
       /* writing-mode is experimental and might have browser quirks */
       /* Consider a CSS Grid layout for more robust control if needed */
       min-height: 7rem;
-      max-width: 50vw;
   }
   /* Hide scrollbar visually if desired, while keeping functionality */
   #adherence-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari, Opera */
@@ -226,6 +225,48 @@
           }, 8000); // Hide toast after 8 seconds (adjust as needed)
         }, 100); // Allow slight delay for DOM attachment
       }
+
+      function updateRemindersAndPoints() {
+        Promise.all([
+          fetch('/api/reminders/').then(response => response.json()),
+          fetch('/api/points/').then(response => response.json())
+        ])
+        .then(([remindersData, pointsData]) => {
+          // Update reminders table
+          const remindersTableBody = document.querySelector('#todays-medications-table tbody');
+          if (remindersTableBody) {
+            remindersTableBody.innerHTML = '';
+            remindersData.forEach(reminder => {
+              const row = remindersTableBody.insertRow();
+              row.insertCell().textContent = reminder.medication;
+              row.insertCell().textContent = reminder.dosage;
+              row.insertCell().textContent = reminder.due_time;
+              // ... add action buttons based on status ...
+            });
+          }
+      
+          // Update achievement points
+          const pointsElement = document.querySelector('.text-purple-900');
+          if (pointsElement && pointsData.achievement_points !== undefined) {
+            pointsElement.textContent = pointsData.achievement_points;
+          }
+      
+          // Update user tier
+          const tierElement = document.querySelector('.text-purple-600 a');
+          if (tierElement && pointsData.user_tier !== undefined) {
+            tierElement.textContent = pointsData.user_tier;
+          }
+        })
+        .catch(error => console.error('Error fetching data:', error));
+      }
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initial load (optional)
+        // updateRemindersAndPoints();
+      
+        // Periodically update data (e.g., every 5 seconds)
+        setInterval(updateRemindersAndPoints, 5000);
+      });
 
       completeForms.forEach((form) => {
         form.addEventListener('submit', function (event) {
