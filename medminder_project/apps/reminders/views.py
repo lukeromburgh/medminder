@@ -333,35 +333,74 @@ def dashboard_today(request):
     ).order_by('due_date', 'due_time').first()
 
 
-    # --- Weekly Adherence (Last 7 days) from DailyReminderLog ---
-    # This logic remains the same as it correctly uses DailyReminderLog
-    seven_days_ago = today - timedelta(days=7)
-
-    # Count total logs due in the last 7 days (including today)
-    total_logs_last_7_days = DailyReminderLog.objects.filter(
+    # Weekly Adherence Calculation (Example - adjust as needed)
+    one_week_ago = today - timedelta(days=7)
+    logs_last_week = DailyReminderLog.objects.filter(
         user=user,
-        due_date__gte=seven_days_ago,
+        due_date__gte=one_week_ago,
         due_date__lte=today # Include today
-    ).count()
+    )
+    completed_last_week = logs_last_week.filter(status='completed').count()
+    total_due_last_week = logs_last_week.count() # Or count distinct days if needed
+    weekly_adherence = int((completed_last_week / total_due_last_week * 100)) if total_due_last_week > 0 else 100
 
-    # Count completed logs in the last 7 days
-    completed_logs_last_7_days = DailyReminderLog.objects.filter(
-        user=user,
-        due_date__gte=seven_days_ago,
-        due_date__lte=today,
-        status='completed' # Filter by status
-    ).count()
-
-    weekly_adherence = 0
-    if total_logs_last_7_days > 0:
-        weekly_adherence = (completed_logs_last_7_days / total_logs_last_7_days) * 100
-
-
-    # --- Achievement Points and Tier ---
-    # This logic remains the same, using UserStats
-    user_stats, created = UserStats.objects.get_or_create(user=user)
+    # Achievement Points / Tier (Example - fetch from UserStats or calculate)
+    user_stats, _ = UserStats.objects.get_or_create(user=user)
     achievement_points = user_stats.achievement_points
-    user_tier = get_user_tier(achievement_points)
+    user_tier = get_user_tier(achievement_points) # Assuming you have a get_tier_display method or similar
+
+
+    # --- STEP 5: CALCULATE ADHERENCE DATA FOR TRACKER WIDGET ---
+    adherence_data = {}
+    # Calculate for the last year (adjust range if needed)
+    start_date_year = today - timedelta(days=365)
+    # Or align to the start of the week/month if preferred for display
+
+    # Get all relevant logs in the period
+    logs_for_tracker = DailyReminderLog.objects.filter(
+        user=user,
+        due_date__gte=start_date_year,
+        due_date__lte=today
+    ).values('due_date', 'status') # Get only necessary fields
+
+    # Group logs by date
+    logs_by_date = {}
+    for log in logs_for_tracker:
+        log_date = log['due_date']
+        if log_date not in logs_by_date:
+            logs_by_date[log_date] = {'completed': 0, 'pending': 0, 'total': 0}
+        logs_by_date[log_date]['total'] += 1
+        if log['status'] == 'completed':
+            logs_by_date[log_date]['completed'] += 1
+        elif log['status'] == 'pending': # Treat past pending as missed for visualization
+             logs_by_date[log_date]['pending'] += 1
+        # Add other statuses ('skipped', 'missed' if you implement them)
+
+    # Determine adherence level for each day in the past year
+    current_date = start_date_year
+    while current_date <= today:
+        date_str = current_date.isoformat() # YYYY-MM-DD format
+        if current_date in logs_by_date:
+            day_data = logs_by_date[current_date]
+            # Define adherence levels (customize as needed)
+            if day_data['pending'] > 0 and current_date < today: # Past day with pending logs = missed
+                adherence_data[date_str] = 1 # Level 1: Missed/Partial
+            elif day_data['completed'] == day_data['total']:
+                adherence_data[date_str] = 3 # Level 3: Fully Completed
+            elif day_data['completed'] > 0:
+                adherence_data[date_str] = 2 # Level 2: Partially Completed
+            else: # All pending for today (or only future logs scheduled)
+                adherence_data[date_str] = 0 # Level 0: Nothing Completed/Pending Today
+        else:
+            # Check if any reminders *should* have been scheduled for this day (more complex)
+            # For simplicity now, assume no logs means nothing was due or logged
+            adherence_data[date_str] = 0 # Level 0: No activity / Nothing due
+
+        current_date += timedelta(days=1)
+
+    # Convert adherence data to JSON for the template
+    adherence_data_json = json.dumps(adherence_data)
+
 
     # --- Total Medications ---
     # This remains the count of active Reminder plans
@@ -375,6 +414,7 @@ def dashboard_today(request):
         'achievement_points': achievement_points,
         'user_tier': user_tier,
         'todays_reminders': todays_reminders, # This is now the correctly generated list of today's DailyReminderLog entries
+        'adherence_data_json': adherence_data_json, # Add adherence data
     }
 
     # Ensure your template path is correct
