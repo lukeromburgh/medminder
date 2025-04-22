@@ -128,11 +128,15 @@
       const adherenceDataJson = {{ adherence_data_json|safe }};
       // Pass today's date string using Django's timezone awareness
       const djangoTodayDateString = "{% now 'Y-m-d' %}";
+      const initialStreakCount = {{ current_streak_count|default:0 }}; {# Assume current_streak_count is passed from Django view context #}
     </script>
     {# **** END SCRIPT TAG **** #}
 
     <div class="flex justify-between items-center mb-4">
+      <div>
       <h2 class="text-xl font-semibold">Medication Adherence</h2>
+      <p class="text-sm text-gray-600" x-text="streakCount > 0 ? streakCount + ' day streak' : 'No current streak'"></p> {# Display streak, show "No current streak" if 0 #}
+      </div>
       <div class="flex space-x-2">
          {# These :class bindings should now work correctly after init runs #}
         <button @click="setView('week')" :class="{ 'bg-blue-500 text-white': currentView === 'week', 'bg-gray-200 text-gray-700': currentView !== 'week' }" class="px-3 py-1 rounded text-sm font-medium hover:bg-blue-400">Week</button>
@@ -361,6 +365,7 @@
         adherenceData: {}, // Data will be loaded in init
         currentView: 'year', // Default view
         gridElement: null,
+        streakCount: 0, // Placeholder for streak count if needed
 
         // Configuration
         colorLevels: {
@@ -391,6 +396,16 @@
                   if (typeof djangoTodayDateString === 'undefined') {
                      console.error("Global variable djangoTodayDateString is not defined!")
                   }
+
+                  {# **** ADD THIS BLOCK TO READ STREAK COUNT **** #}
+                 if (typeof initialStreakCount !== 'undefined') {
+                    this.streakCount = initialStreakCount;
+                 } else {
+                     console.warn("Global variable initialStreakCount is not defined.");
+                     this.streakCount = 0; // Default to 0 if not passed
+                 }
+                 {# **** END BLOCK **** #}
+
             } catch (e) {
                  console.error("Error accessing or parsing adherence data:", e);
                  this.adherenceData = {};

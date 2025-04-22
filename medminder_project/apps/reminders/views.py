@@ -352,6 +352,7 @@ def dashboard_today(request):
 
     # --- STEP 5: CALCULATE ADHERENCE DATA FOR TRACKER WIDGET ---
     adherence_data = {}
+    current_streak_count = calculate_current_adherence_streak(user)
     # Calculate for the last year (adjust range if needed)
     start_date_year = today - timedelta(days=365)
     # Or align to the start of the week/month if preferred for display
@@ -415,6 +416,7 @@ def dashboard_today(request):
         'user_tier': user_tier,
         'todays_reminders': todays_reminders, # This is now the correctly generated list of today's DailyReminderLog entries
         'adherence_data_json': adherence_data_json, # Add adherence data
+        'current_streak_count': current_streak_count,
     }
 
     # Ensure your template path is correct
@@ -551,3 +553,32 @@ def check_streak(user, days):
     # If the loop completes, it means at least one completed ReminderStats entry was found
     # for a reminder owned by the user for all 'days' consecutively.
     return True
+
+def calculate_current_adherence_streak(user):
+    """
+    Calculates the number of consecutive days ending today where the user
+    has at least one completed ReminderStats entry.
+    """
+    today = timezone.now().date()
+    streak_count = 0
+    current_date = today
+
+    while True:
+        # Check if the user has any completed ReminderStats for the current date
+        has_adherence = ReminderStats.objects.filter(
+            reminder__user=user,  # Assuming Reminder model has a ForeignKey to User
+            date=current_date,
+            completed=True
+        ).exists()
+
+        if has_adherence:
+            streak_count += 1
+            current_date -= timedelta(days=1)
+        else:
+            break  # Streak broken
+
+        # Optional: Add a reasonable limit to prevent infinite loops in case of issues
+        if streak_count > 365:  # Example limit of one year
+            break
+
+    return streak_count
