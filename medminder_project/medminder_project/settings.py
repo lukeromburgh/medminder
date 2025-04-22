@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.core',
     'apps.reminders',
+    'django_crontab',
     
 ]
 
@@ -139,3 +140,9 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+CRONJOBS = [
+    ('0 2 * * *', 'apps.reminders.management.commands.populate_reminder_stats', 'populate_reminder_stats'),
+    ('0 2 * * *', 'apps.reminders.management.commands.generate_upcoming_reminder_logs', 'populate_reminder_stats'),
+    ('*/15 * * * *', 'apps.reminders.management.commands.populate_reminder_stats', 'send_reminders'),
+]
