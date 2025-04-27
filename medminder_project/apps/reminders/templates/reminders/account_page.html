@@ -20,7 +20,7 @@
       {# On smaller screens, flex items will wrap if needed, but with current content, it should be fine #}
       <div class="bg-white border border-[#E6E6E6] rounded-lg p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6"> {# Added sm:flex-row and sm:items-start for better alignment on small-medium screens #}
         {# Placeholder for Profile Picture - Adjusted size slightly for mobile #}
-        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-200 rounded-full flex items-center justify-center text-blue-800 text-2xl sm:text-3xl font-bold shrink-0"> {# Adjusted size and added shrink-0 #}
+        <div class="w-16 h-16 sm:w-20 sm:h-20 {{ bg_color }} {{ text_color }} rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold shrink-0"> {# Adjusted size and added shrink-0 #}
           {{ user.username|slice:":1"|upper }} {# Display first letter of username #}
         </div>
         {# Flex-grow allows this div to take available space #}

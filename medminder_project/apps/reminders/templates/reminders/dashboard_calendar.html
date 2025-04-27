@@ -6,9 +6,12 @@
 {% endblock %}
 
 {% block content %}
-  <div class="p-8 bg-white rounded-md shadow-md">
+  {# Adjusted padding for responsiveness: p-4 on small screens, p-6 on medium, p-8 on large #}
+  {# Added h-full and flex flex-col for vertical space #}
+  <div class="p-4 sm:p-6 lg:p-8 bg-white rounded-md shadow-md h-full flex flex-col">
     <h2 class="text-xl font-semibold mb-6">Upcoming Reminders</h2>
-    <div id="calendar"></div>
+    {# Added flex-grow to make the calendar container take up available space #}
+    <div id="calendar" class="flex-grow"></div>
   </div>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css">
@@ -18,46 +21,85 @@
     /* Base Calendar Styles - Neutral and More Padding */
     .fc {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      font-size: 1rem;
+      font-size: 1rem; /* Base font size */
+      height: 100%; /* Ensure the calendar takes up the height of its container */
     }
 
     .fc-header-toolbar {
       display: flex;
+      flex-direction: column; /* Stack buttons and title on mobile */
+      align-items: center; /* Center items when stacked */
       justify-content: space-between;
       font-weight: 600;
       font-size: 1.1rem;
-      align-items: center;
-      margin-bottom: 2em; /* More bottom margin */
-      padding: 0 1em; /* Add some horizontal padding */
+      margin-bottom: 1.5em; /* Slightly less bottom margin on mobile */
+      padding: 0 0.5em; /* Reduced horizontal padding on mobile */
+      text-align: center; /* Center text on mobile */
     }
+
+    /* Adjust header toolbar layout for larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+      .fc-header-toolbar {
+        flex-direction: row; /* Row layout on larger screens */
+        align-items: center; /* Center items vertically in row */
+        justify-content: space-between;
+        margin-bottom: 2em; /* More bottom margin on larger screens */
+        padding: 0 1em; /* More horizontal padding on larger screens */
+        text-align: left; /* Align text left on larger screens */
+      }
+    }
+
 
     .fc-button {
       background-color: #f8f9fa; /* Very light gray */
       color: #495057; /* Neutral dark gray */
       border: 1px solid #e0e0e0; /* Light gray border */
       border-radius: 0.3rem;
-      padding: 0.75em 1.25em; /* Increased padding */
-      font-size: 0.9rem;
+      padding: 0.5em 1em; /* Adjusted padding for buttons on mobile */
+      font-size: 0.8rem; /* Reduced font size for buttons on mobile */
       line-height: 1.5;
       cursor: pointer;
       transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+      margin: 0.2em; /* Add small margin between buttons on mobile */
     }
 
-    .fc-button:hover {
-      background-color: #e9ecef;
-      border-color: #d1d1d1;
+     /* Adjust button padding and font size for larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+       .fc-button {
+         padding: 0.75em 1.25em; /* Increased padding */
+         font-size: 0.9rem;
+         /* Reduced horizontal margin for desktop to help fit */
+         margin: 0 0.1em; /* Changed from 0.2em */
+       }
+       /* Ensure specific button types also use the reduced margin */
+       .fc-prev-button,
+       .fc-next-button,
+       .fc-today-button {
+           margin: 0 0.1em; /* Apply reduced margin to all nav buttons on desktop */
+       }
+
+       .fc-prev-button,
+       .fc-next-button {
+         padding: 0.75em 1em; /* Adjust padding for arrows */
+         font-size: 1em; /* Slightly larger arrows */
+       }
     }
 
-    .fc-button:active {
-      background-color: #dee2e6;
-      border-color: #d1d1d1;
+    /* Ensure navigation buttons stay inline on mobile */
+    @media (max-width: 767px) { /* Apply only below md breakpoint */
+        .fc-header-toolbar .fc-toolbar-chunk:first-child .fc-button-group {
+            flex-wrap: nowrap; /* Prevent wrapping for nav buttons */
+            justify-content: center; /* Keep centered */
+            /* Optional: Add overflow-x: auto; if buttons might be too wide */
+            /* overflow-x: auto; */
+            /* -webkit-overflow-scrolling: touch; */
+        }
+        /* Ensure buttons within this group have appropriate mobile margin */
+        .fc-header-toolbar .fc-toolbar-chunk:first-child .fc-button-group .fc-button {
+             margin: 0.2em; /* Use standard mobile button margin */
+        }
     }
 
-    .fc-prev-button,
-    .fc-next-button {
-      padding: 0.75em 1em; /* Adjust padding for arrows */
-      font-size: 1em; /* Slightly larger arrows */
-    }
 
     .fc-today-button {
       font-weight: 500; /* Slightly less bold */
@@ -67,31 +109,60 @@
       background-color: #f8f9fa;
       color: #6c757d; /* Muted gray */
       border-bottom: 1px solid #e0e0e0;
-      padding: 1em 0.5em; /* Increased vertical padding */
+      padding: 0.8em 0.3em; /* Adjusted vertical and horizontal padding for day headers on mobile */
       text-align: center;
       font-weight: normal; /* Less bold */
-      font-size: 0.9rem;
+      font-size: 0.8rem; /* Reduced font size for day headers on mobile */
     }
 
+    /* Adjust day header padding and font size for larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+       .fc-day-header {
+         padding: 1em 0.5em; /* Increased vertical padding */
+         font-size: 0.9rem;
+       }
+    }
+
+
     .fc-daygrid-day-number {
-      padding: 0.75em; /* Increased padding */
+      padding: 0.5em; /* Adjusted padding for day numbers on mobile */
       text-align: left;
       color: #343a40; /* Darker neutral text */
+      font-size: 0.8rem; /* Reduced font size for day numbers on mobile */
+    }
+
+     /* Adjust day number padding and font size for larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+       .fc-daygrid-day-number {
+         padding: 0.75em; /* Increased padding */
+         font-size: 1rem;
+       }
     }
 
     .fc-daygrid-day-top {
-      padding: 0.75em; /* Increased padding */
+      padding: 0.5em; /* Adjusted padding for day top on mobile */
     }
+
+     /* Adjust day top padding for larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+       .fc-daygrid-day-top {
+         padding: 0.75em; /* Increased padding */
+       }
+    }
+
 
     .fc-daygrid-event {
       background-color: #007bff; /* Still a recognizable blue, but can be changed */
       color: white;
       border: none;
       border-radius: 0.3rem;
-      padding: 0.5em 0.75em; /* Increased padding */
-      margin-bottom: 0.3em; /* More bottom margin */
-      font-size: 0.9rem;
+      padding: 0.4em 0.6em; /* Adjusted padding for events on mobile */
+      margin-bottom: 0.2em; /* Less bottom margin on mobile */
+      font-size: 0.8rem; /* Reduced font size for events on mobile */
       cursor: pointer;
+      white-space: nowrap; /* Prevent event text from wrapping too aggressively */
+      overflow: hidden; /* Hide overflowing text */
+      text-overflow: ellipsis; /* Add ellipsis for overflowing text */
     }
 
     .fc-daygrid-event:hover {
@@ -99,16 +170,38 @@
       background-color:rgb(0, 90, 186);
     }
 
+    /* Adjust event padding and font size for larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+       .fc-daygrid-event {
+         padding: 0.5em 0.75em; /* Increased padding */
+         margin-bottom: 0.3em; /* More bottom margin */
+         font-size: 0.9rem;
+         white-space: normal; /* Allow wrapping on larger screens */
+         overflow: visible;
+         text-overflow: clip;
+       }
+    }
+
+
     .fc-daygrid-more-link {
       color: #007bff;
       text-decoration: none;
-      font-size: 0.9rem;
-      padding: 0.5em; /* Add padding to the link */
+      font-size: 0.8rem; /* Reduced font size for more link on mobile */
+      padding: 0.3em; /* Adjusted padding for the link on mobile */
     }
 
     .fc-daygrid-more-link:hover {
       text-decoration: underline;
     }
+
+     /* Adjust more link font size and padding for larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+       .fc-daygrid-more-link {
+         font-size: 0.9rem;
+         padding: 0.5em; /* Add padding to the link */
+       }
+    }
+
 
     .fc-col-header-cell {
         border: none !important; /* Remove header cell borders */
@@ -116,8 +209,16 @@
 
     .fc-daygrid-day {
         border: 1px solid #f0f0f0 !important; /* Very light gray border for day cells */
-        padding: 0.5em; /* Add some padding to day cells */
+        padding: 0.3em; /* Reduced padding for day cells on mobile */
     }
+
+     /* Adjust day cell padding for larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+       .fc-daygrid-day {
+         padding: 0.5em; /* Add some padding to day cells */
+       }
+    }
+
 
     .fc-today {
         background-color: #e6f7ff !important; /* Very light blue for today */
@@ -125,8 +226,43 @@
 
     /* Month View Specific Adjustments */
     .fc-daygrid-day-events {
-      margin-top: 0.5em; /* More top margin for events */
-      padding: 0 0.5em; /* Add horizontal padding for events container */
+      margin-top: 0.3em; /* Less top margin for events on mobile */
+      padding: 0 0.3em; /* Reduced horizontal padding for events container on mobile */
+    }
+
+     /* Adjust event container margin and padding for larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+       .fc-daygrid-day-events {
+         margin-top: 0.5em; /* More top margin for events */
+         padding: 0 0.5em; /* Add horizontal padding for events container */
+       }
+    }
+
+    /* Adjust button group spacing on mobile */
+    .fc .fc-button-group {
+        display: flex; /* Use flexbox for button groups */
+        flex-wrap: wrap; /* Allow buttons to wrap to the next line (default for other groups) */
+        justify-content: center; /* Center buttons in the group */
+        margin-top: 0.5em; /* Add some space above button groups when stacked */
+    }
+
+     /* Remove flex-wrap and margin-top for button groups on larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+       .fc .fc-button-group {
+         flex-wrap: nowrap;
+         margin-top: 0;
+       }
+    }
+
+    /* Added margin between button groups on larger screens */
+    @media (min-width: 768px) { /* md breakpoint */
+        .fc-header-toolbar .fc-button-group {
+            margin-right: 0.8em;
+        }
+
+        .fc-header-toolbar .fc-button-group:last-child {
+            margin-right: 0;
+        }
     }
 
   </style>
@@ -144,6 +280,33 @@
         },
         eventColor: '#007bff', // Default event color
         // More options can be added here
+
+        // Responsive adjustments via FullCalendar options
+        // FullCalendar can automatically switch views based on width
+        views: {
+          dayGridMonth: { // name of view
+            titleFormat: { year: 'numeric', month: 'long' }
+          },
+          timeGridWeek: {
+             // specific options for the week view
+          },
+          timeGridDay: {
+             // specific options for the day view
+          },
+          listWeek: {
+             // specific options for the list view
+          }
+        },
+        headerToolbar: {
+          left: 'prev,next,today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' // Example views
+        },
+
+        // Options to control height
+        expandRows: true, // This makes the calendar cells expand to fill the available height
+        // contentHeight: 'auto', // Use 'auto' or remove for expandRows to work effectively
+        // height: 'auto', // Use 'auto' or remove for expandRows to work effectively
       });
       calendar.render();
     });

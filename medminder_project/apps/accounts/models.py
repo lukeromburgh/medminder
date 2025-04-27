@@ -1,3 +1,4 @@
+import random
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -28,7 +29,9 @@ class Tier(models.Model):
 class UserSettings(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='usersettings') # Use related_name for easy access from User
     receive_email_reminders = models.BooleanField(default=True) # Keep existing setting
-
+    receive_sms_reminders = models.BooleanField(default=False) # Keep existing setting
+    bg_color = models.CharField(max_length=50, default='bg-gray-200', help_text="Background color for the user's avatar.")
+    text_color = models.CharField(max_length=50, default='text-gray-800', help_text="Text color for the user's avatar.")
     # Fields for payment/tier integration:
 
     # Link to the user's account tier.
@@ -115,7 +118,11 @@ def create_user_settings(sender, instance, created, **kwargs):
             print("WARNING: No default Tier found. Please create one in the admin.")
             pass # UserSettings will be created without a tier, needs manual assignment
 
-        UserSettings.objects.create(user=instance, account_tier=default_tier, subscription_status='free') # Assign default tier and status on creation
+        # Create UserSettings for the new user
+        avatar_colors = ProfileColor() # Call the function to get random colors
+        bg_color, text_color = avatar_colors # Unpack the tuple
+
+        UserSettings.objects.create(user=instance, account_tier=default_tier, subscription_status='free', avatar_bg_color=bg_color, avatar_text_color=text_color) # Assign default tier and status on creation
 
 # Note: The save_user_settings signal is not strictly needed for OneToOne fields
 # when accessing from the User instance like instance.usersettings.save()
@@ -124,3 +131,29 @@ def create_user_settings(sender, instance, created, **kwargs):
 #     # This signal is more complex for OneToOne relationships managed via related_name
 #     # The create signal above is sufficient for initial creation.
 #     pass
+
+def ProfileColor():
+
+    colors = [
+    ('bg-red-200', 'text-red-800'),
+    ('bg-blue-200', 'text-blue-800'),
+    ('bg-green-200', 'text-green-800'),
+    ('bg-yellow-200', 'text-yellow-800'),
+    ('bg-purple-200', 'text-purple-800'),
+    ('bg-pink-200', 'text-pink-800'),
+    ('bg-indigo-200', 'text-indigo-800'),
+    ('bg-teal-200', 'text-teal-800'),
+    ('bg-orange-200', 'text-orange-800'),
+    ('bg-gray-200', 'text-gray-800'), 
+    ('bg-emerald-200', 'text-emerald-800'),
+    ('bg-lime-200', 'text-lime-800'),
+    ('bg-cyan-200', 'text-cyan-800'),
+    ('bg-sky-200', 'text-sky-800'),
+    ('bg-fuchsia-200', 'text-fuchsia-800'),
+    ('bg-violet-200', 'text-violet-800'),
+    ('bg-rose-200', 'text-rose-800'),
+    ('bg-zinc-200', 'text-zinc-800'),
+    ('bg-neutral-200', 'text-neutral-800')
+    ]
+
+    return random.choice(colors)

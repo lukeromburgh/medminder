@@ -1,3 +1,4 @@
+
 {% load i18n %}
 {% load static %}
 
@@ -23,11 +24,11 @@
             appearance: none;
 
             /* Tailwind-like styling */
-            width: 100%; /* Full width within its container */
-            height: 10px; /* Height of the progress bar */
+            /* width: 100%; /* Full width within its container - Overridden by w-5/6 class */ */
+            /* height: 10px;  Removed to rely on h-3 Tailwind class */
             background-color: #e5e7eb; /* Tailwind gray-200 for the track */
             border-radius: 9999px; /* Full rounded corners */
-            margin-bottom: 1.5rem; /* Tailwind mb-6 */
+            margin-bottom: 1.5rem; /* Tailwind mb-6 - Overridden by mb-6 class */
             overflow: hidden; /* Hide the fill outside rounded corners */
         }
 
@@ -53,48 +54,43 @@
     </style>
 </head>
 <body class="h-screen flex items-center justify-center flex-col">
-
-    <main class="w-full max-w-md mx-auto"> {# Centered the main content and limited width #}
-        {# Duolingo Style Progress Bar #}
-        {# Removed the old progress bar div #}
-        <progress class="w-full mb-6" value="{{ wizard.steps.step1 }}" max="{{ wizard.steps.count }}"></progress>
-
+    <progress class="text-lg text-gray-100 mb-4 rounded text-center absolute top-32" value="{{ wizard.steps.step1 }}" max="{{ wizard.steps.count }}"> {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</progress>
+    <main >
         <form action="" method="post">{% csrf_token %}
-            <div class="bg-white p-8 rounded-lg w-full border border-gray-300">
-                {{ wizard.management_form }}
+            <div class="bg-white p-8 rounded-lg w-full max-w-md border border-gray-300 align-start">
+            {{ wizard.management_form }}
 
-                {% if wizard.form.errors %}
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                        <strong class="font-bold">Error!</strong>
-                        <span class="block sm:inline">{{ wizard.form.errors }}</span>
-                    </div>
-                {% endif %}
-
-                {% block wizard_content %}
-                <div class="space-y-4">
-                    {% for field in wizard.form %}
-                        <div class="form-group">
-                            <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-2">
-                                {{ field.label }}
-                            </label>
-                            {# Render the field widget #}
-                            {{ field }}
-                            {% if field.help_text %}
-                                <p class="text-gray-500 text-xs mt-1">{{ field.help_text|safe }}</p>
-                            {% endif %}
-                            {% if field.errors %}
-                                <p class="text-red-500 text-xs italic mt-1">{{ field.errors.0 }}</p>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+            {% if wizard.form.errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Error!</strong>
+                    <span class="block sm:inline">{{ wizard.form.errors }}</span>
                 </div>
-                {% endblock %}
+            {% endif %}
+
+            {% block wizard_content %}
+            <div class="space-y-4">
+                {% for field in wizard.form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="text-gray-500 text-xs mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <p class="text-red-500 text-xs italic mt-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endblock %}
             </div>
 
-            <div class="flex justify-center mt-6">
-                <input type="submit"
-                       value="{% if wizard.steps.current == "confirmation" %}{% translate "Create Reminder" %}{% else %}{% translate "Next" %}{% endif %}"
-                       class="{% if wizard.steps.current == "confirmation" %}bg-green-500 hover:bg-green-600{% else %}bg-gray-800 hover:bg-gray-600{% endif %} text-white py-2 px-6 rounded-full focus:outline-none focus:shadow-outline cursor-pointer" />
+            <div class="flex justify-center justify-self-center mt-6">
+                <input type="submit" 
+                       value="{% if wizard.steps.current == "confirmation" %}{% translate "Create Reminder" %}{% else %}{% translate "Next" %}{% endif %}" 
+                       class="{% if wizard.steps.current == "confirmation" %}bg-green-500 hover:bg-green-600{% else %}bg-gray-800 hover:bg-gray-600{% endif %} text-white py-2 px-6 rounded-full focus:outline-none focus:shadow-outline" />
             </div>
         </form>
     </main>

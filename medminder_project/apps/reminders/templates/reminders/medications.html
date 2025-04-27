@@ -62,34 +62,35 @@
 
           {# Iterate through Reminder instances, each becoming a card #}
           {% for reminder in all_reminders %}
-            {# Applied card styling and Alpine.js show/hide logic #}
-            <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm flex flex-col justify-between"
+            {# Applied modern card styling #}
+            {# Increased rounded corners, updated shadow, removed border, added hover effect #}
+            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between cursor-pointer"
                  :class="{ 'hidden': !(showAll || {{ forloop.counter0 }} < itemLimit) }">
 
               {# Card Header: Medication Name and Dosage #}
               <div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ reminder.medication }}</h3>
-                <p class="text-sm text-gray-700 mb-4">Dosage: <span class="font-medium">{{ reminder.dosage }}</span></p>
+                <p class="text-sm text-gray-700 mb-4">Dosage: <span class="font-medium text-gray-800">{{ reminder.dosage }}</span></p> {# Slightly darker dosage value #}
               </div>
 
               {# Card Body: Schedule Summary and Dates #}
               <div class="text-sm text-gray-600 space-y-2 mb-6"> {# Added bottom margin #}
                   <p>
-                      Schedule: <span class="font-medium">{{ reminder.schedule.get_repeat_type_display }}</span> at <span class="font-medium">{{ reminder.schedule.time_of_day|time:'H:i' }}</span>
+                      Schedule: <span class="font-medium text-gray-800">{{ reminder.schedule.get_repeat_type_display }}</span> at <span class="font-medium text-gray-800">{{ reminder.schedule.time_of_day|time:'H:i' }}</span> {# Slightly darker schedule values #}
                       {# You might need a method on your Schedule model to get a better summary #}
                       {% if reminder.schedule.repeat_type == 'weekly' and reminder.schedule.weekly_days %}
-                          on <span class="font-medium">{{ reminder.schedule.weekly_days }}</span>
+                          on <span class="font-medium text-gray-800">{{ reminder.schedule.weekly_days }}</span>
                       {% elif reminder.schedule.repeat_type == 'monthly' and reminder.schedule.monthly_dates %}
-                          on the <span class="font-medium">{{ reminder.schedule.monthly_dates }}</span> of the month
+                          on the <span class="font-medium text-gray-800">{{ reminder.schedule.monthly_dates }}</span> of the month
                       {% endif %}
                   </p>
                   <p>
-                      Start Date: <span class="font-medium">{{ reminder.schedule.start_date|date:"M d, Y" }}</span>
+                      Start Date: <span class="font-medium text-gray-800">{{ reminder.schedule.start_date|date:"M d, Y" }}</span> {# Slightly darker date value #}
                   </p>
                    <p>
                     End Date:
                     {% if reminder.schedule.end_date %}
-                        <span class="font-medium">{{ reminder.schedule.end_date|date:"M d, Y" }}</span>
+                        <span class="font-medium text-gray-800">{{ reminder.schedule.end_date|date:"M d, Y" }}</span> {# Slightly darker date value #}
                     {% else %}
                         <span class="font-medium text-green-700">Ongoing</span>
                     {% endif %}
@@ -99,15 +100,16 @@
               {# Card Footer: Actions #}
               <div class="flex justify-end gap-4 mt-auto"> {# Added mt-auto to push actions to bottom #}
                 {# Add links to manage the reminder plan #}
-                 <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View/Edit</a>
-                 <a href="#" class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</a>
+                 {# Adjusted text colors for potentially better contrast #}
+                 <a href="#" class="text-blue-700 hover:text-blue-900 text-sm font-medium transition-colors">View/Edit</a>
+                 <a href="#" class="text-red-700 hover:text-red-900 text-sm font-medium transition-colors">Delete</a>
               </div>
             </div>
           {% endfor %}
 
         </div> {# End grid #}
       {% else %}
-        <p>You have no active medication plans.</p>
+        <p class="text-gray-600">You have no active medication plans.</p>
       {% endif %}
     </div>
 
@@ -115,10 +117,10 @@
     {# --- Table Layout (Visible when currentView is 'table') --- #}
     <div x-show="isCurrentView('table')">
        {% if all_reminders %}
-       <div class="overflow-x-auto"> {# Added overflow-x-auto for responsiveness #}
+       <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm"> {# Added border and shadow to table container #}
         {# Applied table header styling #}
         {# Applied table styling #}
-        <table class="min-w-full bg-white border border-gray-200">
+        <table class="min-w-full bg-white"> {# Removed border from table itself #}
           {# Applied thead styling #}
           <thead>
             <tr>
@@ -132,16 +134,15 @@
             </tr>
           </thead>
           {# Applied tbody styling #}
-          <tbody>
+          <tbody class="divide-y divide-gray-200"> {# Added row dividers #}
             {# Iterate through Reminder instances #}
             {% for reminder in all_reminders %}
               {# Applied tr styling and Alpine.js show/hide logic #}
-              <tr class="border-b border-gray-200"
-                  :class="{ 'hidden': !(showAll || {{ forloop.counter0 }} < itemLimit) }"> {# Use hidden class #}
+              <tr :class="{ 'hidden': !(showAll || {{ forloop.counter0 }} < itemLimit) }"> {# Removed border-b here as divide-y is used #}
                 {# Applied td styling #}
-                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">{{ reminder.medication }}</td>
-                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">{{ reminder.dosage }}</td>
-                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">{{ reminder.medication }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">{{ reminder.dosage }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">
                    {{ reminder.schedule.get_repeat_type_display }} at {{ reminder.schedule.time_of_day|time:'H:i' }}
                    {% if reminder.schedule.repeat_type == 'weekly' and reminder.schedule.weekly_days %}
                        on {{ reminder.schedule.weekly_days }}
@@ -149,10 +150,10 @@
                        on the {{ reminder.schedule.monthly_dates }} of the month
                    {% endif %}
                 </td>
-                 <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
+                 <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">
                    {{ reminder.schedule.start_date|date:"M d, Y" }}
                  </td>
-                  <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">
                    {% if reminder.schedule.end_date %}
                        {{ reminder.schedule.end_date|date:"M d, Y" }}
                    {% else %}
@@ -160,16 +161,17 @@
                    {% endif %}
                  </td>
                  {# Applied td styling for actions #}
-                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">
-                   <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View/Edit</a>
-                   <a href="#" class="ml-4 text-red-600 hover:text-red-800 text-sm font-medium">Delete</a>
+                <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">
+                   {# Adjusted text colors for potentially better contrast #}
+                   <a href="#" class="text-blue-700 hover:text-blue-900 text-sm font-medium transition-colors">View/Edit</a>
+                   <a href="#" class="ml-4 text-red-700 hover:text-red-900 text-sm font-medium transition-colors">Delete</a>
                 </td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
-        {% else %}
-          <p>You have no active medication plans.</p> {# Duplicate message, but keeps structure clean #}
+         {% else %}
+          <p class="text-gray-600">You have no active medication plans.</p> {# Duplicate message, but keeps structure clean #}
         {% endif %}
     </div>
     </div>
@@ -181,13 +183,15 @@
     {# Applied button styling #}
     <button x-show="remindersCount > itemLimit" @click="showAll = !showAll" class="mt-8 text-blue-600 hover:text-blue-800 font-medium">
       <span x-text="showAll ? 'Collapse' : 'See All Plans'"></span>
-      <span :class="showAll ? 'rotate-180' : ''" class="inline-block transition-transform">⬇️</span>
+      {# Adjusted icon for potentially better visual alignment #}
+      <svg x-bind:class="showAll ? 'rotate-180' : ''" class="inline-block w-4 h-4 ml-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
     </button>
 
 
     {# --- Add New Plan Button --- #}
     <div class="mt-8 text-center"> {# Centered the button #}
-      <a href="{% url 'medminder:new_plan' %}" class="inline-block bg-gray-800 hover:bg-black text-white py-2 px-5 rounded-full font-medium">Add new plan</a> {# Added font-medium and inline-block #}
+      {# Added slight hover effect #}
+      <a href="{% url 'medminder:new_plan' %}" class="inline-block bg-gray-800 hover:bg-gray-900 text-white py-2 px-6 rounded-full font-medium transition-colors">Add new plan</a>
     </div>
   </section>
 

@@ -11,6 +11,7 @@ from django.urls import reverse
 from .models import Medication, Dosage, Schedule, Reminder, DailyReminderLog, ReminderStats, UserStats
 # Import necessary forms
 from .forms import MedicationNameForm, DosageForm, ScheduleForm, ConfirmationForm
+from apps.accounts.models import UserSettings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q # Import Q for complex queries
 import json # Import json for potentially parsing schedule data
@@ -442,12 +443,12 @@ def complete_reminder(request, reminder_id):
             streak_bonus = 0
 
             if check_streak(request.user, 7):
-                bonus_points = 300
+                bonus_points = 100
                 user_stats.achievement_points += bonus_points
                 points_message += f", 7 Day Streak! +{bonus_points} Bonus!"
                 streak_bonus = bonus_points
             elif check_streak(request.user, 3):
-                bonus_points = 100
+                bonus_points = 25
                 user_stats.achievement_points += bonus_points
                 points_message += f", 3 Day Streak! +{bonus_points} Bonus!"
                 streak_bonus = bonus_points
@@ -680,33 +681,56 @@ def account_page_view(request):
     Renders the user's account page.
 
     Requires the user to be logged in.
-    Passes the current user object to the template context.
+    Passes the current user object and related data to the template context.
     """
-    # The @login_required decorator ensures that request.user is authenticated.
-    # We can directly access the user object.
     user = request.user
-    current_streak_count = calculate_current_adherence_streak(user)
-    user_stats, _ = UserStats.objects.get_or_create(user=user)
-    achievement_points = user_stats.achievement_points
-    user_tier = get_user_tier(achievement_points) # Assuming you have a get_tier_display method or similar
-    tier_name = user_tier[0]
-    badge_image = user_tier[1]
 
-    
+    # Fetch the UserSettings object for the current user
+    # Use .first() or handle DoesNotExist if a User might not have UserSettings
+    # (though your signal should prevent this if it's working correctly)
+    try:
+        user_settings = UserSettings.objects.get(user=user)
+    except UserSettings.DoesNotExist:
+        # Handle case where UserSettings doesn't exist for some reason
+        # Maybe redirect to a setup page or show an error
+        user_settings = None # Or create a default one
 
-    # You might fetch additional data here if needed,
-    # for example, related profile information or badges.
-    # For this basic view, we just need the user object which is
-    # automatically available in the template context when using render().
+    # --- Fetch other data needed for the template ---
+    # Assuming these functions/models are defined elsewhere in your app
+    current_streak_count = 0 # Default value
+    achievement_points = 0 # Default value
+    user_tier_name = 'No Tier' # Default value
+    badge_image_url = '' # Default value for image URL
+
+    # Example of fetching related data (adjust based on your actual models/functions)
+    try:
+        user_stats, _ = UserStats.objects.get_or_create(user=user)
+        achievement_points = user_stats.achievement_points
+        user_tier = get_user_tier(achievement_points) # Assuming get_user_tier returns (name, image_url)
+        user_tier_name = user_tier[0]
+        badge_image_url = user_tier[1]
+        current_streak_count = calculate_current_adherence_streak(user) # Assuming this function exists
+    except Exception as e:
+        print(f"Error fetching user stats or tier: {e}")
+        # Handle errors fetching related data if necessary
+
+
+    # Get avatar colors from the fetched UserSettings object
+    # Provide default values in case user_settings is None
+    # Corrected field names from avatar_bg_color/avatar_text_color to bg_color/text_color
+    bg_color = user_settings.bg_color if user_settings else 'bg-gray-200'
+    text_color = user_settings.text_color if user_settings else 'text-gray-800'
+
 
     context = {
         'user': user,
-        'streak': current_streak_count,
-        'achievement_points': achievement_points,
-        'user_tier': tier_name,
-        'badge_image': badge_image,
-        # Add other context variables here if necessary
-        # 'user_profile': user.profile, # Example if you need the profile explicitly
+        'streak': current_streak_count, # Pass streak
+        'achievement_points': achievement_points, # Pass points
+        'user_tier': user_tier_name, # Pass tier name
+        'badge_image': badge_image_url, # Pass badge image URL
+        'bg_color': bg_color, # Pass background color class
+        'text_color': text_color, # Pass text color class
+        'user_settings': user_settings, # Optionally pass the whole settings object
     }
 
-    return render(request, 'reminders/account_page.html', context)
+    return render(request, 'reminders/account_page.html', context) # Ensure template path is correct
