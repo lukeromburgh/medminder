@@ -39,13 +39,14 @@
       {# Current Tier / Badge Section - Centered content #}
       <div class="bg-white border border-[#E6E6E6] rounded-lg p-6 flex flex-col items-center text-center">
         <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Current Tier</h2> {# Adjusted text size #}
-        {% if user.profile.current_tier %}
-          <p class="text-base sm:text-lg font-bold text-blue-600 mb-3">{{ user.profile.current_tier.name }}</p> {# Adjusted text size #}
+        {% if achievement_points > 0 %}
+          {# Adjusted text size #}
           {# Assuming user.profile.current_tier.image_url is the path to the badge image #}
           {# Use static tag if image_url is a path relative to static files #}
           {# If image_url is a URL from an ImageField, just use {{ user.profile.current_tier.image.url }} #}
-          <img src="{% static user.profile.current_tier.image_url %}" alt="{{ user.profile.current_tier.name }} Badge" class="w-20 h-20 sm:w-24 sm:h-24 object-contain mb-4"> {# Adjusted size #}
-          <a href="{% url 'accounts:view_all_badges' %}" class="text-blue-600 hover:underline font-medium text-xs sm:text-sm">View All Collected Badges</a> {# Adjusted text size #}
+          <img src="{{ badge_image }}" alt="{{ user.profile.current_tier.name }} Badge" class="w-20 h-20 sm:w-24 sm:h-24 object-contain mb-4"> {# Adjusted size #}
+          <p class="text-base sm:text-lg font-bold text-blue-600 mb-3">{{ user_tier }}</p>
+          <a href="" class="text-blue-600 hover:underline font-medium text-xs sm:text-sm">View All Collected Badges</a> {# Adjusted text size #}
         {% else %}
           <p class="text-gray-600 text-xs sm:text-sm">You haven't reached a tier yet.</p> {# Adjusted text size #}
         {% endif %}

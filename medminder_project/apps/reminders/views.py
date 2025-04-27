@@ -688,6 +688,10 @@ def account_page_view(request):
     current_streak_count = calculate_current_adherence_streak(user)
     user_stats, _ = UserStats.objects.get_or_create(user=user)
     achievement_points = user_stats.achievement_points
+    user_tier = get_user_tier(achievement_points) # Assuming you have a get_tier_display method or similar
+    tier_name = user_tier[0]
+    badge_image = user_tier[1]
+
     
 
     # You might fetch additional data here if needed,
@@ -699,6 +703,8 @@ def account_page_view(request):
         'user': user,
         'streak': current_streak_count,
         'achievement_points': achievement_points,
+        'user_tier': tier_name,
+        'badge_image': badge_image,
         # Add other context variables here if necessary
         # 'user_profile': user.profile, # Example if you need the profile explicitly
     }
