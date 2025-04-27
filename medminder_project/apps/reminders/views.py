@@ -685,6 +685,10 @@ def account_page_view(request):
     # The @login_required decorator ensures that request.user is authenticated.
     # We can directly access the user object.
     user = request.user
+    current_streak_count = calculate_current_adherence_streak(user)
+    user_stats, _ = UserStats.objects.get_or_create(user=user)
+    achievement_points = user_stats.achievement_points
+    
 
     # You might fetch additional data here if needed,
     # for example, related profile information or badges.
@@ -693,8 +697,10 @@ def account_page_view(request):
 
     context = {
         'user': user,
+        'streak': current_streak_count,
+        'achievement_points': achievement_points,
         # Add other context variables here if necessary
         # 'user_profile': user.profile, # Example if you need the profile explicitly
     }
 
-    return render(request, 'accounts/account_page.html', context)
+    return render(request, 'reminders/account_page.html', context)

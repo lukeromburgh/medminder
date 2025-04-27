@@ -6,51 +6,118 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">My Account</h1>
+  {# Main container with responsive grid layout #}
+  {# On small screens (default), it's a single column (grid-cols-1) #}
+  {# On large screens (lg breakpoint), it becomes a 3-column grid (lg:grid-cols-3) #}
+  <div class="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-    <div class="bg-white shadow-md rounded-lg p-6 mb-8">
-      <h2 class="text-2xl font-semibold text-gray-700 mb-4">User Information</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <p class="text-gray-600 font-medium">Username:</p>
-          {# Assuming 'user' object is available in the template context #}
-          <p class="text-gray-800">{{ user.username }}</p>
+    {# Left Column: Profile Info, Statistics, Achievements #}
+    {# This column spans 2 columns on large screens (lg:col-span-2) #}
+    {# On small screens, it naturally takes the full width due to the parent grid #}
+    <div class="lg:col-span-2 flex flex-col gap-8">
+
+      {# Profile Info Section - Flex layout for horizontal alignment on larger screens #}
+      {# On smaller screens, flex items will wrap if needed, but with current content, it should be fine #}
+      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6"> {# Added sm:flex-row and sm:items-start for better alignment on small-medium screens #}
+        {# Placeholder for Profile Picture - Adjusted size slightly for mobile #}
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-200 rounded-full flex items-center justify-center text-blue-800 text-2xl sm:text-3xl font-bold shrink-0"> {# Adjusted size and added shrink-0 #}
+          {{ user.username|slice:":1"|upper }} {# Display first letter of username #}
         </div>
-        <div>
-          <p class="text-gray-600 font-medium">Email:</p>
-          <p class="text-gray-800">{{ user.email }}</p>
+        {# Flex-grow allows this div to take available space #}
+        <div class="flex-grow text-center sm:text-left mt-4 sm:mt-0"> {# Added text-center/sm:text-left and margin adjustments #}
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-800">{{ user.username }}</h1> {# Adjusted text size #}
+          <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Joined: {% if user.date_joined %}{{ user.date_joined|date:"F Y" }}{% else %}N/A{% endif %}</p> {# Adjusted text size and margin #}
+          <p class="text-gray-600 text-xs sm:text-sm">Email: {{ user.email }}</p> {# Adjusted text size #}
+          {# Add other basic info here if needed #}
         </div>
-        {# Add other user information fields as needed, e.g., first name, last name #}
-        {% if user.first_name %}
-        <div>
-            <p class="text-gray-600 font-medium">First Name:</p>
-            <p class="text-gray-800">{{ user.first_name }}</p>
+        {# Edit Profile Button Placeholder - Added margin top for mobile #}
+        <div class="mt-4 sm:mt-0"> {# Added margin top for mobile #}
+          <a href="#" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full text-sm">Edit Profile</a>
         </div>
-        {% endif %}
-        {% if user.last_name %}
-        <div>
-            <p class="text-gray-600 font-medium">Last Name:</p>
-            <p class="text-gray-800">{{ user.last_name }}</p>
-        </div>
+      </div>
+
+      {# Current Tier / Badge Section - Centered content #}
+      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6 flex flex-col items-center text-center">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Current Tier</h2> {# Adjusted text size #}
+        {% if user.profile.current_tier %}
+          <p class="text-base sm:text-lg font-bold text-blue-600 mb-3">{{ user.profile.current_tier.name }}</p> {# Adjusted text size #}
+          {# Assuming user.profile.current_tier.image_url is the path to the badge image #}
+          {# Use static tag if image_url is a path relative to static files #}
+          {# If image_url is a URL from an ImageField, just use {{ user.profile.current_tier.image.url }} #}
+          <img src="{% static user.profile.current_tier.image_url %}" alt="{{ user.profile.current_tier.name }} Badge" class="w-20 h-20 sm:w-24 sm:h-24 object-contain mb-4"> {# Adjusted size #}
+          <a href="{% url 'accounts:view_all_badges' %}" class="text-blue-600 hover:underline font-medium text-xs sm:text-sm">View All Collected Badges</a> {# Adjusted text size #}
+        {% else %}
+          <p class="text-gray-600 text-xs sm:text-sm">You haven't reached a tier yet.</p> {# Adjusted text size #}
         {% endif %}
       </div>
+
+
+      {# Statistics Section Placeholder - Grid layout for stats #}
+      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Statistics</h2> {# Adjusted text size #}
+        {# Grid with 2 columns on all screen sizes #}
+        <div class="grid grid-cols-2 gap-4 text-center">
+          <div class="p-3 sm:p-4 bg-gray-100 rounded-md"> {# Adjusted padding #}
+            <p class="text-xl sm:text-2xl font-bold text-green-600">{{streak}}</p> {# Adjusted text size #}
+            <p class="text-gray-600 text-xs sm:text-sm">Day Streak</p> {# Adjusted text size #}
+          </div>
+          <div class="p-3 sm:p-4 bg-gray-100 rounded-md"> {# Adjusted padding #}
+            <p class="text-xl sm:text-2xl font-bold text-blue-600">{{achievement_points}}</p> {# Adjusted text size #}
+            <p class="text-gray-600 text-xs sm:text-sm">Total Points</p> {# Adjusted text size #}
+          </div>
+          {# Add more statistics as needed #}
+        </div>
+      </div>
+
+      {# Achievements Section Placeholder - Grid layout for achievements #}
+      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Achievements</h2> {# Adjusted text size #}
+        {# Grid with 1 column on small screens, 2 on medium and up #}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {# Example Achievement Item #}
+          <div class="flex items-center gap-4 p-3 sm:p-4 bg-gray-100 rounded-md"> {# Adjusted padding #}
+            {# Placeholder for Achievement Icon - Adjusted size #}
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-400 rounded-full flex items-center justify-center text-white text-lg sm:text-xl shrink-0">🏆</div> {# Adjusted size and added shrink-0 #}
+            <div>
+              <p class="font-semibold text-gray-800 text-sm sm:text-base">First Dose Logged</p> {# Adjusted text size #}
+              <p class="text-gray-600 text-xs sm:text-sm">Log your first medication dose.</p> {# Adjusted text size #}
+            </div>
+          </div>
+          {# Add more achievement items #}
+        </div>
+      </div>
+
     </div>
 
-    <div class="bg-white shadow-md rounded-lg p-6 mb-8 flex flex-col items-center text-center">
-      <h2 class="text-2xl font-semibold text-gray-700 mb-4">Current Tier</h2>
-      {# Assuming user.profile.current_tier contains the tier object #}
-      {% if user.profile.current_tier %}
-        <p class="text-xl font-bold text-blue-600 mb-3">{{ user.profile.current_tier.name }}</p>
-        {# Assuming user.profile.current_tier.image_url is the path to the badge image #}
-        <img src="{{ user.profile.current_tier.image_url }}" alt="{{ user.profile.current_tier.name }} Badge" class="w-32 h-32 object-contain mb-4">
-        <a href="{% url 'accounts:view_all_badges' %}" class="text-blue-600 hover:underline font-medium">View All Collected Badges</a>
-      {% else %}
-        <p class="text-gray-600">You haven't reached a tier yet.</p>
-      {% endif %}
-    </div>
+    {# Right Column: Friend Updates, Suggestions #}
+    {# This column spans 1 column on large screens (lg:col-span-1) #}
+    {# On small screens, it naturally takes the full width below the left column #}
+    <div class="lg:col-span-1 flex flex-col gap-8">
 
-    {# Add other sections for account settings, etc. as needed #}
+      {# Friend Updates Section Placeholder #}
+      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Friend updates</h2> {# Adjusted text size #}
+        {# Add your friend updates display logic here #}
+        <p class="text-gray-600 text-xs sm:text-sm">No recent updates.</p> {# Adjusted text size #}
+      </div>
+
+      {# Friend Suggestions Section Placeholder #}
+      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Friend suggestions</h2> {# Adjusted text size #}
+        {# Add your friend suggestions display logic here #}
+        <div class="flex items-center gap-4 mb-4">
+            {# Placeholder for Suggestion Avatar - Adjusted size #}
+            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-300 rounded-full shrink-0"></div> {# Adjusted size and added shrink-0 #}
+            <div class="flex-grow">
+                <p class="font-semibold text-gray-800 text-sm">Suggested User</p> {# Adjusted text size #}
+            </div>
+            {# Adjusted button padding and text size #}
+            <button class="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-full shrink-0">+ Follow</button> {# Added shrink-0 #}
+        </div>
+        {# Add more suggestions #}
+      </div>
+
+    </div>
 
   </div>
 {% endblock %}
