@@ -1,17 +1,55 @@
-{% extends 'base.html' %} {% load static %} {% block title %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
   MedMinder - Never Miss a Dose
-{% endblock %} {% block content %}
+{% endblock %}
+
+{% block content %}
+  <style>
+    /* Define the fade-in and slide-up animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Apply the animation */
+    .animate-fade-in-up {
+      animation: fadeInUp 0.8s ease-out forwards;
+      opacity: 0; /* Start with opacity 0 to prevent a flash before animation */
+    }
+
+    /* Add delay utilities */
+    .animation-delay-100 { animation-delay: 0.1s; }
+    .animation-delay-200 { animation-delay: 0.2s; }
+    .animation-delay-300 { animation-delay: 0.3s; }
+    .animation-delay-400 { animation-delay: 0.4s; }
+    .animation-delay-500 { animation-delay: 0.5s; }
+    .animation-delay-600 { animation-delay: 0.6s; }
+    .animation-delay-700 { animation-delay: 0.7s; }
+    .animation-delay-800 { animation-delay: 0.8s; }
+    /* Add more delays if needed */
+
+  </style>
+
   <div class="flex flex-col min-h-screen">
     {# --- Navbar --- #}
+    {# Typically the navbar doesn't need an entrance animation as it's the first thing the user sees #}
     <nav class="bg-white shadow-sm">
       <div class="w-7xl md:w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-          <div class="flex-shrink-0 flex items-center font-bold text-xl text-black">
+          <div class="flex-shrink-0 flex items-center font-bold text-xl text-black animate-fade-in-up"> {# Added animation #}
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>MedMinder
           </div>
-          <div class="flex items-center">
+          <div class="flex items-center animate-fade-in-up animation-delay-100"> {# Added animation and delay #}
             <a href="{% url 'accounts:login' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Log In</a>
             <a href="{% url 'accounts:signup' %}" class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Sign Up</a>
           </div>
@@ -22,11 +60,11 @@
     {# --- Hero Section --- #}
     <main class="flex-grow">
       <div class="max-w-4xl mx-auto pt-16 px-4 sm:px-6 lg:px-8 text-center">
-        <img src="{% static 'images/medminder.png' %}" alt="MedMinder Icon" class="mx-auto h-8 w-auto my-20" />
+        <img src="{% static 'images/medminder.png' %}" alt="MedMinder Icon" class="mx-auto h-8 w-auto my-20 animate-fade-in-up animation-delay-200" /> {# Added animation and delay #}
 
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-gray-900 leading-tight">Never Miss a Dose Again.</h1>
-        <p class="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-gray-500">MedMinder helps you manage your medications, set reminders, and stay on track. Invite family or caregivers to view your schedule.</p>
-        <div class="mt-8 flex justify-center">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-gray-900 leading-tight animate-fade-in-up animation-delay-300">Never Miss a Dose Again.</h1> {# Added animation and delay #}
+        <p class="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-gray-500 animate-fade-in-up animation-delay-400">MedMinder helps you manage your medications, set reminders, and stay on track. Invite family or caregivers to view your schedule.</p> {# Added animation and delay #}
+        <div class="mt-8 flex justify-center animate-fade-in-up animation-delay-500"> {# Added animation and delay #}
           <div class="inline-flex rounded-md">
             <a href="{% url 'accounts:signup' %}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700">Get Started Free</a>
           </div>
@@ -35,44 +73,43 @@
           </div>
         </div>
       </div>
-      <div class="mt-20 mb-10">
+      <div class="mt-20 mb-10 animate-fade-in-up animation-delay-600"> {# Added animation and delay #}
         <div class="rounded-2xl px-10 py-10 lg:py-32 w-5/6 h-fit flex flex-col items-center justify-center justify-self-center bg-[#ffffff] bg-[radial-gradient(at_40%_20%,hsla(28,100%,74%,0.5)_0px,transparent_50%),radial-gradient(at_80%_0%,hsla(189,100%,56%,0.5)_0px,transparent_50%),radial-gradient(at_0%_50%,hsla(355,100%,93%,0.5)_0px,transparent_50%),radial-gradient(at_80%_50%,hsla(340,100%,76%,0.5)_0px,transparent_50%),radial-gradient(at_0%_100%,hsla(22,100%,77%,1)_0px,transparent_50%),radial-gradient(at_80%_100%,hsla(242,100%,70%,1)_0px,transparent_50%),radial-gradient(at_0%_0%,hsla(343,100%,76%,1)_0px,transparent_50%)]">
           <img class="mx-auto rounded-lg shadow-lg" src="{% static 'images/hero-mock.png' %}" alt="MedMinder App Screenshot" />
         </div>
       </div>
 
-      <article class="flex flex-col lg:flex-row gap-10 justify-center">
+      {# Feature Sections - Animate each section #}
+      <article class="flex flex-col lg:flex-row gap-10 justify-center animate-fade-in-up animation-delay-700"> {# Added animation and delay #}
         <div class="mx-auto lg:mx-0 w-3/4 lg:h-auto lg:w-1/3 my-6 p-12 lg:px-8 justify-self-center bg-yellow-100 text-yellow-700 rounded-lg border border-yellow-300">
           <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4" id="features">💬 &nbsp; Smart Medication Reminders</h2>
           <p class="w-5/6 space-y-4 ml-4 text-lg text-yellow-600">Never miss a dose again. Set up personalized reminders via SMS or email to keep your routine on track—wherever you are, whenever it’s time. Peace of mind, right on schedule.</p>
         </div>
 
-        <div class="mx-auto lg:mx-0 w-3/4 lg:h-auto lg:w-1/3 my-6 p-12 lg:px-8 justify-self-center bg-green-100 text-green-700 rounded-lg border border-green-300">
-          <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4" id="features">📅 &nbsp; Medication History Tracking</h2>
+        <div class="mx-auto lg:mx-0 w-3/4 lg:h-auto lg:w-1/3 my-6 p-12 lg:px-8 justify-self-center bg-green-100 text-green-700 rounded-lg border border-green-300 animate-fade-in-up animation-delay-800"> {# Added animation and delay #}
+          <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4">📅 &nbsp; Medication History Tracking</h2>
           <p class="w-5/6 space-y-4 ml-4 text-lg text-green-600">Stay informed and in control. Easily review your past doses, see what you’ve taken and when, and keep your health records organized in one place.</p>
         </div>
       </article>
 
-      <article class="flex flex-col lg:flex-row gap-10 mb-10 justify-center">
+      <article class="flex flex-col lg:flex-row gap-10 mb-10 justify-center animate-fade-in-up animation-delay-900"> {# Added animation and delay #}
         <div class="mx-auto lg:mx-0 w-3/4 lg:h-auto lg:w-1/3 my-6 p-12 lg:px-8 justify-self-center bg-blue-100 text-blue-700 rounded-lg border border-blue-300">
-          <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4" id="features">👨‍👩‍👧 &nbsp; Share with Family or Caregivers</h2>
+          <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4">👨‍👩‍👧 &nbsp; Share with Family or Caregivers</h2>
           <p class="w-5/6 space-y-4 ml-4 text-lg text-blue-600">You’re not in this alone. Share your schedule with trusted loved ones or caregivers so they can support you when it matters most. Everyone stays in the loop.</p>
         </div>
 
-        <div class="mx-auto lg:mx-0 w-3/4 lg:h-auto lg:w-1/3 my-6 p-12 lg:px-8 justify-self-center bg-purple-100 text-purple-700 rounded-lg border border-purple-300">
-          <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4" id="features">🧭 &nbsp; Effortless, User-Friendly Design</h2>
+        <div class="mx-auto lg:mx-0 w-3/4 lg:h-auto lg:w-1/3 my-6 p-12 lg:px-8 justify-self-center bg-purple-100 text-purple-700 rounded-lg border border-purple-300 animate-fade-in-up animation-delay-1000"> {# Added animation and delay #}
+          <h2 class="w-2/3 text-2xl font-medium mb-6 ml-4">🧭 &nbsp; Effortless, User-Friendly Design</h2>
           <p class="w-5/6 space-y-4 ml-4 text-lg text-purple-600">No tech headaches here. Our clean, intuitive interface is designed to make setting up and managing your meds simple—even if you're not super tech-savvy.</p>
         </div>
       </article>
     </main>
 
     {# --- Footer --- #}
+    {# Footer typically doesn't need an entrance animation #}
     <footer class="bg-gray-50">
       <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
-        &copy;{% now 'Y' %}MedMinder. All rights reserved. {# Add links to
-      Terms, Privacy later #} {#
-      <a href="#" class="ml-4 hover:text-gray-700">Terms</a>
-      <a href="#" class="ml-4 hover:text-gray-700">Privacy</a> #}
+        &copy;{% now 'Y' %}MedMinder. All rights reserved. <br> Created with ❤️ by the MedMinder Team. <br> @lukdwsn
       </div>
     </footer>
   </div>

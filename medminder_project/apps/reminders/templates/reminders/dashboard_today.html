@@ -51,7 +51,7 @@
       {# Adjusted text size/width slightly for mobile grid #}
       <p class="text-xl sm:text-2xl font-bold text-purple-900">{{ achievement_points }}</p>
       <p class="mt-2 sm:mt-4">
-        <a class="text-xs text-purple-600 hover:text-purple-800" href="#">{{ user_tier }}</a>
+        <a class="text-xs text-purple-600 hover:text-purple-800" href="#">{{ user_tier.0 }}</a>
       </p>
     </div>
   </article>
@@ -163,6 +163,43 @@
   </section>
 {# --- END OF NEW WIDGET --- #}
 
+<!-- Achievement Pop-up (hidden by default) -->
+<div id="achievement-popup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden px-4"> {# Added slight bg opacity increase and padding for smaller screens #}
+  <div class="bg-white rounded-2xl shadow-xl p-8 sm:p-10 max-w-sm w-full transform scale-95 transition-all duration-300 relative"> {# Increased padding, slightly reduced max-width for balance #}
+    <button id="close-popup" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button> {# Adjusted position and size #}
+
+    <div class="text-center flex flex-col items-center"> {# Added flex for centering content #}
+      {# Badge Image - Increased bottom margin #}
+      <img id="badge-image" src="" alt="Tier Badge" class="w-64 h-64 object-contain mx-auto mb-6" /> {# Adjusted size slightly, ensured aspect ratio #}
+
+      {# Rank Up Intro Text - Initially hidden, shown on rank up #}
+      <p id="rankup-intro" class="text-sm text-gray-500 mb-1 hidden">You ranked up to</p>
+
+      {# Tier Name / Main Message - Larger, Bolder #}
+      <h2 id="popup-headline" class="text-2xl font-bold text-gray-800 mb-3">
+          <span id="user-tier">Sapphire Legend</span> {# Tier name goes here #}
+      </h2>
+      {# Generic message placeholder (can be used if not rank up, or hidden) #}
+      <p id="popup-generic-message" class="text-lg text-green-600 mb-3 hidden"></p>
+
+      {# Date Badge - Needs dynamic content and styling #}
+      <div id="rankup-date-badge" class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-6 hidden">
+          {# Date will be inserted here by JS #}
+      </div>
+
+       {# Total Points - Initially hidden, maybe shown if NOT rank up #}
+      <p id="total-points-display" class="text-gray-600 mb-6 hidden">Total Points: <span id="total-points" class="font-semibold">1250</span></p>
+
+      {# Claim Badge Button - Added dynamically by JS, styled here for reference #}
+      {# Button will be added here by showAchievementPopup JS function #}
+         <button class="bg-gray-800 hover:bg-black text-white font-semibold py-2.5 px-8 rounded-full transition duration-150 ease-in-out claim-badge-button">
+            Claim Badge
+         </button>
+    </div>
+  </div>
+</div>
+
+
   {# Updated Style Block for Toasts #}
   <style>
     .toast {
@@ -204,6 +241,208 @@
     document.addEventListener('DOMContentLoaded', function () {
       const completeForms = document.querySelectorAll('.complete-form');
       const toastContainer = document.getElementById('toast-container');
+  
+      completeForms.forEach((form) => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+  
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                },
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                         return response.json().then(error_data => {
+                            console.error('Error response:', error_data);
+                            // Show error toast (existing code here is fine)
+                            // ...
+                            throw new Error('Server responded with status ' + response.status + ': ' + (error_data.message || 'Unknown error')); // Throw to trigger .catch
+                         });
+                    }
+                })
+                .then((data) => {
+                    console.log("Received data:", data);
+  
+                    // --- UI Updates for the Table Row ---
+                    const logEntryId = form.action.split('/').filter(Boolean).pop();
+                    const medicationCell = document.getElementById('medication-' + logEntryId);
+                    const dosageCell = document.getElementById('dosage-' + logEntryId);
+                    const dueTimeCell = document.getElementById('due_time-' + logEntryId);
+                    const actionCell = document.getElementById('action-cell-' + logEntryId);
+                    const reminderRow = document.getElementById('reminder-row-' + logEntryId);
+  
+                    if (medicationCell) medicationCell.classList.add('line-through');
+                    if (dosageCell) dosageCell.classList.add('line-through');
+                    if (dueTimeCell) dueTimeCell.classList.add('line-through');
+                    if (actionCell) actionCell.innerHTML = 'Completed';
+                    if (reminderRow) {
+                        reminderRow.classList.add('bg-green-50');
+                        reminderRow.classList.remove('border-b', 'border-gray-200');
+                    }
+  
+                    // --- Achievement Check and Popup ---
+                    if (data.rank_up) {
+                        // Show rank-up popup
+                        showAchievementPopup(data);  // Use existing function
+  
+                        // --- Trigger Confetti Explosion! ---
+                        triggerConfetti(); // Call the new function to trigger confetti
+                    } else {
+                        // Show standard toast
+                        if (data.message) {
+                            showToast(data.message);
+                        }
+                    }
+                })
+                .catch((error) => {
+                    // ... (existing fetch/network error handling is likely fine) ...
+                    console.error('Fetch operation failed:', error);
+                    // Show generic network error toast if needed (existing code is fine)
+                    // ...
+                });
+        });
+      });
+  
+  
+      function showAchievementPopup(data) {
+          const popup = document.getElementById('achievement-popup');
+          const introText = document.getElementById('rankup-intro');
+          const headline = document.getElementById('popup-headline');
+          const tierSpan = document.getElementById('user-tier');
+          const genericMessage = document.getElementById('popup-generic-message');
+          const dateBadge = document.getElementById('rankup-date-badge');
+          const totalPointsDisplay = document.getElementById('total-points-display');
+          const totalPointsSpan = document.getElementById('total-points');
+          const badgeImage = document.getElementById('badge-image');
+          const popupContent = popup.querySelector('.text-center'); // Get the container for the button
+  
+          // Clear previous state / Reset elements
+          introText.classList.add('hidden');
+          genericMessage.classList.add('hidden');
+          dateBadge.classList.add('hidden');
+          totalPointsDisplay.classList.add('hidden');
+          headline.classList.remove('hidden'); // Ensure headline is visible by default
+  
+          // --- Populate Content ---
+          badgeImage.src = data.user_tier[1]; // Badge image URL
+  
+          if (data.rank_up) {
+              // --- Rank Up Specific Content ---
+              introText.classList.remove('hidden'); // Show "You ranked up to"
+              tierSpan.textContent = data.user_tier[0]; // Set the new tier name in the headline
+              headline.classList.remove('text-green-600'); // Use default text color for headline
+              headline.classList.add('text-gray-800');
+  
+              // Populate and show the date badge
+              if (data.rank_up_date) {
+                  dateBadge.textContent = data.rank_up_date;
+                  dateBadge.classList.remove('hidden');
+              }
+  
+              // Remove existing claim button before adding a new one
+              const existingButton = popupContent.querySelector('.claim-badge-button');
+              if (existingButton) {
+                  existingButton.remove();
+              }
+  
+              // Add "Claim Badge" button
+              const claimButton = document.createElement('button');
+              claimButton.textContent = 'Claim Badge';
+              // Apply Tailwind classes for styling matching the image
+              claimButton.className = 'bg-gray-800 hover:bg-black text-white font-semibold py-2.5 px-8 rounded-full transition duration-150 ease-in-out claim-badge-button mt-2'; // Added margin-top
+              claimButton.addEventListener('click', () => {
+                  console.log('Claim Badge clicked for tier:', data.user_tier[0]);
+                  // Add specific claim logic here if needed
+                  hideAchievementPopup(); // Close popup
+              });
+              popupContent.appendChild(claimButton);
+  
+          } else {
+              // --- Standard Points Update (Not Rank Up) ---
+              // You might want to show a different message or layout here.
+              // Option 1: Use the generic message field.
+              headline.classList.add('hidden'); // Hide the tier headline spot
+              genericMessage.textContent = data.message; // Show points message
+              genericMessage.classList.remove('hidden');
+              genericMessage.classList.add('text-green-600'); // Style as green
+  
+              // Option 2: Show total points instead (closer to original)
+              // headline.classList.add('hidden'); // Hide the tier headline spot
+              // genericMessage.classList.add('hidden'); // Hide generic message field
+              // totalPointsSpan.textContent = data.total_points;
+              // totalPointsDisplay.classList.remove('hidden'); // Show the total points line
+  
+  
+              // Remove claim button if it exists from a previous rank up
+              const existingButton = popupContent.querySelector('.claim-badge-button');
+              if (existingButton) {
+                  existingButton.remove();
+              }
+          }
+  
+          // --- Show Popup ---
+          popup.classList.remove('hidden');
+          popup.classList.add('flex');
+          // Small scale animation
+          setTimeout(() => {
+              const innerDiv = popup.querySelector('div:first-child'); // Target the inner div for scaling
+              if (innerDiv) {
+                  innerDiv.classList.remove('scale-95');
+                  innerDiv.classList.add('scale-100');
+              }
+          }, 50);
+      }
+  
+      function hideAchievementPopup() {
+          const popup = document.getElementById('achievement-popup');
+          if (popup) {
+              const innerDiv = popup.querySelector('div:first-child');
+              if (innerDiv) {
+                  innerDiv.classList.add('scale-95');
+                  innerDiv.classList.remove('scale-100');
+              }
+              // Optional: Remove claim button on hide if you prefer it to be fresh each time
+              const claimButton = popup.querySelector('.claim-badge-button');
+               if (claimButton) {
+                   claimButton.remove();
+               }
+              setTimeout(() => {
+                  popup.classList.add('hidden');
+                  popup.classList.remove('flex');
+              }, 200); // Match transition duration
+          }
+      }
+  
+      // --- New function to trigger confetti ---
+      function triggerConfetti() {
+          // Basic confetti explosion from the center of the screen
+          confetti({
+              particleCount: 100, // Number of particles
+              spread: 70, // How spread out the particles are
+              origin: { y: 0.6 } // Origin point (vertical position, 0 is top, 1 is bottom)
+              // You can customize colors, shapes, etc. here
+              // colors: ['#a864fd', '#29cdff', '#78ff44', '#ff71d1', '#ff4787'],
+              // shapes: ['circle', 'square'],
+          });
+  
+          // Optional: Add a second burst for a more dramatic effect
+          setTimeout(() => {
+               confetti({
+                   particleCount: 80,
+                   spread: 80,
+                   origin: { y: 0.5 },
+                   // Add different options for the second burst if desired
+               });
+          }, 200); // Delay the second burst slightly
+      }
+    
+    // The rest of your JavaScript (hideAchievementPopup, etc.) remains the same.
 
       function showToast(message) {
         const toast = document.createElement('div');
@@ -563,5 +802,42 @@
 
       }; // End of returned object
     } // End of adherenceTracker function
+
+    function showAchievementPopup(data) {
+      // Set the content dynamically
+      document.getElementById('popup-message').textContent = data.message;
+      document.getElementById('total-points').textContent = data.total_points;
+      document.getElementById('user-tier').textContent = data.user_tier[0];
+      document.getElementById('badge-image').src = data.user_tier[1];
+    
+      const popup = document.getElementById('achievement-popup');
+      popup.classList.remove('hidden');
+      popup.classList.add('flex');
+      // Small scale animation
+      setTimeout(() => {
+        popup.querySelector('div').classList.remove('scale-95');
+        popup.querySelector('div').classList.add('scale-100');
+      }, 50);
+    }
+    
+    // Close popup on 'X' or outside click
+    document.getElementById('close-popup').addEventListener('click', () => {
+      hideAchievementPopup();
+    });
+    document.getElementById('achievement-popup').addEventListener('click', (e) => {
+      if (e.target.id === 'achievement-popup') hideAchievementPopup();
+    });
+    
+    function hideAchievementPopup() {
+      const popup = document.getElementById('achievement-popup');
+      popup.querySelector('div').classList.add('scale-95');
+      popup.querySelector('div').classList.remove('scale-100');
+      setTimeout(() => {
+        popup.classList.add('hidden');
+        popup.classList.remove('flex');
+      }, 200);
+    }
+
+    
   </script>
 {% endblock %}

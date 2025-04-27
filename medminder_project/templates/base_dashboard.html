@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock %} - MedMinder</title> {# Added app name to title #}
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
@@ -93,9 +94,9 @@
                       </a>
 
                       {# Replace '#' with actual URL and compare URL name if implemented #}
-                      <a href="#"
+                      <a href=""
                          class="flex items-center rounded-md gap-2 px-2 py-1.5 text-sm font-medium underline-offset-2 focus-visible:underline focus:outline-hidden
-                                {% if current_url_name == 'account_page_url_name' %} {# Replace with actual URL name #}
+                                {% if current_url_name == 'account_page' %} {# Replace with actual URL name #}
                                    bg-black/10 text-neutral-900 {# Active classes #}
                                 {% else %}
                                    text-neutral-600 hover:bg-black/5 hover:text-neutral-900 {# Inactive classes #}

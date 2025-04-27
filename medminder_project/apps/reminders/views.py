@@ -422,87 +422,61 @@ def dashboard_today(request):
     # Ensure your template path is correct
     return render(request, 'reminders/dashboard_today.html', context)
 
-
-# Assuming get_user_tier is defined elsewhere, e.g.:
-def get_user_tier(points):
-    """Determines the user's tier based on achievement points."""
-    if points >= 10000:
-        return "Diamond Legend"
-    elif points >= 7500:
-        return "Emerald Elite"
-    elif points >= 5000:
-        return "Ruby Master"
-    elif points >= 3000:
-        return "Sapphire Champion"
-    elif points >= 1500:
-        return "Gold Guardian"
-    elif points >= 750:
-        return "Silver Sentinel"
-    elif points >= 300:
-        return "Bronze Beginner"
-    else:
-        return "Iron Initiate"
-
 @login_required
-def complete_reminder(request, reminder_id): # reminder_id here is actually the DailyReminderLog ID
+def complete_reminder(request, reminder_id):
     """Marks a reminder log entry as completed and updates UserStats."""
 
-    # Fetch the specific DailyReminderLog entry using the ID from the URL
-    # Ensure it belongs to the current user
     log_entry = get_object_or_404(DailyReminderLog, id=reminder_id, user=request.user)
 
     if request.method == 'POST':
-        # Check if it's already completed to prevent double points/streak issues
         if log_entry.status == 'pending':
-            # Mark the DailyReminderLog entry as completed
             log_entry.status = 'completed'
-            log_entry.completion_timestamp = timezone.now() # Record completion time
+            log_entry.completion_timestamp = timezone.now()
             log_entry.save()
 
-            # --- Update UserStats ---
-            # UserStats is for cumulative points and tier
             user_stats, created = UserStats.objects.get_or_create(user=request.user)
-            points_earned = 75 # Base points for completing a reminder
+            points_earned = 75
             user_stats.achievement_points += points_earned
 
             points_message = f"Reminder Completed! +{points_earned} Points"
             streak_bonus = 0
 
-            # --- Check and Apply Streak Bonus based on Daily Completion Summary in ReminderStats ---
-            # This logic awards bonus points based on the streak check using ReminderStats.
-            # IMPORTANT: For this to work correctly, a separate process MUST
-            # update the ReminderStats table daily based on whether the user
-            # met the completion criteria for that day (e.g., completed at least one reminder).
-            # The check_streak function below queries ReminderStats based on this assumption.
             if check_streak(request.user, 7):
                 bonus_points = 300
                 user_stats.achievement_points += bonus_points
                 points_message += f", 7 Day Streak! +{bonus_points} Bonus!"
                 streak_bonus = bonus_points
             elif check_streak(request.user, 3):
-                 bonus_points = 100
-                 user_stats.achievement_points += bonus_points
-                 points_message += f", 3 Day Streak! +{bonus_points} Bonus!"
-                 streak_bonus = bonus_points
+                bonus_points = 100
+                user_stats.achievement_points += bonus_points
+                points_message += f", 3 Day Streak! +{bonus_points} Bonus!"
+                streak_bonus = bonus_points
 
-            user_stats.save() # Save UserStats after adding points/bonus
+            # Get user's tier *before* the update
+            old_tier_name, _ = get_user_tier(user_stats.achievement_points - (points_earned + streak_bonus))  # Important: subtract the points
+            user_stats.save()
 
-            # Return a success JSON response
-            # Include user's new total points and tier for potential UI updates
-            return JsonResponse({
+            # Get user's tier *after* the update
+            new_tier_name, new_badge_image = get_user_tier(user_stats.achievement_points)
+
+            response_data = {
                 'message': points_message,
-                'points_earned_today': points_earned + streak_bonus, # Points earned from this action
-                'total_points': user_stats.achievement_points, # User's new total cumulative points
-                'user_tier': get_user_tier(user_stats.achievement_points) # User's new tier
-            })
+                'points_earned_today': points_earned + streak_bonus,
+                'total_points': user_stats.achievement_points,
+                'user_tier': [new_tier_name, new_badge_image],
+                'rank_up': False,  # Default: no rank up
+            }
 
+            # Check if the tier changed
+            if old_tier_name != new_tier_name:
+                response_data['rank_up'] = True
+                response_data['rank_up_message'] = f"You've reached {new_tier_name}!"
+                # Add the current date, formatted
+                response_data['rank_up_date'] = timezone.now().strftime("%d %b %Y").upper() # e.g., 27 APR 2025
+
+            return JsonResponse(response_data)
         else:
-             # Reminder was already completed or had another status (e.g., skipped)
-             # Return a 400 Bad Request or similar, and a message
-             return JsonResponse({'message': 'Reminder already completed or cannot be completed.', 'points_earned_today': 0}, status=400)
-
-
-    # If it's not a POST request, redirect (shouldn't happen from the dashboard UI)
+            return JsonResponse({'message': 'Reminder already completed or cannot be completed.', 'points_earned_today': 0}, status=400)
     return redirect('medminder:dashboard_today')
 
 
@@ -582,6 +556,39 @@ def calculate_current_adherence_streak(user):
             break
 
     return streak_count
+
+def get_user_tier(points):
+    """Determines the user's tier and corresponding badge image based on achievement points."""
+    if points >= 25000:
+        return "Prism Paragon", "/static/images/badges/prism-paragon.png"
+    elif points >= 20000:
+        return "Diamond Divinity", "/static/images/badges/diamond-divinity.png"
+    elif points >= 15000:
+        return "Lapis Luminary", "/static/images/badges/lapis-luminary.png"
+    elif points >= 12500:
+        return "Jade Journeyer", "/static/images/badges/jade-journeyer.png"
+    elif points >= 7500:
+        return "Emerald Elite", "/static/images/badges/emerald-elite.png"
+    elif points >= 6000:
+        return "Carnelian Commander", "/static/images/badges/carnelian-commander.png"
+    elif points >= 5000:
+        return "Citrine Master", "/static/images/badges/citrine-master.png"
+    elif points >= 4000:
+        return "Peridot Protector", "/static/images/badges/peridot-protector.png"
+    elif points >= 3000:
+        return "Ruby Champion", "/static/images/badges/ruby-champion.png"
+    elif points >= 2250:
+        return "Sapphire Legend", "/static/images/badges/sapphire-legend.png"
+    elif points >= 1500:
+        return "Gold Guardian", "/static/images/badges/gold-guardian.png"
+    elif points >= 750:
+        return "Silver Sentinel", "/static/images/badges/silver-sentinel.png"
+    elif points >= 300:
+        return "Bronze Beginner", "/static/images/badges/bronze-beginner.png"
+    elif points >= 100:
+        return "Iron Initiate", "/static/images/badges/iron-initiate.png"
+    elif points <= 50:
+        return "Unranked", "/static/images/badges/unranked.png"
 
 @login_required
 def dashboard_calendar(request):
@@ -666,3 +673,28 @@ def dashboard_calendar(request):
         'events_json': json.dumps(events),
     }
     return render(request, 'reminders/dashboard_calendar.html', context)
+
+@login_required
+def account_page_view(request):
+    """
+    Renders the user's account page.
+
+    Requires the user to be logged in.
+    Passes the current user object to the template context.
+    """
+    # The @login_required decorator ensures that request.user is authenticated.
+    # We can directly access the user object.
+    user = request.user
+
+    # You might fetch additional data here if needed,
+    # for example, related profile information or badges.
+    # For this basic view, we just need the user object which is
+    # automatically available in the template context when using render().
+
+    context = {
+        'user': user,
+        # Add other context variables here if necessary
+        # 'user_profile': user.profile, # Example if you need the profile explicitly
+    }
+
+    return render(request, 'accounts/account_page.html', context)
