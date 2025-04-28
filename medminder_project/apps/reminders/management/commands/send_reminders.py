@@ -1,59 +1,41 @@
+# reminders/management/commands/send_reminders.py
+
 from django.core.management.base import BaseCommand
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.utils import timezone
-from datetime import timedelta, time # Import time
-from django.db.models import Q # Import Q object
-from ...models import DailyReminderLog # Import your models
-from ....accounts.models import UserSettings # Import User model
-from django.template.loader import render_to_string
+from datetime import timedelta
+from django.db.models import Q
+from django.urls import reverse # Import reverse
 from django.conf import settings # Import settings
+from django.template.loader import render_to_string
+
+from ...models import DailyReminderLog # Import your models
+from ....accounts.models import UserSettings # Import User model (assuming this path)
+# from django.contrib.auth import get_user_model
+# User = get_user_model()
 
 
 class Command(BaseCommand):
     help = 'Sends email reminders for upcoming medication doses.'
 
     def handle(self, *args, **options):
-        now = timezone.localtime(timezone.now()) # Get current datetime in local timezone
-        # Define a time window for reminders, e.g., due within the next 30 minutes
+        now = timezone.localtime(timezone.now())
         time_window_minutes = 30
         time_window_end = now + timedelta(minutes=time_window_minutes)
 
-        # Determine the start and end times for the filter based on the current time
-        start_time = now.time()
-        end_time = time_window_end.time() # This will be tomorrow's time if window crosses midnight
+        self.stdout.write(f"Checking for reminders due today ({now.date().strftime('%Y-%m-%d')}) within the window starting from {now.time().strftime('%H:%M')} for the next {time_window_minutes} minutes...")
 
-        self.stdout.write(f"Checking for reminders due today ({now.date().strftime('%Y-%m-%d')}) within the window starting from {start_time.strftime('%H:%M')} for the next {time_window_minutes} minutes...")
-        # Note: The time range displayed here might be confusing if it crosses midnight,
-        # but the query logic below handles it correctly for today's date.
-
-        # Base filters that apply
         base_filters = Q(status='pending') & Q(is_notified=False) & Q(user__usersettings__receive_email_reminders=True)
 
-        # Time range filters for today's date, handling wrap-around
         time_range_q = Q()
-
-        # If the window does *not* cross midnight (e.g., 10:00 to 10:30)
         if time_window_end.date() == now.date():
-            time_range_q = Q(
-                due_time__gte=start_time,
-                due_time__lte=end_time
-            )
-            self.stdout.write(f"  Filtering today between {start_time.strftime('%H:%M')} and {end_time.strftime('%H:%M')}.")
-
-
-        # If the window *does* cross midnight (e.g., 23:45 to 00:15)
-        # We still only want reminders for TODAY's date.
-        # The time filter needs to find times >= start_time OR <= end_time *on today's date*.
+            time_range_q = Q(due_time__gte=now.time(), due_time__lte=time_window_end.time())
+            self.stdout.write(f"  Filtering today between {now.time().strftime('%H:%M')} and {time_window_end.time().strftime('%H:%M')}.")
         elif time_window_end.date() > now.date():
-             # The reminders must be on the current date
-             # And their time must be >= the start time OR <= the end time (wrapping around midnight)
-             time_range_q = Q(
-                Q(due_time__gte=start_time) | Q(due_time__lte=end_time)
-             )
-             self.stdout.write(f"  Filtering today (across midnight) >= {start_time.strftime('%H:%M')} OR <= {end_time.strftime('%H:%M')}.")
+             time_range_q = Q(Q(due_time__gte=now.time()) | Q(due_time__lte=time_window_end.time()))
+             self.stdout.write(f"  Filtering today (across midnight) >= {now.time().strftime('%H:%M')} OR <= {time_window_end.time().strftime('%H:%M')}.")
 
 
-        # Combine the date filter, base filters, and the time range filters
         due_reminders = DailyReminderLog.objects.filter(
             Q(due_date=now.date()) & base_filters & time_range_q
         ).select_related('user', 'reminder__medication', 'reminder__dosage', 'reminder__schedule')
@@ -70,32 +52,48 @@ class Command(BaseCommand):
             user = log_entry.user
             reminder = log_entry.reminder
 
-            # Check one last time just in case the status changed concurrently
             if log_entry.status != 'pending' or log_entry.is_notified:
                 self.stdout.write(f"Skipping log entry {log_entry.id} - status not pending or already notified.")
                 continue
 
-            # ... (rest of your email sending logic remains the same) ...
-            subject = f"MedMinder Reminder: Time for {reminder.medication.medication_name}"
-            message = (
-                f"Hi {user.username},\n\n"
-                f"This is a reminder to take your medication:\n\n"
-                f"Medication: {reminder.medication.medication_name}\n"
-                f"Dosage: {reminder.dosage.dosage}\n"
-                f"Time: {log_entry.due_time.strftime('%H:%M')}\n\n"
-                f"Remember to log completion on your dashboard.\n\n"
-                f"Best regards,\nMedMinder Team"
-            )
+            # --- Generate the Dashboard URL ---
+            # Use the 'dashboard' URL name
+            dashboard_url_path = reverse('medminder:dashboard')
+            # Build the absolute URL using the SITE_URL setting
+            dashboard_url = f"{settings.SITE_URL}{dashboard_url_path}"
+            # -----------------------------------
 
-            email_from = settings.DEFAULT_FROM_EMAIL # Make sure DEFAULT_FROM_EMAIL is set in settings.py
+
+            # --- Render the email templates ---
+            context = {
+                'user': user,
+                'log_entry': log_entry,
+                'reminder': reminder, # Passing the reminder object directly
+                'dashboard_url': dashboard_url, # Pass the generated dashboard URL to the template
+            }
+
+            # Render plain text and HTML versions
+            text_body = render_to_string('reminders/email/reminder_email_plain.txt', context)
+            html_body = render_to_string('reminders/email/reminder_email.html', context)
+            # ------------------------------------
+
+
+            subject = f"MedMinder Reminder: Time for {reminder.medication.medication_name}"
+            email_from = settings.DEFAULT_FROM_EMAIL
             recipient_list = [user.email]
 
             try:
-                send_mail(subject, message, email_from, recipient_list)
+                msg = EmailMultiAlternatives(subject, text_body, email_from, recipient_list)
+                msg.attach_alternative(html_body, "text/html")
+                msg.send()
+
                 log_entry.is_notified = True # Mark as notified
+                log_entry.notification_sent_at = timezone.localtime(timezone.now()) # Record notification time
+                # Don't mark as completed here, as completion happens via the dashboard manually
                 log_entry.save()
                 sent_count += 1
                 self.stdout.write(self.style.SUCCESS(f"Successfully sent email for log entry {log_entry.id} to {user.email}"))
+
             except Exception as e:
                 self.stderr.write(self.style.ERROR(f"Failed to send email for log entry {log_entry.id} to {user.email}: {e}"))
                 # You might want to add logging or retry logic here

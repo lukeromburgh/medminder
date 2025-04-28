@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MedMinder Reminder: {{ reminder.medication.medication_name }}</title>
+    <style>
+        /* Basic styling for a clean email */
+        body { font-family: sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        h2 { color: #0056b3; }
+        .med-details { margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #007bff; }
+        .med-details p { margin: 5px 0; }
+        .button { display: inline-block; background-color: #007bff; color: #ffffff !important; text-decoration: none; padding: 10px 20px; border-radius: 5px; margin-top: 15px; } /* Changed button color to blue */
+        .footer { margin-top: 30px; font-size: 0.9em; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>MedMinder Reminder</h2>
+
+        <p>Hi {{ user.username }},</p>
+
+        <p>It's time for your medication dose:</p>
+
+        <div class="med-details">
+            <p><strong>Medication:</strong> {{ reminder.medication.medication_name }}</p>
+            <p><strong>Dosage:</strong> {{ reminder.dosage.dosage }}</p>
+            <p><strong>Scheduled Time:</strong> {{ log_entry.due_time|date:"H:i" }}</p>
+        </div>
+
+        <p>Please visit your dashboard to view and log your dose details.</p>
+
+        <p style="text-align: center;">
+            <a href="{{ dashboard_url }}" class="button">Go to Dashboard</a>
+        </p>
+
+        <p>If the button above doesn't work, you can copy and paste this link into your browser:</p>
+        <p><small>{{ dashboard_url }}</small></p>
+
+
+        <div class="footer">
+            <p>Best regards,<br>MedMinder Team</p>
+            </div>
+    </div>
+</body>
+</html>

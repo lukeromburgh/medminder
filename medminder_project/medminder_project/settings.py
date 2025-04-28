@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path, os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -141,13 +143,29 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')  # Your default from email address
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  # Your SendGrid username
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # Your SendGrid password
+
+SITE_URL = 'http://127.0.0.1:8000/'
+
 # Use app passwords for security, not your main Gmail password
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'xXpenisheadXx@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD', 'uuib bhry cpcx zytc')
-DEFAULT_FROM_EMAIL = 'MedMinder Team <xXpenisheadXx@gmail.com>'
+# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+if not DEFAULT_FROM_EMAIL:
+    print("WARNING: DEFAULT_FROM_EMAIL is not set as an environment variable!")
+
+if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
+    # Corrected message to match the variables being checked
+    print("WARNING: Email credentials (EMAIL_HOST_USER, EMAIL_HOST_PASSWORD) are not set as environment variables!")
+
+
 
 CRONJOBS = [
     ('0 2 * * *', 'apps.reminders.management.commands.populate_reminder_stats', 'populate_reminder_stats'),
