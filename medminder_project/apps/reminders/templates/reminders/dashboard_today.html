@@ -12,7 +12,13 @@
 
     {# Updated Div classes - removed mobile/small width, keeping padding/margin and lg width/padding #}
     <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-yellow-50 text-yellow-700 lg:w-1/4 border-yellow-300">
-      <h2 class="lg:text-xl font-medium mb-2" id="features">Total Medications</h2>
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-medium">Total Medications</h3>
+            {# Heroicon: outline/archive-box (or solid/pills if preferred) #}
+            <svg class="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10.5 11.25h3M12 15h.008" />
+            </svg>
+        </div>
       {# Adjusted text size/width slightly for mobile grid #}
       <p class="text-xl sm:text-2xl font-bold text-yellow-900">{{ total_medications }}</p>
       <p class="mt-2 sm:mt-4">
@@ -22,7 +28,13 @@
 
     {# Updated Div classes #}
     <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-green-50 text-green-700 lg:w-1/4 border-green-300">
-      <h2 class="lg:text-xl font-medium mb-2" id="features">Next Reminder</h2>
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium ">Next Reminder</h3>
+        {# Heroicon: outline/clock #}
+        <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
       {# Adjusted text size/width slightly for mobile grid #}
       {% if next_reminder %}
         <p class="text-xl sm:text-2xl font-bold text-green-900">{{ next_reminder.due_time|time:'H:i' }}</p>
@@ -37,7 +49,13 @@
 
     {# Updated Div classes #}
     <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-blue-50 text-blue-700 lg:w-1/4 border-blue-300">
-      <h2 class="lg:text-xl font-medium mb-2" id="features">Weekly Adherence</h2>
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium">Weekly Adherence</h3>
+        {# Heroicon: outline/check-circle #}
+        <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    </div>
       {# Adjusted text size/width slightly for mobile grid #}
       <p class="text-xl sm:text-2xl font-bold text-blue-900">{{ weekly_adherence }}%</p>
       <p class="mt-2 sm:mt-4">
@@ -47,7 +65,13 @@
 
     {# Updated Div classes #}
     <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-purple-50 text-purple-700 lg:w-1/4 border-purple-300">
-      <h2 class="lg:text-xl font-medium mb-2" id="features">Achievement Points</h2>
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium">Points & Rank</h3>
+        {# Heroicon: solid/star #}
+        <svg class="h-5 w-5 text-purple-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10.868 2.884c.321-.772 1.305-.772 1.626 0l1.53 3.705a1 1 0 00.95.69h3.884c.817 0 1.15.996.564 1.54l-3.14 2.278a1 1 0 00-.364 1.118l1.53 3.705c.321.772-.63 1.508-1.305.975l-3.14-2.278a1 1 0 00-1.176 0l-3.14 2.278c-.675.533-1.626-.203-1.305-.975l1.53-3.705a1 1 0 00-.364-1.118L2.236 8.82c-.586-.544-.253-1.54.564-1.54h3.884a1 1 0 00.95-.69l1.53-3.705z" clip-rule="evenodd" />
+        </svg>
+    </div>
       {# Adjusted text size/width slightly for mobile grid #}
       <p class="text-xl sm:text-2xl font-bold text-purple-900">{{ achievement_points }}</p>
       <p class="mt-2 sm:mt-4">
@@ -57,63 +81,107 @@
   </article>
 
   {# The rest of your template code (Today's Medications table, buttons, style, script) remains the same #}
-  <section class="p-8 my-4 lg:my-0 rounded-xl border border-gray-300 bg-white" x-data="{ showAll: false, rowLimit: 3, remindersCount: {{ todays_reminders|length }} }">
-    <h2 class="text-2xl font-semibold mb-4">Today's Medications</h2>
-    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+  {% comment %}
+  Apple-inspired Table Redesign:
+  - Uses more whitespace (padding) instead of heavy borders.
+  - Softer gray tones and cleaner typography.
+  - Rounded corners on buttons and tags.
+  - Subtle hover effect on rows.
+  - Retains responsiveness and Alpine.js functionality.
+{% endcomment %}
 
-    {% if todays_reminders %}
-      {# Wrap the table in a div for horizontal scrolling on small screens #}
-      <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200">
-          <thead>
-            <tr>
-              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Medication</th>
-              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Dosage</th>
-              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Time</th>
-              <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {# Iterate through DailyReminderLog instances, let's name the variable log_entry #}
-            {% for log_entry in todays_reminders %}
-              {# Use log_entry.id for the row and cell IDs #}
-              <tr class="border-b border-gray-200" :style="showAll || {{ forloop.counter0 }} < rowLimit ? '' : 'display: none;'" :id="'reminder-row-' + {{ log_entry.id }}">
-                {# Access medication and dosage via the reminder relationship #}
-                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if log_entry.status == 'completed' %}line-through{% endif %}" :id="'medication-' + {{ log_entry.id }}">{{ log_entry.reminder.medication }}</td>
-                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if log_entry.status == 'completed' %}line-through{% endif %}" :id="'dosage-' + {{ log_entry.id }}">{{ log_entry.reminder.dosage }}</td>
-                {# Time is directly on the log entry #}
-                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900 {% if log_entry.status == 'completed' %}line-through{% endif %}" :id="'due_time-' + {{ log_entry.id }}">{{ log_entry.due_time|time:'H:i' }}</td>
-                <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900" :id="'action-cell-' + {{ log_entry.id }}">
-                  {# Check status: show form if not completed #}
-                  {% if log_entry.status != 'completed' %}
-                    {# Form action should use the log_entry.id #}
-                    <form method="post" action="{% url 'medminder:complete_reminder' log_entry.id %}" class="complete-form">
-                      {% csrf_token %}
-                      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Complete</button>
-                    </form>
-                  {% else %}
+<section class="p-6 lg:p-8 my-4 lg:my-0 rounded-xl border border-gray-200 bg-white shadow-sm" x-data="{ showAll: false, rowLimit: 3, remindersCount: {{ todays_reminders|length }} }">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Today's Medications</h2>
+  <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+
+  {% if todays_reminders %}
+    {# Wrap the table for horizontal scrolling on small screens #}
+    <div class="overflow-x-auto">
+      {# Removed table borders, using padding and subtle dividers #}
+      <table class="w-full border-collapse">
+        <thead>
+          {# Single bottom border for header, softer text styling #}
+          <tr class="border-b border-gray-200">
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">Medication</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">Dosage</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">Time</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100"> {# Subtle line dividers between rows #}
+          {% for log_entry in todays_reminders %}
+            {# Add subtle hover effect, increased padding, use log_entry.id #}
+            <tr class="hover:bg-gray-50 transition-colors duration-150 group"
+                :style="showAll || {{ forloop.counter0 }} < rowLimit ? '' : 'display: none;'"
+                :id="'reminder-row-' + {{ log_entry.id }}"
+                {% if log_entry.status == 'completed' %}
+                    class="bg-green-50/50 hover:bg-green-100/60 transition-colors duration-150 group"
+                {% else %}
+                    class="hover:bg-gray-50 transition-colors duration-150 group"
+                {% endif %}
+            >
+              {# Main content styling, dim completed items #}
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium {% if log_entry.status == 'completed' %}text-gray-400 line-through{% else %}text-gray-800{% endif %}" :id="'medication-' + {{ log_entry.id }}">
+                  {{ log_entry.reminder.medication }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm {% if log_entry.status == 'completed' %}text-gray-400 line-through{% else %}text-gray-600{% endif %}" :id="'dosage-' + {{ log_entry.id }}">
+                  {{ log_entry.reminder.dosage }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm {% if log_entry.status == 'completed' %}text-gray-400 line-through{% else %}text-gray-600{% endif %}" :id="'due_time-' + {{ log_entry.id }}">
+                  {{ log_entry.due_time|time:'H:i' }}
+              </td>
+              {# Action cell with refined button or completed tag #}
+              <td class="px-6 py-4 whitespace-nowrap text-sm align-middle" :id="'action-cell-' + {{ log_entry.id }}">
+                {% if log_entry.status != 'completed' %}
+                  <form method="post" action="{% url 'medminder:complete_reminder' log_entry.id %}" class="complete-form inline-block"> {# Use inline-block if needed #}
+                    {% csrf_token %}
+                    {# Refined Button Style - softer blue, rounded, transition #}
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 text-white text-xs font-semibold py-1.5 px-4 rounded-full transition duration-150 ease-in-out">
+                      Complete
+                    </button>
+                  </form>
+                {% else %}
+                  {# Styled "Completed" Tag #}
+                  <span class="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                     Completed
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div> {# End overflow-x-auto wrapper #}
+                  </span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div> {# End overflow-x-auto wrapper #}
 
-      {# Use remindersCount from x-data #}
-      <button x-show="remindersCount > rowLimit" @click="showAll = !showAll" class="mt-4 text-blue-600 hover:text-blue-800">
-        <span x-text="showAll ? 'Collapse' : 'See More'"></span>
-        <span :class="showAll ? 'rotate-180' : ''" class="inline-block transition-transform">⬇️</span>
-      </button>
-    {% else %}
-      <p>No reminders for today.</p>
-    {% endif %}
-
-    <div class="mt-8">
-      <a href="{% url 'medminder:new_plan' %}" class="bg-gray-800 hover:bg-black text-white py-2 px-5 rounded-full">Add new plan</a>
+    {# "See More" Button - slightly refined style #}
+    <div class="mt-4 text-center" x-show="remindersCount > rowLimit">
+        <button @click="showAll = !showAll" class="text-sm font-medium text-blue-600 hover:text-blue-800 focus:outline-none">
+          <span x-text="showAll ? 'Show Fewer' : 'Show All {{ todays_reminders|length }} Reminders'"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-1 transition-transform duration-200" :class="showAll ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
     </div>
-  </section>
+
+  {% else %}
+    <div class="text-center py-10 px-6 bg-gray-50 rounded-lg">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">All Clear!</h3>
+        <p class="mt-1 text-sm text-gray-500">You have no medication reminders scheduled for today.</p>
+    </div>
+  {% endif %}
+
+  {# "Add New Plan" Button - consistent styling #}
+  <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+    <a href="{% url 'medminder:new_plan' %}" class="inline-flex items-center bg-gray-800 hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700 text-white text-sm font-semibold py-2.5 px-6 rounded-full transition duration-150 ease-in-out">
+      <svg class="w-4 h-4 mr-2 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+      Add New Medication Plan
+    </a>
+  </div>
+</section>
 
     {# --- NEW MEDICATION ADHERENCE TRACKER WIDGET --- #}
     <section class="w-full lg:w-1/2 p-4 sm:p-6 mt-6 rounded-xl border border-gray-300 bg-white"
@@ -306,11 +374,6 @@
   
                         // --- Trigger Confetti Explosion! ---
                         triggerConfetti(); // Call the new function to trigger confetti
-                    } else {
-                        // Show standard toast
-                        if (data.message) {
-                            showToast(data.message);
-                        }
                     }
                 })
                 .catch((error) => {
