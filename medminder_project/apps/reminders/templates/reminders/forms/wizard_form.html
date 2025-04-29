@@ -2,7 +2,6 @@
 {% load i18n %}
 {% load static %}
 
-{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,9 +10,51 @@
     <title>Add Reminder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        /* Optional: Add some transition for smoother progress bar movement */
+        .progress-bar-fill {
+            transition: width 0.4s ease-in-out;
+        }
+
+        /* Style the progress element itself */
+        progress {
+            /* Remove default appearance */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+
+            /* Tailwind-like styling */
+            /* width: 100%; /* Full width within its container - Overridden by w-5/6 class */ */
+            /* height: 10px;  Removed to rely on h-3 Tailwind class */
+            background-color: #e5e7eb; /* Tailwind gray-200 for the track */
+            border-radius: 9999px; /* Full rounded corners */
+            margin-bottom: 1.5rem; /* Tailwind mb-6 - Overridden by mb-6 class */
+            overflow: hidden; /* Hide the fill outside rounded corners */
+        }
+
+        /* Style the progress bar fill (for Webkit browsers like Chrome, Safari) */
+        progress::-webkit-progress-bar {
+            background-color: #e5e7eb; /* Tailwind gray-200 for the track */
+            border-radius: 9999px; /* Full rounded corners */
+        }
+
+        progress::-webkit-progress-value {
+            background-color: #22c55e; /* Tailwind green-500 for the fill */
+            border-radius: 9999px; /* Full rounded corners */
+            transition: width 0.4s ease-in-out; /* Smooth transition for the fill */
+        }
+
+        /* Style the progress bar fill (for Firefox) */
+        progress::-moz-progress-bar {
+            background-color: #22c55e; /* Tailwind green-500 for the fill */
+            border-radius: 9999px; /* Full rounded corners */
+            transition: width 0.4s ease-in-out; /* Smooth transition for the fill */
+        }
+
+    </style>
 </head>
 <body class="h-screen flex items-center justify-center flex-col">
-    <h3 class="text-lg text-gray-700 mb-4 text-center absolute top-32"> {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</h3>
+    <progress class="text-lg text-gray-100 mb-4 rounded text-center absolute top-32" value="{{ wizard.steps.step1 }}" max="{{ wizard.steps.count }}"> {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</progress>
     <main >
         <form action="" method="post">{% csrf_token %}
             <div class="bg-white p-8 rounded-lg w-full max-w-md border border-gray-300 align-start">
@@ -47,10 +88,12 @@
             </div>
 
             <div class="flex justify-center justify-self-center mt-6">
-                <input type="submit" value="{% if wizard.steps.current == wizard.steps.count|add:'-1' %}{% translate "Finish" %}{% else %}{% translate "Next" %}{% endif %}" class="bg-gray-800 hover:bg-gray-600 text-white py-2 px-6 rounded-full focus:outline-none focus:shadow-outline"/>
+                <input type="submit" 
+                       value="{% if wizard.steps.current == "confirmation" %}{% translate "Create Reminder" %}{% else %}{% translate "Next" %}{% endif %}" 
+                       class="{% if wizard.steps.current == "confirmation" %}bg-green-500 hover:bg-green-600{% else %}bg-gray-800 hover:bg-gray-600{% endif %} text-white py-2 px-6 rounded-full focus:outline-none focus:shadow-outline" />
             </div>
         </form>
     </main>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>
-{% endblock %}

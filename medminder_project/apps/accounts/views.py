@@ -1,10 +1,13 @@
 from django.shortcuts import render, HttpResponse
+
+from apps.accounts.models import User
 from .forms import SignUpForm, LoginForm
 from django.contrib.auth import login, logout
 from django.contrib.auth import authenticate
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.http import JsonResponse
+import random
 
 
 # Create your views here.
@@ -80,3 +83,5 @@ def logout_view(request):
 #     """
 #     print("Redirecting to core")  # Debug
 #     return redirect(reverse('core'))
+
+

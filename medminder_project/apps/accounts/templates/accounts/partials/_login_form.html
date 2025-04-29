@@ -2,7 +2,7 @@
     <div class="w-full lg:w-full max-w-sm py-12 px-8 bg-white rounded-lg">
         <h2 class="text-xl font-bold text-gray-700 text-center">Log In</h2>
 
-        <form id='login-form' method="post" action="{% url 'accounts:login_user' %}">
+        <form id="login-form" method="post" action="{% url "accounts:login_user" %}">
             {% if next %}
                 <input type="hidden" name="next" value="{{ next }}" />
             {% endif %}

@@ -1,0 +1,14 @@
+Hi {{ user.username }},
+
+This is a reminder to take your medication:
+
+Medication: {{ reminder.medication.medication_name }}
+Dosage: {{ reminder.dosage.dosage }}
+Time: {{ log_entry.due_time|date:"H:i" }}
+
+Please visit your dashboard to view and log your dose.
+
+Dashboard Link: {{ dashboard_url }}
+
+Best regards,
+MedMinder Team

@@ -1,0 +1,972 @@
+{% extends 'base_dashboard.html' %}
+
+{% load static %}
+
+{% block title %}
+  Dashboard - MedMinder
+{% endblock %}
+
+{% block content %}
+  {# Updated Article classes for 2x2 grid on mobile, row on large screens #}
+  <article class="grid grid-cols-2 gap-4 lg:flex lg:flex-row lg:gap-4 lg:space-between lg:justify-center lg:items-center"> {# Added items-center for vertical alignment on lg #}
+
+    {# Updated Div classes - removed mobile/small width, keeping padding/margin and lg width/padding #}
+    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-yellow-50 text-yellow-700 lg:w-1/4 border-yellow-300">
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-medium">Total Medications</h3>
+            {# Heroicon: outline/archive-box (or solid/pills if preferred) #}
+            <svg class="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10.5 11.25h3M12 15h.008" />
+            </svg>
+        </div>
+      {# Adjusted text size/width slightly for mobile grid #}
+      <p class="text-xl sm:text-2xl font-bold text-yellow-900">{{ total_medications }}</p>
+      <p class="mt-2 sm:mt-4">
+        <a class="text-xs text-yellow-600 hover:text-yellow-800" href={% url "medminder:medications"%}>View Medications</a>
+      </p>
+    </div>
+
+    {# Updated Div classes #}
+    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-green-50 text-green-700 lg:w-1/4 border-green-300">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium ">Next Reminder</h3>
+        {# Heroicon: outline/clock #}
+        <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      {# Adjusted text size/width slightly for mobile grid #}
+      {% if next_reminder %}
+        <p class="text-xl sm:text-2xl font-bold text-green-900">{{ next_reminder.due_time|time:'H:i' }}</p>
+        <p class="mt-2 sm:mt-4">
+          <a class="text-xs text-green-600 hover:text-green-800" href="#">{{ next_reminder.reminder.medication }}</a>
+        </p>
+      {% else %}
+        {# Adjusted text size/width slightly for mobile grid #}
+        <p class="text-xl sm:text-2xl font-bold text-green-900">No Reminders</p>
+      {% endif %}
+    </div>
+
+    {# Updated Div classes #}
+    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-blue-50 text-blue-700 lg:w-1/4 border-blue-300">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium">Weekly Adherence</h3>
+        {# Heroicon: outline/check-circle #}
+        <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    </div>
+      {# Adjusted text size/width slightly for mobile grid #}
+      <p class="text-xl sm:text-2xl font-bold text-blue-900">{{ weekly_adherence }}%</p>
+      <p class="mt-2 sm:mt-4">
+        <a class="text-xs text-blue-600 hover:text-blue-800" href="#">Last 7 days</a>
+      </p>
+    </div>
+
+    {# Updated Div classes #}
+    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-purple-50 text-purple-700 lg:w-1/4 border-purple-300">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium">Points & Rank</h3>
+        {# Heroicon: solid/star #}
+        <svg class="h-5 w-5 text-purple-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10.868 2.884c.321-.772 1.305-.772 1.626 0l1.53 3.705a1 1 0 00.95.69h3.884c.817 0 1.15.996.564 1.54l-3.14 2.278a1 1 0 00-.364 1.118l1.53 3.705c.321.772-.63 1.508-1.305.975l-3.14-2.278a1 1 0 00-1.176 0l-3.14 2.278c-.675.533-1.626-.203-1.305-.975l1.53-3.705a1 1 0 00-.364-1.118L2.236 8.82c-.586-.544-.253-1.54.564-1.54h3.884a1 1 0 00.95-.69l1.53-3.705z" clip-rule="evenodd" />
+        </svg>
+    </div>
+      {# Adjusted text size/width slightly for mobile grid #}
+      <p class="text-xl sm:text-2xl font-bold text-purple-900">{{ achievement_points }}</p>
+      <p class="mt-2 sm:mt-4">
+        <a class="text-xs text-purple-600 hover:text-purple-800" href="#">{{ user_tier.0 }}</a>
+      </p>
+    </div>
+  </article>
+
+
+{% comment %}
+  NOTE: This template requires backend changes:
+  1. `log_entry.status` needs to support values: 'pending', 'completed', 'missed', 'skipped', 'taken_late'.
+     - Logic to determine 'missed' (current time > due_time + grace period AND status == 'pending').
+     - Logic to determine 'taken_late' (completion_time > due_time + grace period).
+     - Logic for a 'skipped' status via a new action.
+     - 'pending' could also represent 'upcoming' if due_time is in the future.
+  2. `log_entry` needs a `completion_time` field (DateTimeField, nullable) populated upon completion.
+  3. A URL and view are needed for the "Skip" action (currently commented out).
+{% endcomment %}
+
+<section class="p-6 lg:p-8 my-4 lg:my-0 rounded-xl border border-gray-200 bg-white shadow-sm" x-data="{ showAll: false, rowLimit: 5, remindersCount: {{ todays_reminders|length }} }"> {# Increased default rowLimit slightly #}
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Today's Medications</h2>
+  <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+
+  {% if todays_reminders %}
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse min-w-[600px]"> {# Added min-w for better small screen scroll #}
+        <thead>
+          <tr class="border-b border-gray-200">
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">Medication</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">Dosage</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">Due Time</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">Status</th> {# New Status Column #}
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for log_entry in todays_reminders %}
+            {# --- Row Highlighting & Alpine --- #}
+            <tr x-show="showAll || {{ forloop.counter0 }} < rowLimit"
+                :id="'reminder-row-' + {{ log_entry.id }}"
+                class="transition-colors duration-150 group
+                       {% if log_entry.status == 'completed' %} bg-green-50/50 hover:bg-green-100/60 border-l-4 border-green-500
+                       {% elif log_entry.status == 'missed' %} bg-red-50/50 hover:bg-red-100/60 border-l-4 border-red-500
+                       {% elif log_entry.status == 'taken_late' %} bg-yellow-50/50 hover:bg-yellow-100/60 border-l-4 border-yellow-500
+                       {% elif log_entry.status == 'skipped' %} bg-gray-100/60 hover:bg-gray-200/60 border-l-4 border-gray-400
+                       {% else %} hover:bg-gray-50 border-l-4 border-transparent {% comment %} Pending/Upcoming {% endcomment %}
+                       {% endif %}"
+                {# Removed display: none; - using x-show now for better Alpine integration #}
+                >
+
+              {# --- Medication, Dosage, Time --- #}
+              {# Apply dimming/strikethrough based on completion/skipping #}
+              {# Condition moved directly into the if tags #}
+              <td class="px-4 py-4 whitespace-nowrap text-sm font-medium {% if log_entry.status == 'completed' or log_entry.status == 'skipped' or log_entry.status == 'taken_late' %}text-gray-400 line-through{% else %}text-gray-800{% endif %}" :id="'medication-' + {{ log_entry.id }}">
+                  {{ log_entry.reminder.medication }}
+              </td>
+              <td class="px-4 py-4 whitespace-nowrap text-sm {% if log_entry.status == 'completed' or log_entry.status == 'skipped' or log_entry.status == 'taken_late' %}text-gray-400 line-through{% else %}text-gray-600{% endif %}" :id="'dosage-' + {{ log_entry.id }}">
+                  {{ log_entry.reminder.dosage }}
+              </td>
+              <td class="px-4 py-4 whitespace-nowrap text-sm {% if log_entry.status == 'completed' or log_entry.status == 'skipped' or log_entry.status == 'taken_late' %}text-gray-400 line-through{% else %}text-gray-600{% endif %}" :id="'due_time-' + {{ log_entry.id }}">
+                  {{ log_entry.due_time|time:'H:i' }}
+              </td>
+
+              {# --- Status Column --- #}
+              <td class="px-4 py-4 whitespace-nowrap text-sm align-middle" :id="'status-cell-' + {{ log_entry.id }}">
+                {% if log_entry.status == 'completed' %}
+                  <span class="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full" title="Completed{% if log_entry.completion_time %} at {{ log_entry.completion_time|time:'H:i' }}{% endif %}">
+                    <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                    Completed {% if log_entry.completion_time %}{{ log_entry.completion_time|time:'H:i' }}{% endif %}
+                  </span>
+                {% elif log_entry.status == 'missed' %}
+                  <span class="inline-flex items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full" title="Missed - Due at {{ log_entry.due_time|time:'H:i' }}">
+                    <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                    Missed
+                  </span>
+                 {% elif log_entry.status == 'taken_late' %}
+                  <span class="inline-flex items-center bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full" title="Taken late at {{ log_entry.completion_time|time:'H:i' }} (Due {{ log_entry.due_time|time:'H:i' }})">
+                     <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" > <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.414L11 9.586V6z" clip-rule="evenodd"/> </svg>
+                     Taken Late {% if log_entry.completion_time %}{{ log_entry.completion_time|time:'H:i' }}{% endif %}
+                  </span>
+                {% elif log_entry.status == 'skipped' %}
+                  <span class="inline-flex items-center bg-gray-200 text-gray-700 text-xs font-medium px-2.5 py-0.5 rounded-full" title="Skipped - Due at {{ log_entry.due_time|time:'H:i' }}">
+                    <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
+                    Skipped
+                  </span>
+                {% comment %} {% elif log_entry.status == 'snoozed' %}
+                  <span class="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full" title="Snoozed - Next due ...">
+                    <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <path d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 5a1 1 0 00-1 1v3a1 1 0 102 0V6a1 1 0 00-1-1zm12 0a1 1 0 00-1 1v3a1 1 0 102 0V6a1 1 0 00-1-1zM10 18a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1zM4.343 15.657a1 1 0 001.414-1.414L4.343 12.83a1 1 0 00-1.414 1.414l1.414 1.414zm11.314 0a1 1 0 001.414 1.414l1.414-1.414a1 1 0 00-1.414-1.414l-1.414 1.414zM4.343 4.343a1 1 0 00-1.414 1.414l1.414 1.414a1 1 0 001.414-1.414L4.343 4.343zm11.314 0a1 1 0 00-1.414-1.414L12.828 4.343a1 1 0 101.414 1.414l1.414-1.414z"></path> </svg>
+                    Snoozed
+                  </span>
+                {% endcomment %}
+                {% else %} {# Default: Pending/Due #}
+                   <span class="inline-flex items-center bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full" title="Due at {{ log_entry.due_time|time:'H:i' }}">
+                     <svg class="w-3 h-3 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                     Due
+                   </span>
+                {% endif %}
+              </td>
+
+              {# --- Actions Column --- #}
+              <td class="px-4 py-4 whitespace-nowrap text-sm align-middle space-x-2" :id="'action-cell-' + {{ log_entry.id }}">
+                {# Show 'Complete' button only if status is pending/due #}
+                {% if log_entry.status == 'pending' or log_entry.status == None %} {# Adjust condition based on your exact 'pending'/'due' status value #}
+                  <form method="post" action="{% url 'medminder:complete_reminder' log_entry.id %}" class="complete-form inline-block">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 text-white text-xs font-semibold py-1.5 px-4 rounded-full transition duration-150 ease-in-out">
+                      Complete
+                    </button>
+                  </form>
+
+                  {% comment %}
+                  <form method="post" action="{% url 'medminder:skip_reminder' log_entry.id %}" class="skip-form inline-block">
+                      {% csrf_token %}
+                      <button type="submit" class="bg-gray-400 hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 text-white text-xs font-semibold py-1.5 px-4 rounded-full transition duration-150 ease-in-out">
+                          Skip
+                      </button>
+                  </form>
+                  {% endcomment %}
+
+                {% elif log_entry.status == 'missed' %}
+                   {# Optionally add an action here, e.g., 'Mark as Taken Late' or just leave blank #}
+                    <span class="text-xs text-gray-500 italic">Action unavailable</span>
+                {% else %}
+                    {# For Completed, Taken Late, Skipped - No primary action needed #}
+                    <span class="text-xs text-gray-500 italic"></span> {# Empty or a subtle indicator #}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div> {# End overflow-x-auto wrapper #}
+
+    {# --- Show More/Fewer Button --- #}
+    <div class="mt-4 text-center" x-show="remindersCount > rowLimit">
+        <button @click="showAll = !showAll" class="text-sm font-medium text-blue-600 hover:text-blue-800 focus:outline-none">
+          <span x-text="showAll ? 'Show Fewer' : 'Show All ' + remindersCount + ' Reminders'"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-1 transition-transform duration-200" :class="showAll ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+    </div>
+
+  {% else %}
+    {# --- No Reminders Message --- #}
+    <div class="text-center py-10 px-6 bg-gray-50 rounded-lg">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">All Clear!</h3>
+        <p class="mt-1 text-sm text-gray-500">You have no medication reminders scheduled for today.</p>
+    </div>
+  {% endif %}
+
+  {# --- Add New Plan Button --- #}
+  <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+    <a href="{% url 'medminder:new_plan' %}" class="inline-flex items-center bg-gray-800 hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700 text-white text-sm font-semibold py-2.5 px-6 rounded-full transition duration-150 ease-in-out">
+      <svg class="w-4 h-4 mr-2 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+      Add New Medication Plan
+    </a>
+  </div>
+</section>
+
+    {# --- NEW MEDICATION ADHERENCE TRACKER WIDGET --- #}
+    <section class="w-full lg:w-1/2 p-4 sm:p-6 mt-6 rounded-xl border border-gray-300 bg-white"
+           x-data="adherenceTracker()" {# <= REMOVE the argument here #}
+           x-init="init()"> {# <= Keep x-init to trigger initialization #}
+
+    {# **** ADD SCRIPT TAG TO DEFINE DATA **** #}
+    {# This script block needs to be INSIDE the section with x-data #}
+    {# so the variables are scoped correctly or globally accessible before init runs #}
+    <script>
+      // Use |safe filter because json.dumps produces valid JSON syntax
+      const adherenceDataJson = {{ adherence_data_json|safe }};
+      // Pass today's date string using Django's timezone awareness
+      const djangoTodayDateString = "{% now 'Y-m-d' %}";
+      const initialStreakCount = {{ current_streak_count|default:0 }}; {# Assume current_streak_count is passed from Django view context #}
+    </script>
+    {# **** END SCRIPT TAG **** #}
+
+    <div class="flex justify-between items-center mb-4">
+      <div>
+      <h2 class="text-xl font-semibold">Medication Adherence</h2>
+      <p class="text-sm text-gray-600" x-text="streakCount > 0 ? streakCount + ' day streak' : 'No current streak'"></p> {# Display streak, show "No current streak" if 0 #}
+      </div>
+      <div class="flex space-x-2">
+         {# These :class bindings should now work correctly after init runs #}
+        <button @click="setView('week')" :class="{ 'bg-blue-500 text-white': currentView === 'week', 'bg-gray-200 text-gray-700': currentView !== 'week' }" class="px-3 py-1 rounded text-sm font-medium hover:bg-blue-400">Week</button>
+        <button @click="setView('month')" :class="{ 'bg-blue-500 text-white': currentView === 'month', 'bg-gray-200 text-gray-700': currentView !== 'month' }" class="px-3 py-1 rounded text-sm font-medium hover:bg-blue-400">Month</button>
+        <button @click="setView('year')" :class="{ 'bg-blue-500 text-white': currentView === 'year', 'bg-gray-200 text-gray-700': currentView !== 'year' }" class="px-3 py-1 rounded text-sm font-medium hover:bg-blue-400">Year</button>
+      </div>
+    </div>
+
+    {# Container for the dynamic grid #}
+    <div class="overflow-x-auto">
+        <div id="adherence-grid" class="flex flex-col flex-wrap h-28 sm:h-32 gap-1" style="writing-mode: vertical-lr;"> {# Adjusted height slightly #}
+            {# Grid squares generated by Alpine.js #}
+        </div>
+    </div>
+     {# Legend #}
+     <div class="flex justify-end items-center space-x-2 sm:space-x-4 mt-2 text-xs text-gray-500 pr-2"> {# Added items-center and padding #}
+        <span>Less</span>
+        <span class="w-3 h-3 bg-gray-200 rounded-sm flex-shrink-0" title="No Data / Not Due"></span> {# Level 0 #}
+        <span class="w-3 h-3 bg-red-300 rounded-sm flex-shrink-0" title="Missed / Incomplete"></span>   {# Level 1 #}
+        <span class="w-3 h-3 bg-yellow-400 rounded-sm flex-shrink-0" title="Partially Completed"></span>{# Level 2 #}
+        <span class="w-3 h-3 bg-green-500 rounded-sm flex-shrink-0" title="Completed"></span> {# Level 3 #}
+        <span>More</span>
+    </div>
+  </section>
+{# --- END OF NEW WIDGET --- #}
+
+<div class="bg-gradient-to-r from-blue-400 to-purple-400 border border-[#E2E2E2] rounded-lg p-12 mt-6 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
+  <div class="flex-grow text-center md:text-left">
+    <h2 class="text-2xl font-bold mb-2">Unlock More with Premium!</h2>
+    <p class="text-sm opacity-90">Get access to Calendar view, Viewer sharing, and more advanced features.</p>
+  </div>
+  <div class="shrink-0">
+    <a href="" class="inline-block bg-black hover:bg-gray-800 text-white font-semibold py-2 px-6 rounded-full transition duration-200">
+      Upgrade Now
+    </a>
+  </div>
+</div>
+
+
+<!-- Achievement Pop-up (hidden by default) -->
+<div id="achievement-popup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden px-4"> {# Added slight bg opacity increase and padding for smaller screens #}
+  <div class="bg-white rounded-2xl shadow-xl p-8 sm:p-10 max-w-sm w-full transform scale-95 transition-all duration-300 relative"> {# Increased padding, slightly reduced max-width for balance #}
+    <button id="close-popup" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button> {# Adjusted position and size #}
+
+    <div class="text-center flex flex-col items-center"> {# Added flex for centering content #}
+      {# Badge Image - Increased bottom margin #}
+      <img id="badge-image" src="" alt="Tier Badge" class="w-64 h-64 object-contain mx-auto mb-6" /> {# Adjusted size slightly, ensured aspect ratio #}
+
+      {# Rank Up Intro Text - Initially hidden, shown on rank up #}
+      <p id="rankup-intro" class="text-sm text-gray-500 mb-1 hidden">You ranked up to</p>
+
+      {# Tier Name / Main Message - Larger, Bolder #}
+      <h2 id="popup-headline" class="text-2xl font-bold text-gray-800 mb-3">
+          <span id="user-tier">Sapphire Legend</span> {# Tier name goes here #}
+      </h2>
+      {# Generic message placeholder (can be used if not rank up, or hidden) #}
+      <p id="popup-generic-message" class="text-lg text-green-600 mb-3 hidden"></p>
+
+      {# Date Badge - Needs dynamic content and styling #}
+      <div id="rankup-date-badge" class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-6 hidden">
+          {# Date will be inserted here by JS #}
+      </div>
+
+       {# Total Points - Initially hidden, maybe shown if NOT rank up #}
+      <p id="total-points-display" class="text-gray-600 mb-6 hidden">Total Points: <span id="total-points" class="font-semibold">1250</span></p>
+
+      {# Claim Badge Button - Added dynamically by JS, styled here for reference #}
+      {# Button will be added here by showAchievementPopup JS function #}
+         <button class="bg-gray-800 hover:bg-black text-white font-semibold py-2.5 px-8 rounded-full transition duration-150 ease-in-out claim-badge-button">
+            Claim Badge
+         </button>
+    </div>
+  </div>
+</div>
+
+
+  {# Updated Style Block for Toasts #}
+  <style>
+    .toast {
+      /* Using Tailwind-like classes */
+      --bg-opacity: 0.95; /* Slightly less transparent than original */
+      background-color: rgba(220, 252, 231, var(--bg-opacity)); /* green-100 */
+      color: rgb(22, 101, 52); /* green-800 */
+      padding: 1rem; /* p-4 */
+      margin-bottom: 0.625rem; /* ~mb-2.5, adjusting slightly from original 10px */
+      border-radius: 0.375rem; /* rounded-md */
+      border: 1px solid rgb(74, 222, 128); /* green-400 */
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+      min-width: 250px; /* Ensure a minimum width */
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    /* Optional: Style for the adherence grid container if needed */
+    #adherence-grid {
+      /* Resemble GitHub's contribution graph flow */
+      /* Height needs to accommodate 7 days vertically */
+      /* The flex-col + flex-wrap + height + writing-mode attempts a similar flow */
+      /* Adjust height and gap as needed */
+      /* writing-mode is experimental and might have browser quirks */
+      /* Consider a CSS Grid layout for more robust control if needed */
+      min-height: 7rem;
+  }
+  /* Hide scrollbar visually if desired, while keeping functionality */
+  #adherence-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari, Opera */
+  #adherence-grid { -ms-overflow-style: none; scrollbar-width: none; } /* IE, Edge, Firefox */
+
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const completeForms = document.querySelectorAll('.complete-form');
+      const toastContainer = document.getElementById('toast-container');
+  
+      completeForms.forEach((form) => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+  
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                },
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                         return response.json().then(error_data => {
+                            console.error('Error response:', error_data);
+                            // Show error toast (existing code here is fine)
+                            // ...
+                            throw new Error('Server responded with status ' + response.status + ': ' + (error_data.message || 'Unknown error')); // Throw to trigger .catch
+                         });
+                    }
+                })
+                .then((data) => {
+                    console.log("Received data:", data);
+  
+                    // --- UI Updates for the Table Row ---
+                    const logEntryId = form.action.split('/').filter(Boolean).pop();
+                    const medicationCell = document.getElementById('medication-' + logEntryId);
+                    const dosageCell = document.getElementById('dosage-' + logEntryId);
+                    const dueTimeCell = document.getElementById('due_time-' + logEntryId);
+                    const actionCell = document.getElementById('action-cell-' + logEntryId);
+                    const reminderRow = document.getElementById('reminder-row-' + logEntryId);
+  
+                    if (medicationCell) medicationCell.classList.add('line-through');
+                    if (dosageCell) dosageCell.classList.add('line-through');
+                    if (dueTimeCell) dueTimeCell.classList.add('line-through');
+                    if (actionCell) actionCell.innerHTML = 'Completed';
+                    if (reminderRow) {
+                        reminderRow.classList.add('bg-green-50');
+                        reminderRow.classList.remove('border-b', 'border-gray-200');
+                    }
+  
+                    // --- Achievement Check and Popup ---
+                    if (data.rank_up) {
+                        // Show rank-up popup
+                        showAchievementPopup(data);  // Use existing function
+  
+                        // --- Trigger Confetti Explosion! ---
+                        triggerConfetti(); // Call the new function to trigger confetti
+                    }
+                })
+                .catch((error) => {
+                    // ... (existing fetch/network error handling is likely fine) ...
+                    console.error('Fetch operation failed:', error);
+                    // Show generic network error toast if needed (existing code is fine)
+                    // ...
+                });
+        });
+      });
+  
+  
+      function showAchievementPopup(data) {
+          const popup = document.getElementById('achievement-popup');
+          const introText = document.getElementById('rankup-intro');
+          const headline = document.getElementById('popup-headline');
+          const tierSpan = document.getElementById('user-tier');
+          const genericMessage = document.getElementById('popup-generic-message');
+          const dateBadge = document.getElementById('rankup-date-badge');
+          const totalPointsDisplay = document.getElementById('total-points-display');
+          const totalPointsSpan = document.getElementById('total-points');
+          const badgeImage = document.getElementById('badge-image');
+          const popupContent = popup.querySelector('.text-center'); // Get the container for the button
+  
+          // Clear previous state / Reset elements
+          introText.classList.add('hidden');
+          genericMessage.classList.add('hidden');
+          dateBadge.classList.add('hidden');
+          totalPointsDisplay.classList.add('hidden');
+          headline.classList.remove('hidden'); // Ensure headline is visible by default
+  
+          // --- Populate Content ---
+          badgeImage.src = data.user_tier[1]; // Badge image URL
+  
+          if (data.rank_up) {
+              // --- Rank Up Specific Content ---
+              introText.classList.remove('hidden'); // Show "You ranked up to"
+              tierSpan.textContent = data.user_tier[0]; // Set the new tier name in the headline
+              headline.classList.remove('text-green-600'); // Use default text color for headline
+              headline.classList.add('text-gray-800');
+  
+              // Populate and show the date badge
+              if (data.rank_up_date) {
+                  dateBadge.textContent = data.rank_up_date;
+                  dateBadge.classList.remove('hidden');
+              }
+  
+              // Remove existing claim button before adding a new one
+              const existingButton = popupContent.querySelector('.claim-badge-button');
+              if (existingButton) {
+                  existingButton.remove();
+              }
+  
+              // Add "Claim Badge" button
+              const claimButton = document.createElement('button');
+              claimButton.textContent = 'Claim Badge';
+              // Apply Tailwind classes for styling matching the image
+              claimButton.className = 'bg-gray-800 hover:bg-black text-white font-semibold py-2.5 px-8 rounded-full transition duration-150 ease-in-out claim-badge-button mt-2'; // Added margin-top
+              claimButton.addEventListener('click', () => {
+                  console.log('Claim Badge clicked for tier:', data.user_tier[0]);
+                  // Add specific claim logic here if needed
+                  hideAchievementPopup(); // Close popup
+              });
+              popupContent.appendChild(claimButton);
+  
+          } else {
+              // --- Standard Points Update (Not Rank Up) ---
+              // You might want to show a different message or layout here.
+              // Option 1: Use the generic message field.
+              headline.classList.add('hidden'); // Hide the tier headline spot
+              genericMessage.textContent = data.message; // Show points message
+              genericMessage.classList.remove('hidden');
+              genericMessage.classList.add('text-green-600'); // Style as green
+  
+              // Option 2: Show total points instead (closer to original)
+              // headline.classList.add('hidden'); // Hide the tier headline spot
+              // genericMessage.classList.add('hidden'); // Hide generic message field
+              // totalPointsSpan.textContent = data.total_points;
+              // totalPointsDisplay.classList.remove('hidden'); // Show the total points line
+  
+  
+              // Remove claim button if it exists from a previous rank up
+              const existingButton = popupContent.querySelector('.claim-badge-button');
+              if (existingButton) {
+                  existingButton.remove();
+              }
+          }
+  
+          // --- Show Popup ---
+          popup.classList.remove('hidden');
+          popup.classList.add('flex');
+          // Small scale animation
+          setTimeout(() => {
+              const innerDiv = popup.querySelector('div:first-child'); // Target the inner div for scaling
+              if (innerDiv) {
+                  innerDiv.classList.remove('scale-95');
+                  innerDiv.classList.add('scale-100');
+              }
+          }, 50);
+      }
+  
+      function hideAchievementPopup() {
+          const popup = document.getElementById('achievement-popup');
+          if (popup) {
+              const innerDiv = popup.querySelector('div:first-child');
+              if (innerDiv) {
+                  innerDiv.classList.add('scale-95');
+                  innerDiv.classList.remove('scale-100');
+              }
+              // Optional: Remove claim button on hide if you prefer it to be fresh each time
+              const claimButton = popup.querySelector('.claim-badge-button');
+               if (claimButton) {
+                   claimButton.remove();
+               }
+              setTimeout(() => {
+                  popup.classList.add('hidden');
+                  popup.classList.remove('flex');
+              }, 200); // Match transition duration
+          }
+      }
+  
+      // --- New function to trigger confetti ---
+      function triggerConfetti() {
+          // Basic confetti explosion from the center of the screen
+          confetti({
+              particleCount: 100, // Number of particles
+              spread: 70, // How spread out the particles are
+              origin: { y: 0.6 } // Origin point (vertical position, 0 is top, 1 is bottom)
+              // You can customize colors, shapes, etc. here
+              // colors: ['#a864fd', '#29cdff', '#78ff44', '#ff71d1', '#ff4787'],
+              // shapes: ['circle', 'square'],
+          });
+  
+          // Optional: Add a second burst for a more dramatic effect
+          setTimeout(() => {
+               confetti({
+                   particleCount: 80,
+                   spread: 80,
+                   origin: { y: 0.5 },
+                   // Add different options for the second burst if desired
+               });
+          }, 200); // Delay the second burst slightly
+      }
+    
+    // The rest of your JavaScript (hideAchievementPopup, etc.) remains the same.
+
+      function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast'; // Uses the updated .toast styles
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+
+        // Remove potentially older toasts if too many
+        while(toastContainer.children.length > 5) { // Keep max 5 toasts visible
+          toastContainer.removeChild(toastContainer.firstChild);
+        }
+
+
+        setTimeout(() => {
+          toast.classList.add('show');
+          // Use CSS transition duration from the style block for hiding
+          setTimeout(() => {
+            toast.remove();
+          }, 8000); // Hide toast after 8 seconds (adjust as needed)
+        }, 100); // Allow slight delay for DOM attachment
+      }
+
+      function updateRemindersAndPoints() {
+        Promise.all([
+          fetch('/api/reminders/').then(response => response.json()),
+          fetch('/api/points/').then(response => response.json())
+        ])
+        .then(([remindersData, pointsData]) => {
+          // Update reminders table
+          const remindersTableBody = document.querySelector('#todays-medications-table tbody');
+          if (remindersTableBody) {
+            remindersTableBody.innerHTML = '';
+            remindersData.forEach(reminder => {
+              const row = remindersTableBody.insertRow();
+              row.insertCell().textContent = reminder.medication;
+              row.insertCell().textContent = reminder.dosage;
+              row.insertCell().textContent = reminder.due_time;
+              // ... add action buttons based on status ...
+            });
+          }
+      
+          // Update achievement points
+          const pointsElement = document.querySelector('.text-purple-900');
+          if (pointsElement && pointsData.achievement_points !== undefined) {
+            pointsElement.textContent = pointsData.achievement_points;
+          }
+      
+          // Update user tier
+          const tierElement = document.querySelector('.text-purple-600 a');
+          if (tierElement && pointsData.user_tier !== undefined) {
+            tierElement.textContent = pointsData.user_tier;
+          }
+        })
+        .catch(error => console.error('Error fetching data:', error));
+      }
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initial load (optional)
+        // updateRemindersAndPoints();
+      
+        // Periodically update data (e.g., every 5 seconds)
+        setInterval(updateRemindersAndPoints, 5000);
+      });
+
+      completeForms.forEach((form) => {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          const formData = new FormData(this);
+
+          fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.json();
+              } else {
+                // Handle non-2xx responses
+                 return response.json().then(error_data => {
+                    console.error('Error response:', error_data);
+                    // Show error toast
+                    const errorToast = document.createElement('div');
+                    // Add distinct error styling (using Tailwind red classes example)
+                    errorToast.className = 'toast';
+                    errorToast.style.backgroundColor = 'rgba(254, 226, 226, 0.95)'; /* red-100 */
+                    errorToast.style.color = 'rgb(153, 27, 27)'; /* red-800 */
+                    errorToast.style.border = '1px solid rgb(239, 68, 68)'; /* red-500 */
+                    errorToast.textContent = 'Error: ' + (error_data.message || 'Unknown error');
+                    toastContainer.appendChild(errorToast);
+
+                     while(toastContainer.children.length > 5) { // Keep max 5 toasts visible
+                       toastContainer.removeChild(toastContainer.firstChild);
+                     }
+
+                    setTimeout(() => {
+                       errorToast.classList.add('show');
+                       setTimeout(() => {
+                           errorToast.remove();
+                       }, 8000); // Hide error toast after 8 seconds
+                    }, 100);
+
+                    throw new Error('Server responded with status ' + response.status);
+                 });
+              }
+            })
+            .then((data) => {
+              // Assuming the server returns JSON with a 'message' and 'points' on success
+              if (data.message) {
+                showToast(data.message); // Show the success message toast
+
+                // Update the UI dynamically
+                // The ID extracted from the URL is the DailyReminderLog ID
+                const logEntryId = form.action.split('/').filter(Boolean).pop(); // Use filter(Boolean) to handle trailing slashes
+
+                // Get the specific cells and row using the logEntryId
+                const medicationCell = document.getElementById('medication-' + logEntryId);
+                const dosageCell = document.getElementById('dosage-' + logEntryId);
+                const dueTimeCell = document.getElementById('due_time-' + logEntryId);
+                const actionCell = document.getElementById('action-cell-' + logEntryId);
+                const reminderRow = document.getElementById('reminder-row-' + logEntryId);
+
+                // Add line-through class to text cells
+                if (medicationCell) {
+                  medicationCell.classList.add('line-through');
+                }
+                if (dosageCell) {
+                  dosageCell.classList.add('line-through');
+                }
+                if (dueTimeCell) {
+                  dueTimeCell.classList.add('line-through');
+                }
+
+                // Update the action cell content
+                if (actionCell) {
+                  actionCell.innerHTML = 'Completed'; // Or data.status if your backend sends it
+                }
+
+                // Optional: Change row styling on completion
+                if (reminderRow) {
+                  // Use lighter green for completed row background
+                  reminderRow.classList.add('bg-green-50');
+                  // Optional: Remove or change bottom border color
+                  reminderRow.classList.remove('border-b', 'border-gray-200');
+                  // Add a completed border color if desired
+                  // reminderRow.classList.add('border-l-4', 'border-green-500');
+                }
+
+                // Note: If you implement "skip", you might handle that status differently here
+
+                // Optional: Update points/tier display on the dashboard if those elements exist
+                // e.g., const pointsElement = document.getElementById('achievement-points');
+                // if (pointsElement && data.total_points !== undefined) {
+                //    pointsElement.textContent = data.total_points;
+                // }
+                // const tierElement = document.getElementById('user-tier'); // Assuming you add an ID to the tier p tag
+                // if (tierElement && data.user_tier !== undefined) {
+                //    tierElement.textContent = data.user_tier;
+                // }
+              }
+            })
+            .catch((error) => {
+              console.error('Fetch operation failed:', error);
+              // The error handling in the .then(response => ...) already showed a toast for server errors.
+              // This catch is for network errors or errors thrown from the .then blocks.
+              // A network error toast might be shown here if the fetch fails entirely before a response is received.
+              // Avoid showing multiple error toasts if the .then handles the error response.
+              // This catch block is often less necessary if you handle response.ok in the first .then
+               const existingErrorToast = toastContainer.querySelector('.toast[style*="red"]'); // Check for existing red toasts
+               if (!existingErrorToast) { // Only show generic network error if no specific server error toast is already shown
+                   const networkErrorToast = document.createElement('div');
+                    networkErrorToast.className = 'toast';
+                    networkErrorToast.style.backgroundColor = 'rgba(254, 226, 226, 0.95)'; /* red-100 */
+                    networkErrorToast.style.color = 'rgb(153, 27, 27)'; /* red-800 */
+                    networkErrorToast.style.border = '1px solid rgb(239, 68, 68)'; /* red-500 */
+                    networkErrorToast.textContent = 'A network error occurred.';
+                    toastContainer.appendChild(networkErrorToast);
+
+                     while(toastContainer.children.length > 5) { // Keep max 5 toasts visible
+                       toastContainer.removeChild(toastContainer.firstChild);
+                     }
+
+                     setTimeout(() => {
+                       networkErrorToast.classList.add('show');
+                       setTimeout(() => {
+                           networkErrorToast.remove();
+                       }, 8000); // Hide error toast after 8 seconds
+                    }, 100);
+               }
+            });
+        });
+      });
+    });
+
+    function adherenceTracker() { // <= REMOVE argument 'jsonData'
+      return {
+        // Component State
+        adherenceData: {}, // Data will be loaded in init
+        currentView: 'year', // Default view
+        gridElement: null,
+        streakCount: 0, // Placeholder for streak count if needed
+
+        // Configuration
+        colorLevels: {
+            0: 'bg-gray-200',    // No Data / Not Due / Future
+            1: 'bg-red-300',     // Missed / Some Pending Past Due
+            2: 'bg-yellow-400',  // Partial Completion
+            3: 'bg-green-500'    // Fully Completed
+        },
+        statusTexts: {
+            0: 'No Data / Not Due',
+            1: 'Missed / Incomplete',
+            2: 'Partially Completed',
+            3: 'Completed'
+        },
+
+        // Initialization Logic
+        init() {
+            console.log("Initializing adherenceTracker..."); // Debug log
+            try {
+                // Access data defined in the <script> tag above
+                 if (typeof adherenceDataJson !== 'undefined') {
+                    this.adherenceData = adherenceDataJson;
+                    // console.log("Adherence data loaded:", this.adherenceData); // Debug: Check loaded data
+                 } else {
+                    console.warn("Global variable adherenceDataJson is not defined.");
+                    this.adherenceData = {};
+                 }
+                  if (typeof djangoTodayDateString === 'undefined') {
+                     console.error("Global variable djangoTodayDateString is not defined!")
+                  }
+
+                  {# **** ADD THIS BLOCK TO READ STREAK COUNT **** #}
+                 if (typeof initialStreakCount !== 'undefined') {
+                    this.streakCount = initialStreakCount;
+                 } else {
+                     console.warn("Global variable initialStreakCount is not defined.");
+                     this.streakCount = 0; // Default to 0 if not passed
+                 }
+                 {# **** END BLOCK **** #}
+
+            } catch (e) {
+                 console.error("Error accessing or parsing adherence data:", e);
+                 this.adherenceData = {};
+            }
+
+            this.gridElement = document.getElementById('adherence-grid');
+            if (!this.gridElement) {
+                console.error("Adherence grid element not found!");
+                return; // Stop if grid element doesn't exist
+            }
+
+            this.renderGrid(); // Render the initial view
+            console.log("adherenceTracker initialized."); // Debug log
+        },
+
+        // View Switching Logic
+        setView(view) {
+          if (['week', 'month', 'year'].includes(view)) {
+              this.currentView = view;
+              this.renderGrid();
+          } else {
+              console.warn("Invalid view selected:", view);
+          }
+        },
+
+        // Date Formatting Helper
+        getISODateString(date) {
+            // Already implemented correctly
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        },
+
+        // Grid Rendering Logic
+        renderGrid() {
+            if (!this.gridElement) return;
+            this.gridElement.innerHTML = ''; // Clear previous grid
+
+            // Determine Date Range based on view and Django's date
+            const todayParts = (typeof djangoTodayDateString !== 'undefined' ? djangoTodayDateString : this.getISODateString(new Date())).split('-');
+            const endDate = new Date(Date.UTC(parseInt(todayParts[0]), parseInt(todayParts[1]) - 1, parseInt(todayParts[2]))); // Use UTC to avoid timezone shifts from string parsing
+
+            let startDate;
+            if (this.currentView === 'week') {
+                startDate = new Date(endDate);
+                startDate.setUTCDate(endDate.getUTCDate() - 6); // Go back 6 days for a 7-day view
+            } else if (this.currentView === 'month') {
+                startDate = new Date(endDate);
+                startDate.setUTCDate(1); // Go to the 1st day of the current month (UTC)
+            } else { // 'year' view
+                startDate = new Date(endDate);
+                startDate.setUTCDate(endDate.getUTCDate() - 364); // Approx 365 days
+                // Align to start of the week (Sunday=0 in UTC)
+                startDate.setUTCDate(startDate.getUTCDate() - startDate.getUTCDay());
+            }
+
+            // Generate Squares
+            let currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                const dateStr = this.getISODateString(currentDate); // Get YYYY-MM-DD
+                const level = this.adherenceData.hasOwnProperty(dateStr) ? this.adherenceData[dateStr] : 0;
+                const colorClass = this.colorLevels[level] || this.colorLevels[0]; // Fallback to level 0 color
+                const statusText = this.statusTexts[level] || this.statusTexts[0];
+
+                const square = document.createElement('div');
+                // Added flex-shrink-0 to prevent shrinking in flex container
+                square.className = `w-3 h-3 ${colorClass} rounded-sm flex-shrink-0`;
+                square.title = `${dateStr}: ${statusText}`; // Tooltip
+
+                this.gridElement.appendChild(square);
+
+                // Move to the next day (UTC)
+                currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+            }
+
+            // Adjust Grid Container Style
+             this.applyGridStyles();
+        },
+
+        // Apply dynamic styles to grid container
+        applyGridStyles() {
+          if (!this.gridElement) return;
+
+          console.log(`Applying styles for view: ${this.currentView}`); // Log current view
+          console.log("Before cleanup. Classes:", this.gridElement.className, "Style:", this.gridElement.style.cssText); // Log state before cleanup
+
+
+          // Reset common styles potentially changed by other views
+          // Ensure ALL flex direction/wrap classes are removed
+          this.gridElement.classList.remove('flex-row', 'flex-col', 'flex-col-reverse', 'flex-wrap', 'flex-wrap-reverse', 'flex-row-reverse');
+          // Reset inline styles that might conflict from initial HTML or previous views
+          this.gridElement.style.removeProperty('writing-mode');
+          this.gridElement.style.removeProperty('direction');
+          // Keep height auto for wrapped views (month, year), set explicitly for week if needed
+          // this.gridElement.style.removeProperty('height'); // Removed height reset here
+
+          if (this.currentView === 'year') {
+               // Apply styles for year view: Reverse Row-based layout (Green Top-Left)
+               this.gridElement.style.height = 'auto'; // Auto height for wrapping
+               this.gridElement.classList.add('flex-row-reverse', 'flex-wrap-reverse');
+          } else if (this.currentView === 'month') {
+               // Apply styles for month view (Standard row layout LTR, wrap downwards)
+               this.gridElement.style.height = 'auto'; // Auto height for wrapping
+               this.gridElement.classList.add('flex-row', 'flex-wrap');
+          } else { // 'week' view
+               // Apply styles for week view (Single row LTR)
+               this.gridElement.style.height = 'auto'; // Auto height, single row won't exceed
+               this.gridElement.classList.add('flex-row');
+          }
+
+          console.log(`After applying styles for ${this.currentView}. Classes:`, this.gridElement.className, "Style:", this.gridElement.style.cssText); // Log final state
+        },
+
+      }; // End of returned object
+    } // End of adherenceTracker function
+
+    function showAchievementPopup(data) {
+      // Set the content dynamically
+      document.getElementById('popup-message').textContent = data.message;
+      document.getElementById('total-points').textContent = data.total_points;
+      document.getElementById('user-tier').textContent = data.user_tier[0];
+      document.getElementById('badge-image').src = data.user_tier[1];
+    
+      const popup = document.getElementById('achievement-popup');
+      popup.classList.remove('hidden');
+      popup.classList.add('flex');
+      // Small scale animation
+      setTimeout(() => {
+        popup.querySelector('div').classList.remove('scale-95');
+        popup.querySelector('div').classList.add('scale-100');
+      }, 50);
+    }
+    
+    // Close popup on 'X' or outside click
+    document.getElementById('close-popup').addEventListener('click', () => {
+      hideAchievementPopup();
+    });
+    document.getElementById('achievement-popup').addEventListener('click', (e) => {
+      if (e.target.id === 'achievement-popup') hideAchievementPopup();
+    });
+    
+    function hideAchievementPopup() {
+      const popup = document.getElementById('achievement-popup');
+      popup.querySelector('div').classList.add('scale-95');
+      popup.querySelector('div').classList.remove('scale-100');
+      setTimeout(() => {
+        popup.classList.add('hidden');
+        popup.classList.remove('flex');
+      }, 200);
+    }
+
+    
+  </script>
+{% endblock %}
