@@ -10,7 +10,6 @@
   {# Removed the top dashboard widgets article block #}
 
   {# Section for displaying all active medication plans #}
-  {# all_reminders variable in x-data should reflect the count of all_reminders #}
   <section
     class="p-8 my-4 lg:my-0 rounded-xl border border-gray-300 bg-white"
     x-data="{
@@ -18,6 +17,9 @@
       showAll: false,
       itemLimit: 6, // Number of items visible initially
       remindersCount: {{ all_reminders|length }},
+      showDeleteModal: false,
+      selectedFormId: null,
+      selectedMedName: '',
       setView(viewType) {
         this.currentView = viewType;
         localStorage.setItem('medsView', viewType); // Save preference to local storage
@@ -25,8 +27,28 @@
       },
       isCurrentView(viewType) {
          return this.currentView === viewType;
+      },
+      // Function to handle deletion modal
+      openDeleteModal(formId, medName) {
+          this.selectedFormId = formId;
+          this.selectedMedName = medName;
+          this.showDeleteModal = true;
+          // Add class to prevent background scrolling
+          document.body.classList.add('overflow-hidden');
+      },
+      confirmDelete() {
+          document.getElementById(this.selectedFormId).submit();
+          this.closeDeleteModal();
+      },
+      closeDeleteModal() {
+          this.showDeleteModal = false;
+          this.selectedFormId = null;
+          this.selectedMedName = '';
+          // Remove class to allow scrolling again
+          document.body.classList.remove('overflow-hidden');
       }
     }"
+    @keydown.escape="showDeleteModal ? closeDeleteModal() : null"
   >
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold">All Active Medication Plans</h2>
@@ -53,6 +75,18 @@
         </div>
     </div>
 
+    {# Optional: Display Django messages (like success/error after delete) #}
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="p-3 rounded
+                    {% if message.tags == 'success' %} bg-green-100 text-green-800 {% elif message.tags == 'error' %} bg-red-100 text-red-800 {% elif message.tags == 'warning' %} bg-yellow-100 text-yellow-800 {% else %} bg-blue-100 text-blue-800 {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
 
     {# --- Card Layout (Visible when currentView is 'cards') --- #}
     <div x-show="isCurrentView('cards')">
@@ -62,22 +96,19 @@
 
           {# Iterate through Reminder instances, each becoming a card #}
           {% for reminder in all_reminders %}
-            {# Applied modern card styling #}
-            {# Increased rounded corners, updated shadow, removed border, added hover effect #}
-            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between cursor-pointer"
+            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between"
                  :class="{ 'hidden': !(showAll || {{ forloop.counter0 }} < itemLimit) }">
 
               {# Card Header: Medication Name and Dosage #}
               <div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ reminder.medication }}</h3>
-                <p class="text-sm text-gray-700 mb-4">Dosage: <span class="font-medium text-gray-800">{{ reminder.dosage }}</span></p> {# Slightly darker dosage value #}
+                <p class="text-sm text-gray-700 mb-4">Dosage: <span class="font-medium text-gray-800">{{ reminder.dosage }}</span></p>
               </div>
 
               {# Card Body: Schedule Summary and Dates #}
-              <div class="text-sm text-gray-600 space-y-2 mb-6"> {# Added bottom margin #}
+              <div class="text-sm text-gray-600 space-y-2 mb-6">
                   <p>
-                      Schedule: <span class="font-medium text-gray-800">{{ reminder.schedule.get_repeat_type_display }}</span> at <span class="font-medium text-gray-800">{{ reminder.schedule.time_of_day|time:'H:i' }}</span> {# Slightly darker schedule values #}
-                      {# You might need a method on your Schedule model to get a better summary #}
+                      Schedule: <span class="font-medium text-gray-800">{{ reminder.schedule.get_repeat_type_display }}</span> at <span class="font-medium text-gray-800">{{ reminder.schedule.time_of_day|time:'H:i' }}</span>
                       {% if reminder.schedule.repeat_type == 'weekly' and reminder.schedule.weekly_days %}
                           on <span class="font-medium text-gray-800">{{ reminder.schedule.weekly_days }}</span>
                       {% elif reminder.schedule.repeat_type == 'monthly' and reminder.schedule.monthly_dates %}
@@ -85,12 +116,12 @@
                       {% endif %}
                   </p>
                   <p>
-                      Start Date: <span class="font-medium text-gray-800">{{ reminder.schedule.start_date|date:"M d, Y" }}</span> {# Slightly darker date value #}
+                      Start Date: <span class="font-medium text-gray-800">{{ reminder.schedule.start_date|date:"M d, Y" }}</span>
                   </p>
                    <p>
                     End Date:
                     {% if reminder.schedule.end_date %}
-                        <span class="font-medium text-gray-800">{{ reminder.schedule.end_date|date:"M d, Y" }}</span> {# Slightly darker date value #}
+                        <span class="font-medium text-gray-800">{{ reminder.schedule.end_date|date:"M d, Y" }}</span>
                     {% else %}
                         <span class="font-medium text-green-700">Ongoing</span>
                     {% endif %}
@@ -98,11 +129,19 @@
               </div>
 
               {# Card Footer: Actions #}
-              <div class="flex justify-end gap-4 mt-auto"> {# Added mt-auto to push actions to bottom #}
-                {# Add links to manage the reminder plan #}
-                 {# Adjusted text colors for potentially better contrast #}
-                 <a href="#" class="text-blue-700 hover:text-blue-900 text-sm font-medium transition-colors">View/Edit</a>
-                 <a href="#" class="text-red-700 hover:text-red-900 text-sm font-medium transition-colors">Delete</a>
+              <div class="flex justify-end mt-auto">
+                {# Modern Delete Button Link #}
+                <a href="#"
+                   @click.prevent="openDeleteModal('delete-form-{{ reminder.id }}', '{{ reminder.medication }}')"
+                   class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors flex items-center">
+                   {# Optional: Add a trash icon #}
+                   <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                   Delete
+                </a>
+                {# Hidden form for deletion #}
+                <form id="delete-form-{{ reminder.id }}" method="post" action="{% url 'medminder:delete_reminder' reminder.id %}" class="hidden">
+                    {% csrf_token %}
+                </form>
               </div>
             </div>
           {% endfor %}
@@ -117,14 +156,10 @@
     {# --- Table Layout (Visible when currentView is 'table') --- #}
     <div x-show="isCurrentView('table')">
        {% if all_reminders %}
-       <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm"> {# Added border and shadow to table container #}
-        {# Applied table header styling #}
-        {# Applied table styling #}
-        <table class="min-w-full bg-white"> {# Removed border from table itself #}
-          {# Applied thead styling #}
+       <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+        <table class="min-w-full bg-white">
           <thead>
             <tr>
-              {# Applied th styling #}
               <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Medication</th>
               <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Dosage</th>
               <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Schedule Summary</th>
@@ -133,13 +168,10 @@
               <th class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          {# Applied tbody styling #}
-          <tbody class="divide-y divide-gray-200"> {# Added row dividers #}
+          <tbody class="divide-y divide-gray-200">
             {# Iterate through Reminder instances #}
             {% for reminder in all_reminders %}
-              {# Applied tr styling and Alpine.js show/hide logic #}
-              <tr :class="{ 'hidden': !(showAll || {{ forloop.counter0 }} < itemLimit) }"> {# Removed border-b here as divide-y is used #}
-                {# Applied td styling #}
+              <tr :class="{ 'hidden': !(showAll || {{ forloop.counter0 }} < itemLimit) }">
                 <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">{{ reminder.medication }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">{{ reminder.dosage }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">
@@ -160,18 +192,28 @@
                        Ongoing
                    {% endif %}
                  </td>
-                 {# Applied td styling for actions #}
                 <td class="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-900">
-                   {# Adjusted text colors for potentially better contrast #}
-                   <a href="#" class="text-blue-700 hover:text-blue-900 text-sm font-medium transition-colors">View/Edit</a>
-                   <a href="#" class="ml-4 text-red-700 hover:text-red-900 text-sm font-medium transition-colors">Delete</a>
+                   {# Modern Delete Button Link #}
+                   <a href="#"
+                      @click.prevent="openDeleteModal('delete-form-{{ reminder.id }}', '{{ reminder.medication }}')"
+                      class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors flex items-center">
+                      {# Optional: Add a trash icon #}
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                      Delete
+                   </a>
+                   {# Hidden form for deletion #}
+                   <form id="delete-form-{{ reminder.id }}" method="post" action="{% url 'medminder:delete_reminder' reminder.id %}" class="hidden">
+                       {% csrf_token %}
+                   </form>
                 </td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
          {% else %}
-          <p class="text-gray-600">You have no active medication plans.</p> {# Duplicate message, but keeps structure clean #}
+          {# This message is already covered by the outer if in the card layout, #}
+          {# but keeping it here for clarity in the table-specific div if needed #}
+          {# <p class="text-gray-600">You have no active medication plans.</p> #}
         {% endif %}
     </div>
     </div>
@@ -180,7 +222,6 @@
     {# --- See More Button (Applies to whichever view is active) --- #}
     {# Use remindersCount from x-data which now counts all_reminders #}
     {# Only show "See More" if there are more reminders than the limit #}
-    {# Applied button styling #}
     <button x-show="remindersCount > itemLimit" @click="showAll = !showAll" class="mt-8 text-blue-600 hover:text-blue-800 font-medium">
       <span x-text="showAll ? 'Collapse' : 'See All Plans'"></span>
       {# Adjusted icon for potentially better visual alignment #}
@@ -189,9 +230,50 @@
 
 
     {# --- Add New Plan Button --- #}
-    <div class="mt-8 text-center"> {# Centered the button #}
-      {# Added slight hover effect #}
+    <div class="mt-8 text-center">
       <a href="{% url 'medminder:new_plan' %}" class="inline-block bg-gray-800 hover:bg-gray-900 text-white py-2 px-6 rounded-full font-medium transition-colors">Add new plan</a>
+    </div>
+
+    {# --- Delete Confirmation Modal --- #}
+    <div 
+      x-show="showDeleteModal" 
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      x-transition:enter="transition-opacity ease-out duration-300"
+      x-transition:enter-start="opacity-0"
+      x-transition:enter-end="opacity-100"
+      x-transition:leave="transition-opacity ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      x-cloak
+    >
+      <div 
+        class="bg-white rounded-xl shadow-lg max-w-md w-full p-6"
+        @click.away="closeDeleteModal()"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="transform scale-95 opacity-0"
+        x-transition:enter-end="transform scale-100 opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="transform scale-100 opacity-100"
+        x-transition:leave-end="transform scale-95 opacity-0"
+      >
+        <div class="text-center mb-6">
+          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+            <svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900">Delete Medication Plan</h3>
+          <p class="mt-2 text-gray-600">Are you sure you want to delete <span class="font-medium" x-text="selectedMedName"></span>? This action cannot be undone.</p>
+        </div>
+        <div class="flex justify-center space-x-4">
+          <button @click="closeDeleteModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300">
+            Cancel
+          </button>
+          <button @click="confirmDelete()" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500">
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 

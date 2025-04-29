@@ -29,8 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Europe/London'
+USE_TZ = True
 
 # Application definition
 

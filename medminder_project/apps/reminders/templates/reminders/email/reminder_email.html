@@ -2,45 +2,135 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedMinder Reminder: {{ reminder.medication.medication_name }}</title>
     <style>
         /* Basic styling for a clean email */
-        body { font-family: sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-        h2 { color: #0056b3; }
-        .med-details { margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #007bff; }
-        .med-details p { margin: 5px 0; }
-        .button { display: inline-block; background-color: #007bff; color: #ffffff !important; text-decoration: none; padding: 10px 20px; border-radius: 5px; margin-top: 15px; } /* Changed button color to blue */
-        .footer { margin-top: 30px; font-size: 0.9em; color: #777; }
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0; /* Remove default body margin */
+            padding: 0; /* Remove default body padding */
+            /* Fallback background color */
+            background-color: #f5f5f5; /* neutral-100 equivalent */
+            /* Complex radial gradient background from Tailwind class */
+            background-image:
+                radial-gradient(at 40% 20%, hsla(28,100%,74%,0.5) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, hsla(189,100%,56%,0.5) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355,100%,93%,0.5) 0px, transparent 50%),
+                radial-gradient(at 80% 50%, hsla(340,100%,76%,0.5) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(22,100%,77%,1) 0px, transparent 50%),
+                radial-gradient(at 80% 100%, hsla(242,100%,70%,1) 0px, transparent 50%),
+                radial-gradient(at 0% 0%, hsla(343,100%,76%,1) 0px, transparent 50%);
+            background-attachment: fixed; /* Keep background fixed when scrolling */
+            background-size: cover; /* Cover the entire viewport */
+            -webkit-text-size-adjust: 100%; /* Prevent iOS text size adjustment */
+            -ms-text-size-adjust: 100%; /* Prevent Windows Phone text size adjustment */
+            height: 100%; /* Ensure body takes at least full viewport height */
+        }
+
+        /* Container for the white box */
+        .email-wrapper {
+            padding: 20px; /* Padding around the white box */
+            width: 100%; /* Full width */
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        .email-container {
+            max-width: 600px; /* Max width for the white box */
+            margin: 20px auto; /* Center the box and add vertical margin */
+            padding: 40px; /* Padding inside the white box */
+            background-color: #ffffff; /* White background */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            border: 1px solid #ddd; /* Light border */
+            box-sizing: border-box; /* Include padding and border in width */
+        }
+
+        h2 {
+            color: #000000;
+            text-align: center; /* Center the heading */
+            margin-top: 0; /* Remove top margin for heading */
+        }
+
+        .heading {
+            margin: 20px 0; /* Margin around the heading */
+        }
+
+        .med-details {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #007bff;
+            border-radius: 4px; /* Rounded corners for details box */
+        }
+
+        .med-details p {
+            margin: 5px 0;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #ffffff !important; /* Important to override potential client styles */
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-weight: bold; /* Make button text bold */
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center; /* Center the footer text */
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .email-container {
+                width: 100%; /* Full width on small screens */
+                margin: 10px auto; /* Adjust margin */
+                padding: 15px; /* Adjust padding */
+            }
+            .email-wrapper {
+                padding: 10px; /* Adjust wrapper padding */
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>MedMinder Reminder</h2>
+    <div class="email-wrapper">
+        <div class="email-container">
+            <h2 class="heading">MedMinder Reminder</h2>
 
-        <p>Hi {{ user.username }},</p>
+            <p>Hi {{ user.username }},</p>
 
-        <p>It's time for your medication dose:</p>
+            <p>It's time for your medication dose:</p>
 
-        <div class="med-details">
-            <p><strong>Medication:</strong> {{ reminder.medication.medication_name }}</p>
-            <p><strong>Dosage:</strong> {{ reminder.dosage.dosage }}</p>
-            <p><strong>Scheduled Time:</strong> {{ log_entry.due_time|date:"H:i" }}</p>
-        </div>
-
-        <p>Please visit your dashboard to view and log your dose details.</p>
-
-        <p style="text-align: center;">
-            <a href="{{ dashboard_url }}" class="button">Go to Dashboard</a>
-        </p>
-
-        <p>If the button above doesn't work, you can copy and paste this link into your browser:</p>
-        <p><small>{{ dashboard_url }}</small></p>
-
-
-        <div class="footer">
-            <p>Best regards,<br>MedMinder Team</p>
+            <div class="med-details">
+                <p><strong>Medication:</strong> {{ reminder.medication.medication_name }}</p>
+                <p><strong>Dosage:</strong> {{ reminder.dosage.dosage }}</p>
+                {# Use the timezone-aware due_time_display from the context #}
+                <p><strong>Scheduled Time:</strong> {{ due_time_display }}</p>
             </div>
+
+            <p>Please visit your dashboard to view and log your dose details.</p>
+
+            <p style="text-align: center;">
+                <a href="{{ dashboard_url }}" class="button">Go to Dashboard</a>
+            </p>
+
+            <p style="text-align: center; margin-top: 20px; font-size: 0.8rem;">If the button above doesn't work, you can copy and paste this link into your browser:</p>
+            <p style="text-align: center;"><small><a href="{{ dashboard_url }}" style="color: #007bff; text-decoration: underline;">{{ dashboard_url }}</a></small></p>
+
+
+            <div class="footer">
+                <p>Best regards,<br>MedMinder Team</p>
+                </div>
+        </div>
     </div>
 </body>
 </html>

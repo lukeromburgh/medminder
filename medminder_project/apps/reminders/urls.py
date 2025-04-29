@@ -14,6 +14,7 @@ urlpatterns = [
     path('medications', views.all_medications, name='medications'),
     path('dashboard/calendar/', views.dashboard_calendar, name='dashboard_calendar'), # New URL for the calendar
     path('account', views.account_page_view, name='account_page'),
+    path('delete-reminder/<int:reminder_id>/', views.delete_reminder, name='delete_reminder'),
     # path('profile/', views.profile, name='profile'),
     # path('invite-viewer/', views.invite_viewer, name='invite_viewer'),
 ]

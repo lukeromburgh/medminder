@@ -14,6 +14,7 @@ from .forms import MedicationNameForm, DosageForm, ScheduleForm, ConfirmationFor
 from apps.accounts.models import UserSettings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q # Import Q for complex queries
+from django.contrib import messages
 import json # Import json for potentially parsing schedule data
 
 
@@ -422,6 +423,36 @@ def dashboard_today(request):
 
     # Ensure your template path is correct
     return render(request, 'reminders/dashboard_today.html', context)
+
+
+
+@login_required
+def delete_reminder(request, reminder_id):
+    """
+    View to handle deletion of a medication reminder.
+    Ensures that only the owner of the reminder can delete it.
+    """
+    # Get the reminder or return 404 if not found
+    reminder = get_object_or_404(Reminder, id=reminder_id)
+    
+    # Security check: ensure the logged-in user owns this reminder
+    if reminder.user != request.user:
+        messages.error(request, "You don't have permission to delete this medication plan.")
+        return redirect('medminder:all_medications')
+    
+    # Store the medication name for the success message
+    medication_name = str(reminder.medication)
+    
+    # Delete the reminder (this will also delete related logs due to CASCADE)
+    reminder.delete()
+    
+    # Add success message to be displayed
+    messages.success(request, f"'{medication_name}' medication plan has been deleted successfully.")
+    
+    # Redirect back to the all medications page
+    return redirect('medminder:medications')
+
+
 
 @login_required
 def complete_reminder(request, reminder_id):
