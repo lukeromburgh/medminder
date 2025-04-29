@@ -588,7 +588,8 @@ def get_user_tier(points):
         return "Bronze Beginner", "/static/images/badges/bronze-beginner.png"
     elif points >= 100:
         return "Iron Initiate", "/static/images/badges/iron-initiate.png"
-    elif points <= 50:
+    # Change the last elif to an else to cover all remaining cases (points <= 99)
+    else:
         return "Unranked", "/static/images/badges/unranked.png"
 
 @login_required
@@ -718,8 +719,8 @@ def account_page_view(request):
     # Get avatar colors from the fetched UserSettings object
     # Provide default values in case user_settings is None
     # Corrected field names from avatar_bg_color/avatar_text_color to bg_color/text_color
-    bg_color = user_settings.bg_color if user_settings else 'bg-gray-200'
-    text_color = user_settings.text_color if user_settings else 'text-gray-800'
+    bg_color = user_settings.avatar_bg_color if user_settings else 'bg-gray-200'
+    text_color = user_settings.avatar_text_color if user_settings else 'text-gray-800'
 
 
     context = {

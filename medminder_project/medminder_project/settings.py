@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django_browser_reload',
     'apps.accounts',
     'apps.core',
-    'apps.reminders',
+    'apps.reminders.apps.RemindersConfig',
     'django_crontab',
     
 ]

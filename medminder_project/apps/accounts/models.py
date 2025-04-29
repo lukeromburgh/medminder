@@ -30,8 +30,8 @@ class UserSettings(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='usersettings') # Use related_name for easy access from User
     receive_email_reminders = models.BooleanField(default=True) # Keep existing setting
     receive_sms_reminders = models.BooleanField(default=False) # Keep existing setting
-    bg_color = models.CharField(max_length=50, default='bg-gray-200', help_text="Background color for the user's avatar.")
-    text_color = models.CharField(max_length=50, default='text-gray-800', help_text="Text color for the user's avatar.")
+    avatar_bg_color = models.CharField(max_length=50, default='bg-gray-200', help_text="Background color for the user's avatar.")
+    avatar_text_color = models.CharField(max_length=50, default='text-gray-800', help_text="Text color for the user's avatar.")
     # Fields for payment/tier integration:
 
     # Link to the user's account tier.

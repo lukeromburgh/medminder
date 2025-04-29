@@ -8,13 +8,27 @@ from .models import ReminderStats, UserStats, Reminder, DailyReminderLog
 
 User = get_user_model()
 
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_user_stats(sender, instance, created, **kwargs):
+    """
+    Creates a UserStats object automatically when a new user is created.
+    """
+    # The 'instance' received by the signal is the actual user object,
+    # so you don't need get_user_model() inside the function either.
     if created:
+        # You will need the UserStats model imported here or within the function if preferred,
+        # but importing at the module level is standard if it's just for use in signals.
+        # from .models import UserStats # Could import here instead if needed
+
         UserStats.objects.create(
-            user=instance,
-            date=now().date(),
+            user=instance, # 'instance' is the newly created User object
+            date=timezone.now().date(),
+            # Other fields will take their default values
         )
+        # Optional: Add a print statement here for debugging if needed
+        # print(f"UserStats created for {instance.username}")
+
+
 
 @receiver(post_save, sender=Reminder)
 def create_reminder_stats(sender, instance, created, **kwargs):
