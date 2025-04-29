@@ -425,23 +425,35 @@ def dashboard_today(request):
 
 @login_required
 def complete_reminder(request, reminder_id):
-    """Marks a reminder log entry as completed and updates UserStats."""
-
+    """
+    Marks a reminder log entry as completed or taken_late using the model method
+    and updates UserStats.
+    """
     log_entry = get_object_or_404(DailyReminderLog, id=reminder_id, user=request.user)
 
     if request.method == 'POST':
-        if log_entry.status == 'pending':
-            log_entry.status = 'completed'
-            log_entry.completion_timestamp = timezone.now()
-            log_entry.save()
+        # Check if the reminder is currently pending (eligible for completion)
+        if log_entry.status == DailyReminderLog.STATUS_PENDING:
 
+            # --- Use the model method to handle status and timestamp ---
+            # This will set status to 'completed' or 'taken_late'
+            # and update action_timestamp, then save the log_entry.
+            log_entry.mark_complete()
+            # --- End of change ---
+
+            # --- UserStats and Points Logic (remains largely the same) ---
             user_stats, created = UserStats.objects.get_or_create(user=request.user)
-            points_earned = 75
+            points_earned = 75  # Base points for completing/taking late
             user_stats.achievement_points += points_earned
 
-            points_message = f"Reminder Completed! +{points_earned} Points"
+            # Determine message based on the *resulting* status
+            completion_type = "Completed" if log_entry.status == DailyReminderLog.STATUS_COMPLETED else "Taken Late"
+            points_message = f"Reminder {completion_type}! +{points_earned} Points"
             streak_bonus = 0
 
+            # --- Streak Check ---
+            # Ensure check_streak considers both 'completed' and 'taken_late' statuses
+            # if necessary for streak calculation. Assuming it does for now.
             if check_streak(request.user, 7):
                 bonus_points = 100
                 user_stats.achievement_points += bonus_points
@@ -453,31 +465,52 @@ def complete_reminder(request, reminder_id):
                 points_message += f", 3 Day Streak! +{bonus_points} Bonus!"
                 streak_bonus = bonus_points
 
-            # Get user's tier *before* the update
-            old_tier_name, _ = get_user_tier(user_stats.achievement_points - (points_earned + streak_bonus))  # Important: subtract the points
+            # --- Tier Calculation ---
+            # Get user's tier *before* this action's points were finalized
+            # Calculate points just added in this request
+            total_points_added = points_earned + streak_bonus
+            points_before_this_action = user_stats.achievement_points - total_points_added
+            old_tier_name, _ = get_user_tier(points_before_this_action)
+
+            # Save the updated stats
             user_stats.save()
 
             # Get user's tier *after* the update
             new_tier_name, new_badge_image = get_user_tier(user_stats.achievement_points)
 
+            # --- Prepare JSON Response ---
             response_data = {
                 'message': points_message,
-                'points_earned_today': points_earned + streak_bonus,
+                'points_earned_today': total_points_added,
                 'total_points': user_stats.achievement_points,
                 'user_tier': [new_tier_name, new_badge_image],
-                'rank_up': False,  # Default: no rank up
+                'rank_up': False,  # Default
+                # Include the final status and timestamp in the response if needed by frontend
+                'final_status': log_entry.get_status_display(),
+                'action_time': log_entry.action_timestamp.strftime('%H:%M') if log_entry.action_timestamp else None,
             }
 
             # Check if the tier changed
             if old_tier_name != new_tier_name:
                 response_data['rank_up'] = True
                 response_data['rank_up_message'] = f"You've reached {new_tier_name}!"
-                # Add the current date, formatted
-                response_data['rank_up_date'] = timezone.now().strftime("%d %b %Y").upper() # e.g., 27 APR 2025
+                # Add the current date, formatted - using timezone.now() for consistency
+                response_data['rank_up_date'] = timezone.now().strftime("%d %b %Y").upper() # e.g., 29 APR 2025
 
             return JsonResponse(response_data)
+
+        # Reminder was not in 'pending' state
         else:
-            return JsonResponse({'message': 'Reminder already completed or cannot be completed.', 'points_earned_today': 0}, status=400)
+            # Provide a slightly more informative message based on the current status
+            status_display = log_entry.get_status_display() # e.g., "Completed", "Skipped", "Missed"
+            return JsonResponse({
+                'message': f'Reminder already marked as "{status_display}".',
+                'points_earned_today': 0,
+                'final_status': status_display, # Send current status
+                'action_time': log_entry.action_timestamp.strftime('%H:%M') if log_entry.action_timestamp else None,
+                }, status=400) # Bad request - cannot complete non-pending item
+
+    # If not a POST request, redirect (or return error if API endpoint)
     return redirect('medminder:dashboard_today')
 
 
