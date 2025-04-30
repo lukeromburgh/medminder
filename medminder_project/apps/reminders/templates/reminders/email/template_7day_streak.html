@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedMinder: {{ streak_count }} Day Streak!</title>
+    <style>
+        /* Reset styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            line-height: 1.6;
+        }
+        
+        /* Main container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* Header section with green background */
+        .header {
+            background-color: #4CAF50;
+            color: #333333;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        /* Logo styling */
+        .logo {
+            text-align: left;
+            margin-bottom: 20px;
+            padding-left: 10px;
+        }
+        
+        .logo-text {
+            color: #333333;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        /* Illustration container */
+        .illustration {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        /* Badge styling */
+        .badge {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        /* Streak heading */
+        .streak-title {
+            font-size: 40px;
+            font-weight: bold;
+            margin: 15px 0 25px;
+        }
+        
+        /* Button styling */
+        .button {
+            display: inline-block;
+            background-color: #3F51B5;
+            color: #ffffff !important;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        
+        /* Main content area */
+        .content {
+            padding: 30px;
+            color: #333333;
+        }
+        
+        /* User greeting */
+        .greeting {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        /* Message */
+        .message {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        
+        /* Footer section */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: #6c757d;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 100%;
+                border-radius: 0;
+            }
+            
+            .streak-title {
+                font-size: 32px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-text">♦♦♦ MedMinder</span>
+            </div>
+            <div class="illustration">
+                <!-- Replace with your actual illustration image URL -->
+                <img src="https://via.placeholder.com/300x200" alt="Group of healthcare providers and patients" style="max-width: 300px;">
+            </div>
+            <div class="badge">Nice!</div>
+            <div class="streak-title">
+                {{ streak_count }} Day streak!
+            </div>
+            <a href="{{ boost_url }}" class="button">Claim boost</a>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                Nice job, {{ user.username }}!
+            </div>
+            <div class="message">
+                A {{ streak_count }} day streak means any reminders you complete today will give you {{ bonus_points }} extra points!
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Keep up the great work with your medication routine!</p>
+            <p>© 2025 MedMinder • <a href="#unsubscribe" style="color: #6c757d;">Unsubscribe</a> • <a href="#privacy" style="color: #6c757d;">Privacy Policy</a></p>
+        </div>
+    </div>
+</body>
+</html>

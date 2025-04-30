@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weekly Insights</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+      color: #111111;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .header {
+      background: linear-gradient(180deg, #FFA726, #FB8C00);
+      padding: 40px 20px;
+    }
+
+    .logo {
+      text-align: left;
+      font-weight: bold;
+      font-size: 20px;
+      color: #111;
+      margin-bottom: 20px;
+    }
+
+    .date-badge {
+      background-color: #FFC062;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      display: inline-block;
+      margin: 20px 0;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #111111;
+      margin-bottom: 20px;
+    }
+
+    .illustration img {
+      width: 180px;
+      margin: 10px 0 20px;
+    }
+
+    .button {
+      display: inline-block;
+      background-color: #3F51B5;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .content {
+      padding: 30px 20px;
+      text-align: left;
+      background-color: #fff;
+    }
+
+    .content p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .footer {
+      font-size: 14px;
+      color: #666;
+      padding: 20px;
+      text-align: center;
+    }
+
+    a {
+      color: #3F51B5;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">MedMinder</div>
+      <div class="illustration">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Medminder_illustration.svg/512px-Medminder_illustration.svg.png" alt="Illustration" />
+      </div>
+      <div class="date-badge">14 May 2025</div>
+      <div class="title">Weekly insights</div>
+      <a href="{{ dashboard_url }}" class="button">Go to dashboard</a>
+    </div>
+
+    <div class="content">
+      <p>Hi {{ user.username }},</p>
+      <p>Here’s a quick look at your progress this week:</p>
+      <p>🔥 Streak: <strong>{{ streak_count }} days</strong></p>
+      <p>⏳ Missed doses: <strong>{{ missed_doses }}</strong></p>
+      <p>✅ Completed doses: <strong>{{ completed_doses }}</strong></p>
+      <p>🏅 Achievement points: <strong>{{ achievement_points }}</strong></p>
+      <p>📊 Rank: Top <strong>{{ user_rank_percentile }}%</strong> of users</p>
+    </div>
+
+    <div class="footer">
+      © 2025 MedMinder • 
+      <a href="#unsubscribe">Unsubscribe</a> • 
+      <a href="#privacy">Privacy Policy</a>
+    </div>
+  </div>
+</body>
+</html>
