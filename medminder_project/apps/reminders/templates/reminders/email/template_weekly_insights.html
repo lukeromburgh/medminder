@@ -8,35 +8,57 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #ffffff;
+      background-color: #f4f4f4; /* Light grey background for page */
       color: #111111;
+      -webkit-text-size-adjust: 100%; /* Prevent font scaling */
+      -ms-text-size-adjust: 100%; /* Prevent font scaling */
     }
 
     .container {
       max-width: 600px;
-      margin: 0 auto;
-      text-align: center;
+      margin: 20px auto; /* Add margin for page background visibility */
+      background-color: #ffffff; /* White background for email body */
+      border-radius: 8px; /* Optional: Rounded corners */
+      overflow: hidden; /* Ensures content stays within rounded corners */
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Optional: Subtle shadow */
+      /* text-align: center; removed - applied specifically where needed */
     }
 
     .header {
-      background: linear-gradient(180deg, #FFA726, #FB8C00);
-      padding: 40px 20px;
+      background: linear-gradient(180deg, #FECE00, #EF7000);
+      padding: 20px 20px 40px 20px; /* Adjusted padding */
+      text-align: center; /* Center header content by default */
     }
 
-    .logo {
-      text-align: left;
-      font-weight: bold;
-      font-size: 20px;
-      color: #111;
-      margin-bottom: 20px;
+    .logo-container {
+      margin-top: 10px;
+      margin-left: 5px;
+      text-align: left; /* Align logo to the left */
+      margin-bottom: 25px; /* Space below logo */
+    }
+
+    .logo-container img {
+      height: 24px;
+      width: auto;
+      vertical-align: middle; /* Good practice for images */
+    }
+
+    /* Removed unused .logo CSS rule */
+
+    .illustration img {
+      max-width: 300px;
+      width: 80%; /* Responsive width */
+      height: auto; /* Maintain aspect ratio */
+      margin: 10px auto 20px auto; /* Center illustration */
     }
 
     .date-badge {
-      background-color: #FFC062;
-      color: white;
+      background-color: rgba(255, 255, 255, 0.2); /* Softer badge bg */
+      color: #111; /* Dark text for readability */
       padding: 6px 14px;
-      border-radius: 20px;
+      border-radius: 10px;
       font-size: 14px;
+      font-weight: 500; /* Medium weight */
       display: inline-block;
       margin: 20px 0;
     }
@@ -45,75 +67,128 @@
       font-size: 32px;
       font-weight: bold;
       color: #111111;
+      margin-top: 0; /* Adjusted margin */
       margin-bottom: 20px;
-    }
-
-    .illustration img {
-      width: 180px;
-      margin: 10px 0 20px;
     }
 
     .button {
       display: inline-block;
-      background-color: #3F51B5;
-      color: white;
+      background-color: #0A63E5;
+      color: #ffffff !important; /* Ensure text is white, !important for email clients */
       padding: 12px 28px;
       border-radius: 30px;
       text-decoration: none;
       font-weight: bold;
       font-size: 16px;
+      margin-top: 10px; /* Add some space above button */
     }
 
     .content {
       padding: 30px 20px;
       text-align: left;
       background-color: #fff;
+      color: #333333; /* Slightly softer text color */
+      line-height: 1.6; /* Improved readability */
     }
 
     .content p {
-      font-size: 18px;
-      margin: 10px 0;
+      font-size: 16px; /* Slightly smaller base font */
+      margin: 0 0 15px 0; /* Space below paragraphs */
+    }
+
+    /* Stats List Styling */
+    .stats-list {
+      list-style: none; /* Remove default bullets */
+      padding: 0;
+      margin: 25px 0; /* Add space around the list */
+      border-top: 1px solid #eeeeee; /* Top border for separation */
+    }
+
+    .stats-list li {
+      display: flex; /* Use flexbox for alignment */
+      justify-content: space-between; /* Push label and value apart */
+      align-items: center; /* Vertically center items */
+      padding: 12px 5px; /* Padding inside each list item (less horizontal padding needed due to flex) */
+      border-bottom: 1px solid #eeeeee; /* Separator line */
+      font-size: 15px; /* Adjust font size for stats */
+    }
+
+     .stats-list li span {
+       /* Style for the label part if needed - includes emoji */
+       margin-right: 10px; /* Ensure space between label and value */
+     }
+
+    .stats-list li strong {
+      font-weight: 600; /* Semi-bold for value */
+      text-align: right; /* Align value text to the right */
+      color: #111111; /* Ensure value is dark */
     }
 
     .footer {
-      font-size: 14px;
-      color: #666;
-      padding: 20px;
-      text-align: center;
+        text-align: center;
+        padding: 20px;
+        font-size: 14px;
+        color: #6c757d;
+        border-top: 1px solid #eee;
     }
 
-    a {
-      color: #3F51B5;
+    .footer a {
+      color: #0A63E5; /* Use button color for links */
       text-decoration: none;
+      font-weight: 500;
     }
+    .footer a:hover { /* Optional hover effect */
+        text-decoration: underline;
+    }
+
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">MedMinder</div>
-      <div class="illustration">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Medminder_illustration.svg/512px-Medminder_illustration.svg.png" alt="Illustration" />
+      <div class="logo-container">
+        <img src="https://i.ibb.co/sJtcRSSQ/black-logo.png" alt="MedMinder Logo">
       </div>
-      <div class="date-badge">14 May 2025</div>
-      <div class="title">Weekly insights</div>
+      <div class="illustration">
+        <img src="https://i.ibb.co/BHwWZncz/insights.png" alt="Insights Illustration" />
+      </div>
+      <div class="date-badge">May 14, 2025</div> <div class="title">Weekly Insights</div>
       <a href="{{ dashboard_url }}" class="button">Go to dashboard</a>
     </div>
 
     <div class="content">
       <p>Hi {{ user.username }},</p>
       <p>Here’s a quick look at your progress this week:</p>
-      <p>🔥 Streak: <strong>{{ streak_count }} days</strong></p>
-      <p>⏳ Missed doses: <strong>{{ missed_doses }}</strong></p>
-      <p>✅ Completed doses: <strong>{{ completed_doses }}</strong></p>
-      <p>🏅 Achievement points: <strong>{{ achievement_points }}</strong></p>
-      <p>📊 Rank: Top <strong>{{ user_rank_percentile }}%</strong> of users</p>
+
+      <ul class="stats-list">
+        <li>
+          <span>🔥 Streak</span>
+          <strong>{{ streak_count }} days</strong>
+        </li>
+        <li>
+          <span>⏳ Missed doses</span>
+          <strong>{{ missed_doses }}</strong>
+        </li>
+        <li>
+          <span>✅ Completed doses</span>
+          <strong>{{ completed_doses }}</strong>
+        </li>
+        <li>
+          <span>🏅 Achievement points</span>
+          <strong>{{ achievement_points }}</strong>
+        </li>
+        <li>
+          <span>📊 Rank</span>
+          <strong>Top {{ user_rank_percentile }}%</strong>
+        </li>
+      </ul>
+      <p>Keep up the great work! Consistency is key to managing your health.</p>
+
     </div>
 
     <div class="footer">
-      © 2025 MedMinder • 
-      <a href="#unsubscribe">Unsubscribe</a> • 
-      <a href="#privacy">Privacy Policy</a>
+        <p>Keep crushing it! Your stats are looking good.</p>
+        <p>© 2025 MedMinder • <a href="#unsubscribe" style="color: #6c757d;">Unsubscribe</a> • <a href="#privacy" style="color: #6c757d;">Privacy Policy</a></p>
     </div>
   </div>
 </body>

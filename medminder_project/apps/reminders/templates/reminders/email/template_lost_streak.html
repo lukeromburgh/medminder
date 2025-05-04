@@ -28,7 +28,7 @@
         
         /* Header section with red background */
         .header {
-            background-color: #E91E63;
+            background-image: linear-gradient(180deg, #FF2F66 0%,rgb(163, 26, 58) 100%);
             color: white;
             text-align: center;
             padding: 30px 20px;
@@ -51,7 +51,7 @@
         .illustration {
             text-align: center;
             margin: 20px auto;
-            max-width: 250px;
+            max-width: 300px;
         }
         
         /* Badge styling */
@@ -60,9 +60,9 @@
             background-color: rgba(0, 0, 0, 0.2);
             color: #ffffff;
             padding: 5px 15px;
-            border-radius: 20px;
+            border-radius: 10px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         /* Streak lost heading */
@@ -76,14 +76,15 @@
         /* Button styling */
         .button {
             display: inline-block;
-            background-color: #4CAF50;
+            background-color: #32C166;
             color: #ffffff !important;
-            font-weight: bold;
-            text-decoration: none;
-            padding: 12px 30px;
+            padding: 12px 28px;
             border-radius: 30px;
-            margin: 10px 0;
-            font-size: 18px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 10px; /* Add some space above button */
+            margin-bottom: 20px; /* Add some space below button */
         }
         
         /* Main content area */
@@ -129,12 +130,11 @@
     <div class="container">
         <div class="header">
             <div class="logo">
-                <span class="logo-text">♦♦♦ MedMinder</span>
+                <img src="https://i.ibb.co/FkXCndqx/white-logo.png" height="24px" width="auto" alt="white-logo" border="0">
             </div>
             <div class="illustration">
-                <!-- Replace with your actual illustration image URL -->
-                <img src="https://via.placeholder.com/250" alt="Person falling illustration" style="max-width: 100%;">
-            </div>
+                <img src="https://i.ibb.co/KcJkFLBj/lost-streak.png" alt="Person falling illustration" style="max-width: 100%; height: auto;">
+                </div>
             <div class="badge">Uh oh</div>
             <div class="streak-lost-title">
                 You lost your streak :(
