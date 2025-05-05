@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Plans Comparison - MediRemind{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary-color: #4f46e5;
+    --primary-light: #818cf8;
+    --secondary-color: #10b981;
+    --light-color: #f3f4f6;
+    --dark-color: #1f2937;
+    --gray-color: #9ca3af;
+  }
+
+  .plan-card {
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .premium-plan {
+    border: 2px solid var(--primary-color);
+  }
+
+  .feature-icon {
+    color: var(--secondary-color);
+  }
+
+  .feature-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .feature-item:last-child {
+    border-bottom: none;
+  }
+
+  .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .badge-popular {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+    position: absolute;
+    top: -10px;
+    right: 20px;
+  }
+
+  .section-heading {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--dark-color);
+    position: relative;
+  }
+
+  .section-heading:after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -15px;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+  }
+
+  .check-icon {
+    color: var(--secondary-color);
+  }
+
+  .x-icon {
+    color: var(--gray-color);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="flex flex-col min-h-screen">
+    {# --- Navbar --- #}
+    {# Typically the navbar doesn't need an entrance animation as it's the first thing the user sees #}
+    <nav class="bg-white shadow-sm">
+        <div class="w-7xl md:w-full mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16"> {# Added items-center here for vertical alignment #}
+            <div class="flex-shrink-0 animate-fade-in-up"> {# Use flex-shrink-0 to prevent logo from shrinking #}
+              <img src="https://i.ibb.co/sJtcRSSQ/black-logo.png" class="h-6 w-auto" alt="Your Website Logo"> {# Use Tailwind classes for height and width, add alt text #}
+            </div>
+            <div class="flex items-center animate-fade-in-up animation-delay-100"> {# Added animation and delay #}
+              <a href="{% url 'accounts:login' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Log In</a>
+              <a href="{% url 'accounts:signup' %}" class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Sign Up</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+<div class="container mx-auto px-4 py-12">
+  <!-- Header Section -->
+  <div class="text-center mb-16">
+    <h1 class="section-heading">Choose Your Perfect Plan</h1>
+    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+      Get started with our free plan or upgrade to premium for advanced features that help you stay on top of your medical needs.
+    </p>
+  </div>
+
+  <!-- Plans Comparison Section -->
+  <div class="flex flex-col md:flex-row gap-8 justify-center max-w-6xl mx-auto">
+    
+    <!-- Free Plan Card -->
+    <div class="plan-card bg-white p-8 flex-1">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Free Plan</h2>
+        <p class="text-gray-600 mb-4">Perfect for getting started</p>
+        <div class="text-3xl font-bold text-gray-900 mb-4">$0<span class="text-lg font-normal text-gray-600">/month</span></div>
+        <a href="" class="btn-outline block w-full text-center">Get Started</a>
+      </div>
+      
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800">Included Features:</h3>
+        <ul>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Basic medication reminders</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Up to 5 medication entries</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Email notifications</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Medication history (7 days)</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-times x-icon mr-3"></i>
+            <span class="text-gray-500">SMS reminders</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-times x-icon mr-3"></i>
+            <span class="text-gray-500">Family member accounts</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-times x-icon mr-3"></i>
+            <span class="text-gray-500">Prescription refill tracking</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-times x-icon mr-3"></i>
+            <span class="text-gray-500">Doctor appointment reminders</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Premium Plan Card -->
+    <div class="plan-card premium-plan bg-white p-8 flex-1 relative">
+      <span class="badge-popular">Most Popular</span>
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Premium Plan</h2>
+        <p class="text-gray-600 mb-4">For comprehensive health management</p>
+        <div class="text-3xl font-bold text-primary-color mb-4">$9.99<span class="text-lg font-normal text-gray-600">/month</span></div>
+        <!-- Note: Premium view link placeholder as requested -->
+        <button class="btn-primary block w-full text-center">Upgrade Now</button>
+      </div>
+      
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800">All Free Features Plus:</h3>
+        <ul>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span><strong>Unlimited</strong> medication entries</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>SMS and push notifications</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Add up to 5 family members</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Prescription refill tracking</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Doctor appointment reminders</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Full medication history</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Export health reports</span>
+          </li>
+          <li class="feature-item flex items-center">
+            <i class="fas fa-check check-icon mr-3"></i>
+            <span>Priority customer support</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimonials or Additional Info -->
+  <div class="mt-16 text-center">
+    <h2 class="text-2xl font-bold mb-8 text-gray-800">Why Our Users Love MediRemind</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div class="bg-light-color p-6 rounded-lg">
+        <div class="mb-4">
+          <i class="fas fa-quote-left text-2xl text-primary-light"></i>
+        </div>
+        <p class="mb-4 text-gray-700">"This app has helped me stay on track with my medications. The premium plan is worth every penny for the SMS reminders alone!"</p>
+        <p class="font-semibold text-gray-900">- Sarah J.</p>
+      </div>
+      
+      <div class="bg-light-color p-6 rounded-lg">
+        <div class="mb-4">
+          <i class="fas fa-quote-left text-2xl text-primary-light"></i>
+        </div>
+        <p class="mb-4 text-gray-700">"I manage medications for both my parents and myself. The family account feature has been a lifesaver for us."</p>
+        <p class="font-semibold text-gray-900">- Michael T.</p>
+      </div>
+      
+      <div class="bg-light-color p-6 rounded-lg">
+        <div class="mb-4">
+          <i class="fas fa-quote-left text-2xl text-primary-light"></i>
+        </div>
+        <p class="mb-4 text-gray-700">"Started with the free plan and upgraded to premium. The appointment reminders and prescription tracking are game-changers."</p>
+        <p class="font-semibold text-gray-900">- Lisa M.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="mt-16 max-w-3xl mx-auto">
+    <h2 class="text-2xl font-bold mb-8 text-center text-gray-800">Frequently Asked Questions</h2>
+    
+    <div class="space-y-4">
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <h3 class="font-semibold text-gray-900">Can I switch between plans?</h3>
+        <p class="mt-2 text-gray-700">Yes, you can upgrade to Premium at any time. If you downgrade to Free, you'll keep using Premium until the end of your billing period.</p>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <h3 class="font-semibold text-gray-900">Is there a discount for annual billing?</h3>
+        <p class="mt-2 text-gray-700">Yes! Save 20% with our annual plan at $95.90/year instead of the monthly rate.</p>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <h3 class="font-semibold text-gray-900">How do family accounts work?</h3>
+        <p class="mt-2 text-gray-700">With Premium, you can add up to 5 family members. Each person gets their own login but you can manage and view everyone's medications.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA Section -->
+  <div class="mt-16 text-center">
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">Ready to take control of your health?</h2>
+    <p class="text-gray-600 mb-8 max-w-2xl mx-auto">Start with our free plan today or go premium for the complete experience.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="" class="btn-outline">Try Free Plan</a>
+      <!-- Note: Premium view link placeholder as requested -->
+      <button class="btn-primary">Get Premium</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Any additional JavaScript can go here
+  document.addEventListener('DOMContentLoaded', function() {
+    // Animation for plan cards
+    const planCards = document.querySelectorAll('.plan-card');
+    planCards.forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-10px)';
+      });
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(-5px)';
+      });
+    });
+  });
+</script>
+{% endblock %}

@@ -171,6 +171,7 @@ if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
 
 CRONJOBS = [
     ('0 2 * * *', 'apps.reminders.management.commands.populate_reminder_stats', 'populate_reminder_stats'),
-    ('0 2 * * *', 'apps.reminders.management.commands.generate_upcoming_reminder_logs', 'populate_reminder_stats'),
-    ('*/15 * * * *', 'apps.reminders.management.commands.populate_reminder_stats', 'send_reminders'),
+    ('0 2 * * *', 'apps.reminders.management.commands.generate_upcoming_reminder_logs', 'generate_upcoming_reminder_logs'), # Corrected alias too, just in case
+    ('*/15 * * * *', 'apps.reminders.management.commands.send_reminders', 'send_reminders'), # Every 15 minutes
 ]
+

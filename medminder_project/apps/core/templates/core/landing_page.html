@@ -43,11 +43,9 @@
     {# Typically the navbar doesn't need an entrance animation as it's the first thing the user sees #}
     <nav class="bg-white shadow-sm">
       <div class="w-7xl md:w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex-shrink-0 flex items-center font-bold text-xl text-black animate-fade-in-up"> {# Added animation #}
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>MedMinder
+        <div class="flex justify-between items-center h-16"> {# Added items-center here for vertical alignment #}
+          <div class="flex-shrink-0 animate-fade-in-up"> {# Use flex-shrink-0 to prevent logo from shrinking #}
+            <img src="https://i.ibb.co/sJtcRSSQ/black-logo.png" class="h-6 w-auto" alt="Your Website Logo"> {# Use Tailwind classes for height and width, add alt text #}
           </div>
           <div class="flex items-center animate-fade-in-up animation-delay-100"> {# Added animation and delay #}
             <a href="{% url 'accounts:login' %}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Log In</a>
