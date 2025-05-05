@@ -103,6 +103,61 @@
       </article>
     </main>
 
+    <div class="container mx-auto px-4 py-16 sm:py-20 flex flex-col items-center justify-center text-center lg:max-w-5xl rounded-lg shadow-lg border border-gray-200 bg-white">
+      {# --- Email Subscription Widget --- #}
+      {# Consider reducing lg:max-w-5xl (e.g., to lg:max-w-3xl) if the container feels too wide for just this content #}
+  
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 animate-fade-in-up">
+          Be the first to know!
+      </h1>
+  
+      <p class="text-lg text-gray-600 mb-8 max-w-xl animate-fade-in-up animation-delay-100">
+          Join our mailing list to get exclusive updates on new features, special offers, and important announcements delivered straight to your inbox. Don't miss out!
+      </p>
+  
+      {# Display Django Messages #}
+      <div class="w-full max-w-md mb-6">
+          {% include 'core/includes/messages.html' %}
+          {# Optional: Fallback message display code... #}
+      </div>
+  
+      <div class="w-full max-w-md animate-fade-in-up animation-delay-200">
+          {# Increased top margin slightly below #}
+          <form method="post" action="{% url 'core:home' %}" class="flex flex-col sm:flex-row gap-3 mt-10">
+              {% csrf_token %}
+  
+              {# --- Email Input Field --- #}
+              <div class="flex-grow w-full">
+                  {{ form.email }}
+  
+                  {# Display field-specific errors #}
+                  {% if form.email.errors %}
+                      <div class="text-red-500 text-sm text-left mt-1">
+                          {% for error in form.email.errors %}
+                              {{ error }}
+                          {% endfor %}
+                      </div>
+                  {% endif %}
+              </div>
+  
+  
+              {# --- Submit Button --- #}
+              <button type="submit" class="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                  Get Notified
+              </button>
+  
+          </form>
+      </div>
+  
+      {# Optional: Add custom animation delay CSS if needed ... #}
+  </div>
+  
+      {% comment %}
+          Add other landing page content below the widget if needed
+      {% endcomment %}
+  
+  </div>
+
     {# --- Footer --- #}
     {# Footer typically doesn't need an entrance animation #}
     <footer class="bg-gray-50">

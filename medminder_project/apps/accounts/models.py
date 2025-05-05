@@ -157,3 +157,11 @@ def ProfileColor():
     ]
 
     return random.choice(colors)
+
+class ReceiveUpdates(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='waitlist')
+    email = models.EmailField(max_length=255, unique=True)
+    notifications = models.BooleanField(default=True, help_text="Receive notifications about updates and new features.")
+
+    def __str__(self):
+        return f"Waitlist for {self.user.username} ({self.email})"
