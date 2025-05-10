@@ -174,7 +174,7 @@ CRONTAB_PYTHON_EXECUTABLE = '/Users/lukedawson/Downloads/medminder_project/venv/
 CRONJOBS = [
     # Schedule: At 02:00 AM every day
     ('0 2 * * *',
-     'populate_reminder_stats',  # This is the name of your management command
+     'apps.reminders.cron.populate_reminder_stats',  # This is the name of your management command
      [],                         # Optional: list of arguments for the command
      {},                         # Optional: dict of keyword arguments for the command
      '>> /Users/lukedawson/Downloads/medminder_project/logs/populate_reminder_stats.log 2>&1' # Log output
@@ -182,7 +182,7 @@ CRONJOBS = [
 
     # Schedule: At 02:00 AM every day
     ('0 2 * * *',
-     'generate_upcoming_reminder_logs',
+     'apps.reminders.cron.generate_upcoming_reminder_logs',
      [],
      {},
      '>> /Users/lukedawson/Downloads/medminder_project/logs/generate_upcoming_reminder_logs.log 2>&1'
@@ -190,7 +190,7 @@ CRONJOBS = [
 
     # Schedule: Every 15 minutes
     ('*/15 * * * *',
-     'send_reminders',
+     'apps.reminders.cron.send_reminders',
      [],
      {},
      '>> /Users/lukedawson/Downloads/medminder_project/logs/send_reminders.log 2>&1'
@@ -198,7 +198,7 @@ CRONJOBS = [
 
     # Schedule: Every 15 minutes
     ('*/15 * * * *',
-     'update_reminders',
+     'apps.reminders.cron.update_reminders',
      [],
      {},
      '>> /Users/lukedawson/Downloads/medminder_project/logs/update_reminders.log 2>&1'
