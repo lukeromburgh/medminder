@@ -169,11 +169,39 @@ if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
     # Corrected message to match the variables being checked
     print("WARNING: Email credentials (EMAIL_HOST_USER, EMAIL_HOST_PASSWORD) are not set as environment variables!")
 
-
+CRONTAB_PYTHON_EXECUTABLE = '/Users/lukedawson/Downloads/medminder_project/venv/bin/python3.10'
 
 CRONJOBS = [
-    ('0 2 * * *', 'apps.reminders.management.commands.populate_reminder_stats', 'populate_reminder_stats'),
-    ('0 2 * * *', 'apps.reminders.management.commands.generate_upcoming_reminder_logs', 'generate_upcoming_reminder_logs'), # Corrected alias too, just in case
-    ('*/15 * * * *', 'apps.reminders.management.commands.send_reminders', 'send_reminders'), # Every 15 minutes
+    # Schedule: At 02:00 AM every day
+    ('0 2 * * *',
+     'populate_reminder_stats',  # This is the name of your management command
+     [],                         # Optional: list of arguments for the command
+     {},                         # Optional: dict of keyword arguments for the command
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/populate_reminder_stats.log 2>&1' # Log output
+    ),
+
+    # Schedule: At 02:00 AM every day
+    ('0 2 * * *',
+     'generate_upcoming_reminder_logs',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/generate_upcoming_reminder_logs.log 2>&1'
+    ),
+
+    # Schedule: Every 15 minutes
+    ('*/15 * * * *',
+     'send_reminders',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/send_reminders.log 2>&1'
+    ),
+
+    # Schedule: Every 15 minutes
+    ('*/15 * * * *',
+     'update_reminders',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/update_reminders.log 2>&1'
+    ),
 ]
 
