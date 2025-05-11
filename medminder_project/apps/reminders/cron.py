@@ -252,7 +252,7 @@ def generate_upcoming_reminder_logs():
 # -----------------------------------------------------------------------------
 # Function 3: Update Missed Reminders (from update_missed_reminders.py)
 # -----------------------------------------------------------------------------
-def update_missed_reminders():
+def update_reminders():
     """
     Finds pending reminders that are past their grace period and marks them as missed.
     """
