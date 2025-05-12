@@ -1,124 +1,332 @@
 {% extends 'base_dashboard.html' %}
+
 {% load static %}
+{% load tz %}
 
 {% block title %}
-  My Account - MedMinder
+My Account - MedMinder
 {% endblock %}
 
 {% block content %}
-  {# Main container with responsive grid layout #}
-  {# On small screens (default), it's a single column (grid-cols-1) #}
-  {# On large screens (lg breakpoint), it becomes a 3-column grid (lg:grid-cols-3) #}
-  <div class="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+{# Main container with responsive grid layout #}
+{# On small screens (default), it's a single column (grid-cols-1) #}
+{# On large screens (lg breakpoint), it becomes a 3-column grid (lg:grid-cols-3) #}
+<div class="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-    {# Left Column: Profile Info, Statistics, Achievements #}
-    {# This column spans 2 columns on large screens (lg:col-span-2) #}
-    {# On small screens, it naturally takes the full width due to the parent grid #}
-    <div class="lg:col-span-2 flex flex-col gap-8">
+{# Left Column: Profile Info, Statistics, Achievements #}
+{# This column spans 2 columns on large screens (lg:col-span-2) #}
+{# On small screens, it naturally takes the full width due to the parent grid #}
+<div class="lg:col-span-2 flex flex-col gap-8">
 
-      {# Profile Info Section - Flex layout for horizontal alignment on larger screens #}
-      {# On smaller screens, flex items will wrap if needed, but with current content, it should be fine #}
-      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6"> {# Added sm:flex-row and sm:items-start for better alignment on small-medium screens #}
-        {# Placeholder for Profile Picture - Adjusted size slightly for mobile #}
-        <div class="w-16 h-16 sm:w-20 sm:h-20 {{ bg_color }} {{ text_color }} rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold shrink-0"> {# Adjusted size and added shrink-0 #}
-          {{ user.username|slice:":1"|upper }} {# Display first letter of username #}
-        </div>
-        {# Flex-grow allows this div to take available space #}
-        <div class="flex-grow text-center sm:text-left mt-4 sm:mt-0"> {# Added text-center/sm:text-left and margin adjustments #}
-          <h1 class="text-xl sm:text-2xl font-bold text-gray-800">{{ user.username }}</h1> {# Adjusted text size #}
-          <p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Joined: {% if user.date_joined %}{{ user.date_joined|date:"F Y" }}{% else %}N/A{% endif %}</p> {# Adjusted text size and margin #}
-          <p class="text-gray-600 text-xs sm:text-sm">Email: {{ user.email }}</p> {# Adjusted text size #}
-          {# Add other basic info here if needed #}
-        </div>
-        {# Edit Profile Button Placeholder - Added margin top for mobile #}
-        <div class="mt-4 sm:mt-0"> {# Added margin top for mobile #}
-          <a href="#" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full text-sm">Edit Profile</a>
-        </div>
-      </div>
+{# Profile Info Section - Flex layout for horizontal alignment on larger screens #}
+{# On smaller screens, flex items will wrap if needed, but with current content, it should be fine #}
+<div class="bg-white border border-[#E6E6E6] rounded-lg p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6"> {# Added sm:flex-row and sm:items-start for better alignment on small-medium screens #}
+{# Placeholder for Profile Picture - Adjusted size slightly for mobile #}
+<div class="w-16 h-16 sm:w-20 sm:h-20 {{ bg_color }} {{ text_color }} rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold shrink-0"> {# Adjusted size and added shrink-0 #}
+{{ user.username|slice:":1"|upper }} {# Display first letter of username #}
+</div>
 
-      {# Current Tier / Badge Section - Centered content #}
-      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6 flex flex-col items-center text-center">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Current Tier</h2> {# Adjusted text size #}
-        {% if achievement_points > 0 %}
-          {# Adjusted text size #}
-          {# Assuming user.profile.current_tier.image_url is the path to the badge image #}
-          {# Use static tag if image_url is a path relative to static files #}
-          {# If image_url is a URL from an ImageField, just use {{ user.profile.current_tier.image.url }} #}
-          <img src="{{ badge_image }}" alt="{{ user.profile.current_tier.name }} Badge" class="w-20 h-20 sm:w-24 sm:h-24 object-contain mb-4"> {# Adjusted size #}
-          <p class="text-base sm:text-lg font-bold text-blue-600 mb-3">{{ user_tier }}</p>
-          <a href="" class="text-blue-600 hover:underline font-medium text-xs sm:text-sm">View All Collected Badges</a> {# Adjusted text size #}
-        {% else %}
-          <p class="text-gray-600 text-xs sm:text-sm">You haven't reached a tier yet.</p> {# Adjusted text size #}
-        {% endif %}
-      </div>
+{# Flex-grow allows this div to take available space #}
+<div class="flex-grow text-center sm:text-left mt-4 sm:mt-0"> {# Added text-center/sm:text-left and margin adjustments #}
+<h1 class="text-xl sm:text-2xl font-bold text-gray-800">{{ user.username }}</h1> {# Adjusted text size #}
+<p class="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">Joined: {% if user.date_joined %}{{ user.date_joined|date:"F Y" }}{% else %}N/A{% endif %}</p> {# Adjusted text size and margin #}
+<p class="text-gray-600 text-xs sm:text-sm">Email: {{ user.email }}</p> {# Adjusted text size #}
+{# Add other basic info here if needed #}
+</div>
+
+{# Edit Profile Button Placeholder - Added margin top for mobile #}
+<div class="mt-4 sm:mt-0"> {# Added margin top for mobile #}
+<a href="#" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full text-sm">Edit Profile</a>
+</div>
+</div>
+
+{# Current Tier / Badge Section - Centered content #}
+<div class="bg-white border border-[#E6E6E6] rounded-lg p-6 flex flex-col items-center text-center">
+<h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Current Tier</h2> {# Adjusted text size #}
+{% if achievement_points > 0 %}
+{# Adjusted text size #}
+{# Assuming user.profile.current_tier.image_url is the path to the badge image #}
+{# Use static tag if image_url is a path relative to static files #}
+{# If image_url is a URL from an ImageField, just use {{ user.profile.current_tier.image.url }} #}
+<img src="{{ badge_image }}" alt="{{ user.profile.current_tier.name }} Badge" class="w-20 h-20 sm:w-24 sm:h-24 object-contain mb-4"> {# Adjusted size #}
+<p class="text-base sm:text-lg font-bold text-blue-600 mb-3">{{ user_tier }}</p>
+<a href="" class="text-blue-600 hover:underline font-medium text-xs sm:text-sm">View All Collected Badges</a> {# Adjusted text size #}
+{% else %}
+<p class="text-gray-600 text-xs sm:text-sm">You haven't reached a tier yet.</p> {# Adjusted text size #}
+{% endif %}
+</div>
 
 
-      {# Statistics Section Placeholder - Grid layout for stats #}
-      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Statistics</h2> {# Adjusted text size #}
-        {# Grid with 2 columns on all screen sizes #}
-        <div class="grid grid-cols-2 gap-4 text-center">
-          <div class="p-3 sm:p-4 bg-gray-100 rounded-md"> {# Adjusted padding #}
-            <p class="text-xl sm:text-2xl font-bold text-green-600">{{streak}}</p> {# Adjusted text size #}
-            <p class="text-gray-600 text-xs sm:text-sm">Day Streak</p> {# Adjusted text size #}
-          </div>
-          <div class="p-3 sm:p-4 bg-gray-100 rounded-md"> {# Adjusted padding #}
-            <p class="text-xl sm:text-2xl font-bold text-blue-600">{{achievement_points}}</p> {# Adjusted text size #}
-            <p class="text-gray-600 text-xs sm:text-sm">Total Points</p> {# Adjusted text size #}
-          </div>
-          {# Add more statistics as needed #}
-        </div>
-      </div>
+{# Statistics Section Placeholder - Grid layout for stats #}
+<div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
+<h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Statistics</h2> {# Adjusted text size #}
+{# Grid with 2 columns on all screen sizes #}
+<div class="grid grid-cols-2 gap-4 text-center">
+<div class="p-3 sm:p-4 bg-gray-100 rounded-md"> {# Adjusted padding #}
+<p class="text-xl sm:text-2xl font-bold text-green-600">{{streak}}</p> {# Adjusted text size #}
+<p class="text-gray-600 text-xs sm:text-sm">Day Streak</p> {# Adjusted text size #}
+</div>
+<div class="p-3 sm:p-4 bg-gray-100 rounded-md"> {# Adjusted padding #}
+<p class="text-xl sm:text-2xl font-bold text-blue-600">{{achievement_points}}</p> {# Adjusted text size #}
+<p class="text-gray-600 text-xs sm:text-sm">Total Points</p> {# Adjusted text size #}
+</div>
+{# Add more statistics as needed #}
+</div>
+</div>
 
-      {# Achievements Section Placeholder - Grid layout for achievements #}
-      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Achievements</h2> {# Adjusted text size #}
-        {# Grid with 1 column on small screens, 2 on medium and up #}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {# Example Achievement Item #}
-          <div class="flex items-center gap-4 p-3 sm:p-4 bg-gray-100 rounded-md"> {# Adjusted padding #}
-            {# Placeholder for Achievement Icon - Adjusted size #}
-            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-400 rounded-full flex items-center justify-center text-white text-lg sm:text-xl shrink-0">🏆</div> {# Adjusted size and added shrink-0 #}
-            <div>
-              <p class="font-semibold text-gray-800 text-sm sm:text-base">First Dose Logged</p> {# Adjusted text size #}
-              <p class="text-gray-600 text-xs sm:text-sm">Log your first medication dose.</p> {# Adjusted text size #}
-            </div>
-          </div>
-          {# Add more achievement items #}
-        </div>
-      </div>
+{# Achievements Section Placeholder - Grid layout for achievements #}
+<div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
+<h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Achievements</h2> {# Adjusted text size #}
+{# Grid with 1 column on small screens, 2 on medium and up #}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+{# Example Achievement Item #}
+<div class="flex items-center gap-4 p-3 sm:p-4 bg-gray-100 rounded-md"> {# Adjusted padding #}
+{# Placeholder for Achievement Icon - Adjusted size #}
+<div class="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-400 rounded-full flex items-center justify-center text-white text-lg sm:text-xl shrink-0">🏆</div> {# Adjusted size and added shrink-0 #}
+<div>
+<p class="font-semibold text-gray-800 text-sm sm:text-base">First Dose Logged</p> {# Adjusted text size #}
+<p class="text-gray-600 text-xs sm:text-sm">Log your first medication dose.</p> {# Adjusted text size #}
+</div>
+</div>
+{# Add more achievement items #}
+</div>
+</div>
 
+</div>
+
+{# Right Column: Replaced Friend Updates with User Settings #}
+{# This column spans 1 column on large screens (lg:col-span-1) #}
+{# On small screens, it naturally takes the full width below the left column #}
+<div class="lg:col-span-1 flex flex-col gap-8">
+
+{# User Settings Section - Replaces Friend Updates #}
+<div id="settings-block" class="bg-white border border-[#E6E6E6] rounded-lg p-6 cursor-pointer hover:bg-gray-50 transition-colors">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-700">User Settings</h2>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+        </svg>
     </div>
-
-    {# Right Column: Friend Updates, Suggestions #}
-    {# This column spans 1 column on large screens (lg:col-span-1) #}
-    {# On small screens, it naturally takes the full width below the left column #}
-    <div class="lg:col-span-1 flex flex-col gap-8">
-
-      {# Friend Updates Section Placeholder #}
-      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Friend updates</h2> {# Adjusted text size #}
-        {# Add your friend updates display logic here #}
-        <p class="text-gray-600 text-xs sm:text-sm">No recent updates.</p> {# Adjusted text size #}
-      </div>
-
-      {# Friend Suggestions Section Placeholder #}
-      <div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Friend suggestions</h2> {# Adjusted text size #}
-        {# Add your friend suggestions display logic here #}
-        <div class="flex items-center gap-4 mb-4">
-            {# Placeholder for Suggestion Avatar - Adjusted size #}
-            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-300 rounded-full shrink-0"></div> {# Adjusted size and added shrink-0 #}
-            <div class="flex-grow">
-                <p class="font-semibold text-gray-800 text-sm">Suggested User</p> {# Adjusted text size #}
-            </div>
-            {# Adjusted button padding and text size #}
-            <button class="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-full shrink-0">+ Follow</button> {# Added shrink-0 #}
+    <div class="space-y-3">
+        <div class="flex items-center justify-between">
+            <p class="text-gray-600 text-sm">Profile Settings</p>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
         </div>
-        {# Add more suggestions #}
-      </div>
-
+        <div class="flex items-center justify-between">
+            <p class="text-gray-600 text-sm">Notification Preferences</p>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </div>
+        <div class="flex items-center justify-between">
+            <p class="text-gray-600 text-sm">Current Plan: <span class="font-medium text-blue-600">{{ user.usersettings.account_tier.name|default:"Free" }}</span></p>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </div>
     </div>
+</div>
 
-  </div>
+{# Friend Suggestions Section Placeholder - Unchanged #}
+<div class="bg-white border border-[#E6E6E6] rounded-lg p-6">
+<h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Friend suggestions</h2> {# Adjusted text size #}
+{# Add your friend suggestions display logic here #}
+<div class="flex items-center gap-4 mb-4">
+{# Placeholder for Suggestion Avatar - Adjusted size #}
+<div class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-300 rounded-full shrink-0"></div> {# Adjusted size and added shrink-0 #}
+<div class="flex-grow">
+<p class="font-semibold text-gray-800 text-sm">Suggested User</p> {# Adjusted text size #}
+</div>
+{# Adjusted button padding and text size #}
+<button class="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold py-1 px-3 rounded-full shrink-0">+ Follow</button> {# Added shrink-0 #}
+</div>
+{# Add more suggestions #}
+</div>
+
+</div>
+
+</div>
+
+{# Settings Modal/Popup #}
+<div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <form id="settings-form" method="POST" action="{% url 'medminder:update_user_settings' %}">
+            {% csrf_token %}
+            <div class="p-5 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-800">User Settings</h3>
+                <button type="button" id="close-settings" class="text-gray-400 hover:text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Profile Color</label>
+                    <div class="flex flex-wrap gap-3" id="color-selector">
+                        {% for bg_color, text_color in available_colors %}
+                        <div class="w-8 h-8 {{ bg_color }} rounded-full cursor-pointer color-option {% if bg_color == user.usersettings.avatar_bg_color %}ring-2 ring-offset-2 ring-blue-500{% endif %}" 
+                             data-bg-color="{{ bg_color }}" 
+                             data-text-color="{{ text_color }}"></div>
+                        {% empty %}
+                        <!-- Default color options if no colors are available from the backend -->
+                        <div class="w-8 h-8 bg-red-200 rounded-full cursor-pointer color-option {% if user.usersettings.avatar_bg_color == 'bg-red-200' %}ring-2 ring-offset-2 ring-blue-500{% endif %}" 
+                             data-bg-color="bg-red-200" 
+                             data-text-color="text-red-800"></div>
+                        <div class="w-8 h-8 bg-blue-200 rounded-full cursor-pointer color-option {% if user.usersettings.avatar_bg_color == 'bg-blue-200' %}ring-2 ring-offset-2 ring-blue-500{% endif %}" 
+                             data-bg-color="bg-blue-200" 
+                             data-text-color="text-blue-800"></div>
+                        <div class="w-8 h-8 bg-green-200 rounded-full cursor-pointer color-option {% if user.usersettings.avatar_bg_color == 'bg-green-200' %}ring-2 ring-offset-2 ring-blue-500{% endif %}" 
+                             data-bg-color="bg-green-200" 
+                             data-text-color="text-green-800"></div>
+                        <div class="w-8 h-8 bg-purple-200 rounded-full cursor-pointer color-option {% if user.usersettings.avatar_bg_color == 'bg-purple-200' %}ring-2 ring-offset-2 ring-blue-500{% endif %}" 
+                             data-bg-color="bg-purple-200" 
+                             data-text-color="text-purple-800"></div>
+                        <div class="w-8 h-8 bg-pink-200 rounded-full cursor-pointer color-option {% if user.usersettings.avatar_bg_color == 'bg-pink-200' %}ring-2 ring-offset-2 ring-blue-500{% endif %}" 
+                             data-bg-color="bg-pink-200" 
+                             data-text-color="text-pink-800"></div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" id="avatar_bg_color" name="avatar_bg_color" value="{{ user.usersettings.avatar_bg_color }}">
+                    <input type="hidden" id="avatar_text_color" name="avatar_text_color" value="{{ user.usersettings.avatar_text_color }}">
+                </div>
+                
+                <div>
+                    <label for="timezone" class="block text-sm font-medium text-gray-700 mb-2">Time Zone</label>
+                    <select id="timezone" name="timezone" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                        {% for tz in timezones %}
+                        <option value="{{ tz }}" {% if user.usersettings.timezone == tz %}selected{% endif %}>{{ tz }}</option>
+                        {% empty %}
+                        <!-- Default timezone options if none are provided from backend -->
+                        <option value="America/Los_Angeles" {% if user.usersettings.timezone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time (UTC-08:00)</option>
+                        <option value="America/Denver" {% if user.usersettings.timezone == 'America/Denver' %}selected{% endif %}>Mountain Time (UTC-07:00)</option>
+                        <option value="America/Chicago" {% if user.usersettings.timezone == 'America/Chicago' %}selected{% endif %}>Central Time (UTC-06:00)</option>
+                        <option value="America/New_York" {% if user.usersettings.timezone == 'America/New_York' %}selected{% endif %}>Eastern Time (UTC-05:00)</option>
+                        <option value="UTC" {% if user.usersettings.timezone == 'UTC' %}selected{% endif %}>GMT (UTC+00:00)</option>
+                        <option value="Europe/Paris" {% if user.usersettings.timezone == 'Europe/Paris' %}selected{% endif %}>Central European Time (UTC+01:00)</option>
+                        <option value="Europe/Kiev" {% if user.usersettings.timezone == 'Europe/Kiev' %}selected{% endif %}>Eastern European Time (UTC+02:00)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="flex items-center">
+                    <input id="email-notifications" name="receive_email_reminders" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" {% if user.usersettings.receive_email_reminders %}checked{% endif %}>
+                    <label for="email-notifications" class="ml-2 block text-sm text-gray-700">Receive email notifications</label>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-md">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Current Plan</p>
+                            <p class="text-sm text-gray-500">{{ user.usersettings.account_tier.name|default:"Free Plan" }}</p>
+                        </div>
+                        <a href="{% url 'medminder:manage_plan' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Upgrade
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end">
+                <button type="button" id="cancel-settings" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-3">
+                    Cancel
+                </button>
+                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // JavaScript for modal functionality and form handling
+    document.addEventListener('DOMContentLoaded', function() {
+        const settingsBlock = document.getElementById('settings-block');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettings = document.getElementById('close-settings');
+        const cancelSettings = document.getElementById('cancel-settings');
+        const settingsForm = document.getElementById('settings-form');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const bgColorInput = document.getElementById('avatar_bg_color');
+        const textColorInput = document.getElementById('avatar_text_color');
+        
+        // Open modal when settings block is clicked
+        settingsBlock.addEventListener('click', function() {
+            settingsModal.classList.remove('hidden');
+            settingsModal.classList.add('flex');
+        });
+        
+        // Close modal functions
+        function closeModal() {
+            settingsModal.classList.add('hidden');
+            settingsModal.classList.remove('flex');
+        }
+        
+        closeSettings.addEventListener('click', closeModal);
+        cancelSettings.addEventListener('click', closeModal);
+        
+        // Close modal when clicking outside
+        settingsModal.addEventListener('click', function(e) {
+            if (e.target === settingsModal) {
+                closeModal();
+            }
+        });
+        
+        // Handle color selection
+        colorOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selection from all options
+                colorOptions.forEach(opt => {
+                    opt.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-500');
+                });
+                
+                // Add selection to clicked option
+                this.classList.add('ring-2', 'ring-offset-2', 'ring-blue-500');
+                
+                // Update hidden inputs
+                bgColorInput.value = this.getAttribute('data-bg-color');
+                textColorInput.value = this.getAttribute('data-text-color');
+            });
+        });
+        
+        // Handle form submission with AJAX
+        settingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Prepare form data
+            const formData = new FormData(settingsForm);
+            
+            // Send AJAX request
+            fetch(settingsForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    alert('Settings updated successfully!');
+                    
+                    // Reload the page to reflect changes
+                    window.location.reload();
+                } else {
+                    // Show error message
+                    alert('Error updating settings: ' + JSON.stringify(data.errors));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving settings.');
+            })
+            .finally(() => {
+                closeModal();
+            });
+        });
+    });
+</script>
 {% endblock %}

@@ -1,10 +1,12 @@
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect, render
 from formtools.wizard.views import SessionWizardView
-# import pdb # Keep or remove based on your debugging needs
 from datetime import timedelta, date # Import date
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
+from django.views.decorators.http import require_POST
+import pytz
+
 from django.urls import reverse
 # Import necessary models
 # Note: ReminderStats model definition is assumed for check_streak
@@ -799,3 +801,53 @@ def account_page_view(request):
     }
 
     return render(request, 'reminders/account_page.html', context) # Ensure template path is correct
+
+from apps.accounts.models import UserSettings
+
+@login_required
+@require_POST
+def update_user_settings(request):
+    """
+    View to handle AJAX requests for updating user settings.
+    Updates the user's settings based on form data and returns JSON response.
+    """
+    if not request.is_ajax():
+        return JsonResponse({'success': False, 'errors': 'Invalid request'})
+    
+    # Get current user settings
+    user_settings = request.user.usersettings
+    
+    # Update settings from form data
+    try:
+        # Avatar colors
+        avatar_bg_color = request.POST.get('avatar_bg_color')
+        avatar_text_color = request.POST.get('avatar_text_color')
+        if avatar_bg_color and avatar_text_color:
+            user_settings.avatar_bg_color = avatar_bg_color
+            user_settings.avatar_text_color = avatar_text_color
+        
+        # Timezone
+        timezone = request.POST.get('timezone')
+        if timezone and timezone in pytz.all_timezones:
+            user_settings.timezone = timezone
+        
+        # Email notifications
+        user_settings.receive_email_reminders = request.POST.get('receive_email_reminders') == 'on'
+        
+        # Save updated settings
+        user_settings.save()
+        
+        return JsonResponse({'success': True})
+    
+    except Exception as e:
+        return JsonResponse({'success': False, 'errors': str(e)})
+
+@login_required
+def manage_plan(request):
+    """
+    View to handle redirecting to plan management page.
+    This is a placeholder for where you would implement your subscription management logic.
+    """
+    # This is where you would implement your subscription management logic
+    # For now, just redirect back to the account page
+    return redirect('account')

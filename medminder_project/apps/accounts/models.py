@@ -32,6 +32,7 @@ class UserSettings(models.Model):
     receive_sms_reminders = models.BooleanField(default=False) # Keep existing setting
     avatar_bg_color = models.CharField(max_length=50, default='bg-gray-200', help_text="Background color for the user's avatar.")
     avatar_text_color = models.CharField(max_length=50, default='text-gray-800', help_text="Text color for the user's avatar.")
+    timezone = models.CharField(max_length=50, default='UTC', help_text="User's preferred timezone.")
     # Fields for payment/tier integration:
 
     # Link to the user's account tier.
