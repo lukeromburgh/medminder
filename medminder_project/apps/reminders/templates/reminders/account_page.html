@@ -166,7 +166,7 @@ My Account - MedMinder
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Profile Color</label>
                     <div class="flex flex-wrap gap-3" id="color-selector">
-                        {% for bg_color, text_color in available_colors %}
+                        {% for bg_color, text_color in colors %}
                         <div class="w-8 h-8 {{ bg_color }} rounded-full cursor-pointer color-option {% if bg_color == user.usersettings.avatar_bg_color %}ring-2 ring-offset-2 ring-blue-500{% endif %}" 
                              data-bg-color="{{ bg_color }}" 
                              data-text-color="{{ text_color }}"></div>
