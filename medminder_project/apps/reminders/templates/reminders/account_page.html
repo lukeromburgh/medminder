@@ -34,10 +34,6 @@ My Account - MedMinder
 {# Add other basic info here if needed #}
 </div>
 
-{# Edit Profile Button Placeholder - Added margin top for mobile #}
-<div class="mt-4 sm:mt-0"> {# Added margin top for mobile #}
-<a href="#" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full text-sm">Edit Profile</a>
-</div>
 </div>
 
 {# Current Tier / Badge Section - Centered content #}
@@ -196,18 +192,14 @@ My Account - MedMinder
                 <div>
                     <label for="timezone" class="block text-sm font-medium text-gray-700 mb-2">Time Zone</label>
                     <select id="timezone" name="timezone" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                        {% for tz in timezones %}
-                        <option value="{{ tz }}" {% if user.usersettings.timezone == tz %}selected{% endif %}>{{ tz }}</option>
-                        {% empty %}
-                        <!-- Default timezone options if none are provided from backend -->
-                        <option value="America/Los_Angeles" {% if user.usersettings.timezone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time (UTC-08:00)</option>
-                        <option value="America/Denver" {% if user.usersettings.timezone == 'America/Denver' %}selected{% endif %}>Mountain Time (UTC-07:00)</option>
-                        <option value="America/Chicago" {% if user.usersettings.timezone == 'America/Chicago' %}selected{% endif %}>Central Time (UTC-06:00)</option>
-                        <option value="America/New_York" {% if user.usersettings.timezone == 'America/New_York' %}selected{% endif %}>Eastern Time (UTC-05:00)</option>
-                        <option value="UTC" {% if user.usersettings.timezone == 'UTC' %}selected{% endif %}>GMT (UTC+00:00)</option>
-                        <option value="Europe/Paris" {% if user.usersettings.timezone == 'Europe/Paris' %}selected{% endif %}>Central European Time (UTC+01:00)</option>
-                        <option value="Europe/Kiev" {% if user.usersettings.timezone == 'Europe/Kiev' %}selected{% endif %}>Eastern European Time (UTC+02:00)</option>
-                        {% endfor %}
+                        {% if timezones %}
+                            {% for tz_item in timezones %}
+                            <option value="{{ tz_item.value }}" {% if user.usersettings.timezone == tz_item.value %}selected{% endif %}>{{ tz_item.display }}</option>
+                            {% endfor %}
+                        {% else %}
+                        <option value="UTC">UTC (default)</option>
+                        <option value="America/New_York">Eastern Time (default)</option>
+                        {% endif %}
                     </select>
                 </div>
                 

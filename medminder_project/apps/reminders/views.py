@@ -751,6 +751,20 @@ def account_page_view(request):
     Passes the current user object and related data to the template context.
     """
     user = request.user
+    
+    common_timezones_list = pytz.common_timezones
+
+    formatted_timezones = []
+    for tz_name in common_timezones_list:
+        # You might want to format tz_name for display,
+        # e.g., replace underscores with spaces, or derive a more descriptive name.
+        # For simplicity here, we'll use the IANA name as the display name as well,
+        # but you could add logic to make it prettier.
+        # Example of a slightly nicer display:
+        display_name = tz_name.replace('_', ' ')
+        # You could also try to get current UTC offset, but this can be complex
+        # due to DST and historical changes. For a dropdown, the name is often enough.
+        formatted_timezones.append({'value': tz_name, 'display': display_name})
 
     # Fetch the UserSettings object for the current user
     # Use .first() or handle DoesNotExist if a User might not have UserSettings
@@ -799,6 +813,7 @@ def account_page_view(request):
         'text_color': text_color, # Pass text color class
         'colors': colors, # Pass the list of color options
         'user_settings': user_settings, # Optionally pass the whole settings object
+        'timezones': formatted_timezones, # Pass the list of timezones
     }
 
     return render(request, 'reminders/account_page.html', context) # Ensure template path is correct
@@ -814,6 +829,7 @@ def update_user_settings(request):
     """
     # Check if the request was made via AJAX
     is_ajax_request = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
 
     if is_ajax_request:
         # --- This block handles the AJAX request ---
