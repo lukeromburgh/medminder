@@ -189,7 +189,7 @@ CRONJOBS = [
     ),
 
     # Schedule: Every 15 minutes
-    ('*/1 * * * *',
+    ('*/15 * * * *',
      'apps.reminders.cron.send_reminders',
      [],
      {},

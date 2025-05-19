@@ -88,8 +88,23 @@ def send_reminders():
             print(f"[{now_utc.isoformat()}] Processing reminder ID {reminder.id} for user {target_user.username} in timezone {user_tz_str}")
             logger.info(f"[{now_utc.isoformat()}] Processing reminder ID {reminder.id} for user {target_user.username} in timezone {user_tz_str}")
 
+            if not user_tz_str:
+                print(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has an empty timezone string in UserSettings. Skipping reminder ID {reminder.id}.")
+                logger.warning(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has an empty timezone string in UserSettings. Skipping reminder ID {reminder.id}.")
+                continue
+            user_tz = pytz.timezone(user_tz_str)
+
             # Combine due_date and due_time into a naive datetime object
             naive_due_datetime = datetime.combine(reminder.due_date, reminder.due_time)
+
+            # Check if naive_due_datetime is indeed naive
+            if timezone.is_aware(naive_due_datetime):
+                print(f"[{now_utc.isoformat()}] WARNING: naive_due_datetime for reminder ID {reminder.id} is unexpectedly timezone-aware: {naive_due_datetime}")
+                logger.warning(f"[{now_utc.isoformat()}] WARNING: naive_due_datetime for reminder ID {reminder.id} is unexpectedly timezone-aware: {naive_due_datetime}")
+                # Attempt to make it naive (assuming it's in UTC if it has tz info)
+                naive_due_datetime = timezone.make_naive(naive_due_datetime, timezone.utc)
+                print(f"[{now_utc.isoformat()}]          Attempting to make it naive (assuming UTC): {naive_due_datetime}")
+                logger.warning(f"[{now_utc.isoformat()}]          Attempting to make it naive (assuming UTC): {naive_due_datetime}")
 
             # Localize the naive datetime to the user's timezone
             local_due_datetime = user_tz.localize(naive_due_datetime)
@@ -97,26 +112,74 @@ def send_reminders():
             # Get the current time in the user's timezone
             now_in_user_tz = now_utc.astimezone(user_tz)
 
-            # Calculate the time difference
+            # Calculate the time difference in seconds
             time_difference = (local_due_datetime - now_in_user_tz).total_seconds()
 
             print(f"[{now_utc.isoformat()}]   due_date: {reminder.due_date}")
             print(f"[{now_utc.isoformat()}]   due_time: {reminder.due_time}")
+            print(f"[{now_utc.isoformat()}]   naive_due_datetime: {naive_due_datetime}")
             print(f"[{now_utc.isoformat()}]   local_due_datetime: {local_due_datetime.isoformat()}")
             print(f"[{now_utc.isoformat()}]   now_in_user_tz: {now_in_user_tz.isoformat()}")
             print(f"[{now_utc.isoformat()}]   Time Difference (seconds): {time_difference}")
 
             logger.info(f"[{now_utc.isoformat()}]   due_date: {reminder.due_date}")
             logger.info(f"[{now_utc.isoformat()}]   due_time: {reminder.due_time}")
+            logger.info(f"[{now_utc.isoformat()}]   naive_due_datetime: {naive_due_datetime}")
             logger.info(f"[{now_utc.isoformat()}]   local_due_datetime: {local_due_datetime.isoformat()}")
             logger.info(f"[{now_utc.isoformat()}]   now_in_user_tz: {now_in_user_tz.isoformat()}")
             logger.info(f"[{now_utc.isoformat()}]   Time Difference (seconds): {time_difference}")
 
-            if not user_tz_str:
-                print(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has an empty timezone string in UserSettings. Skipping reminder ID {reminder.id}.")
-                logger.warning(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has an empty timezone string in UserSettings. Skipping reminder ID {reminder.id}.")
+            if not user_settings.receive_email_reminders:
+                print(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has disabled email reminders. Skipping reminder ID {reminder.id}.")
+                logger.info(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has disabled email reminders. Skipping reminder ID {reminder.id}.")
                 continue
-            user_tz = pytz.timezone(user_tz_str)
+
+            # Check if the reminder is due within the next 15 minutes
+            if 0 <= time_difference <= 900:
+                # Idempotency Check: Skip if already notified
+                if reminder.is_notified:
+                    print(f"[{now_utc.isoformat()}] Cron: Reminder ID {reminder.id} already notified for {target_user.username}. Skipping.")
+                    logger.info(f"[{now_utc.isoformat()}] Cron: Reminder ID {reminder.id} already notified for {target_user.username}. Skipping.")
+                    continue
+
+                # Prepare email
+                try:
+                    dashboard_url_path = reverse('medminder:dashboard')
+                    dashboard_url = f"{settings.SITE_URL}{dashboard_url_path}"
+
+                    context = {
+                        'user': target_user,
+                        'log_entry': reminder,  # Match original template context
+                        'reminder': reminder.reminder,
+                        'dashboard_url': dashboard_url,
+                        'due_time_display': local_due_datetime.strftime('%H:%M %Z'),
+                    }
+
+                    text_body = render_to_string('reminders/email/reminder_email_plain.txt', context)
+                    html_body = render_to_string('reminders/email/template_reminder.html', context)
+
+                    subject = f"MedMinder Reminder: Time for {reminder.reminder.medication.medication_name}"
+                    email_from = settings.DEFAULT_FROM_EMAIL
+                    recipient_list = [target_user.email]
+
+                    msg = EmailMultiAlternatives(subject, text_body, email_from, recipient_list)
+                    msg.attach_alternative(html_body, "text/html")
+                    msg.send()
+
+                    # Update the reminder's notified status
+                    reminder.is_notified = True
+                    reminder.save(update_fields=['is_notified'])
+                    sent_count += 1
+                    print(f"[{now_utc.isoformat()}] Cron: Successfully sent email for reminder ID {reminder.id} to {target_user.email}")
+                    logger.info(f"[{now_utc.isoformat()}] Cron: Successfully sent email for reminder ID {reminder.id} to {target_user.email}")
+
+                except Exception as e:
+                    print(f"[{now_utc.isoformat()}] Cron: ERROR: Failed to send email for reminder ID {reminder.id} to {target_user.email}: {e}")
+                    logger.error(f"[{now_utc.isoformat()}] Cron: Failed to send email for reminder ID {reminder.id}: {e}")
+                    continue
+            else:
+                print(f"[{now_utc.isoformat()}]   Reminder not due within the next 15-minute window. Time difference: {time_difference} seconds.")
+                logger.info(f"[{now_utc.isoformat()}]   Reminder not due within the next 15-minute window. Time difference: {time_difference} seconds.")
 
         except User.usersettings.RelatedObjectDoesNotExist:
             print(f"[{now_utc.isoformat()}] Cron: UserSettings not found for {target_user.username} (ID: {target_user.id}). Skipping reminder ID {reminder.id}.")
@@ -126,72 +189,12 @@ def send_reminders():
             print(f"[{now_utc.isoformat()}] Cron: Unknown timezone '{user_tz_str}' for {target_user.username} (ID: {target_user.id}). Skipping reminder ID {reminder.id}.")
             logger.warning(f"[{now_utc.isoformat()}] Cron: Unknown timezone '{user_tz_str}' for {target_user.username} (ID: {target_user.id}). Skipping reminder ID {reminder.id}.")
             continue
-
-        # Skip if user has disabled email reminders
-        if not user_settings.receive_email_reminders:
-            print(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has disabled email reminders. Skipping reminder ID {reminder.id}.")
-            logger.info(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has disabled email reminders. Skipping reminder ID {reminder.id}.")
-            continue
-
-        # Convert reminder's due_datetime to user's local timezone
-        due_datetime_local = reminder.due_datetime.astimezone(user_tz)
-        now_in_user_local_tz = now_utc.astimezone(user_tz)
-
-        # Check if the reminder is due (within a 1-minute window)
-        time_difference = (due_datetime_local - now_in_user_local_tz).total_seconds()
-        if 0 <= time_difference <= 60:  # Due now or within the next minute
-
-            # Idempotency Check: Skip if already notified
-            if reminder.is_notified:
-                print(f"[{now_utc.isoformat()}] Cron: Reminder ID {reminder.id} already notified for {target_user.username}. Skipping.")
-                logger.info(f"[{now_utc.isoformat()}] Cron: Reminder ID {reminder.id} already notified for {target_user.username}. Skipping.")
-                continue
-
-            # Prepare email
-            try:
-                dashboard_url_path = reverse('medminder:dashboard')
-                dashboard_url = f"{settings.SITE_URL}{dashboard_url_path}"
-
-                context = {
-                    'user': target_user,
-                    'log_entry': reminder,  # Match original template context
-                    'reminder': reminder.reminder,
-                    'dashboard_url': dashboard_url,
-                    'due_time_display': due_datetime_local.strftime('%H:%M %Z'),
-                }
-
-                text_body = render_to_string('reminders/email/reminder_email_plain.txt', context)
-                html_body = render_to_string('reminders/email/template_reminder.html', context)
-
-                subject = f"MedMinder Reminder: Time for {reminder.reminder.medication.medication_name}"
-                email_from = settings.DEFAULT_FROM_EMAIL
-                recipient_list = [target_user.email]
-
-                msg = EmailMultiAlternatives(subject, text_body, email_from, recipient_list)
-                msg.attach_alternative(html_body, "text/html")
-                msg.send()
-
-                # Update the reminder's notified status
-                reminder.is_notified = True
-                reminder.save(update_fields=['is_notified'])
-                sent_count += 1
-                print(f"[{now_utc.isoformat()}] Cron: Successfully sent email for reminder ID {reminder.id} to {target_user.email}")
-                logger.info(f"[{now_utc.isoformat()}] Cron: Successfully sent email for reminder ID {reminder.id} to {target_user.email}")
-
-            except Exception as e:
-                print(f"[{now_utc.isoformat()}] Cron: ERROR: Failed to send email for reminder ID {reminder.id} to {target_user.email}: {e}")
-                logger.error(f"[{now_utc.isoformat()}] Cron: Failed to send email for reminder ID {reminder.id} to {target_user.email}: {e}")
-                continue
-        else:
-                print(f"[{now_utc.isoformat()}]   Reminder not due within the 1-minute window.")
-                logger.info(f"[{now_utc.isoformat()}]   Reminder not due within the 1-minute window.")
-
-                
-
+        except Exception as e:
+            print(f"[{now_utc.isoformat()}] Cron: ERROR processing reminder ID {reminder.id}: {e}")
+            logger.error(f"[{now_utc.isoformat()}] Cron: ERROR processing reminder ID {reminder.id}: {e}")
 
     print(f"[{now_utc.isoformat()}] Cron: Finished. Processed {processed_count} reminders. Sent {sent_count} new reminders.")
     logger.info(f"[{now_utc.isoformat()}] Cron: Finished. Processed {processed_count} reminders. Sent {sent_count} new reminders.")
-
 
 # -----------------------------------------------------------------------------
 # Function 2: Generate Upcoming Reminder Logs (from generate_upcoming_reminder_logs.py)
