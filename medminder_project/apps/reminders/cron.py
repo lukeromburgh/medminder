@@ -3,6 +3,13 @@
 
 import logging
 from datetime import timedelta, datetime, date # Import datetime for comparisons
+from django.utils import timezone as django_timezone
+from django.contrib.auth.models import User
+import pytz
+from datetime import time
+
+import logging
+import pytz
 
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.utils import timezone
@@ -11,10 +18,13 @@ from django.urls import reverse
 from django.conf import settings
 from django.template.loader import render_to_string
 
+from apps.accounts.models import User
+
 # Adjust these import paths based on your project structure
 # It's often better to use absolute paths from the project root if cron.py is in an app.
 # Assuming cron.py is within the 'reminders' app:
-from .models import DailyReminderLog, Reminder # If models.py is in the same app
+from .models import DailyReminderLog, Reminder, UserStats # If models.py is in the same app
+from .views import calculate_current_adherence_streak # If this is in views.py
 # Or if your models are structured differently, e.g.:
 # from apps.reminders.models import DailyReminderLog, Reminder
 
@@ -42,97 +52,145 @@ logger = logging.getLogger(__name__)
 # -----------------------------------------------------------------------------
 def send_reminders():
     """
-    Sends email reminders for upcoming medication doses, respecting timezones.
+    Sends email reminders for medication doses, respecting user timezones.
     """
-    print("Cron job: Starting send_due_reminders...")
-    logger.info("Cron job: Starting send_due_reminders...")
+    now_utc = django_timezone.now()  # Current time in UTC, Django timezone-aware
+    print(f"[{now_utc.isoformat()}] Cron: Starting send_reminders job...")
+    logger.info(f"[{now_utc.isoformat()}] Cron: Starting send_reminders job...")
 
-    now = timezone.localtime(timezone.now())
-    time_window_minutes = 30
-    time_window_end = now + timedelta(minutes=time_window_minutes)
+    # Fetch pending, unnotified reminders with related user and user settings
+    reminders = DailyReminderLog.objects.filter(
+        status=DailyReminderLog.STATUS_PENDING,
+        is_notified=False
+    ).select_related(
+        'user',  # Fetches the related User object
+        'user__usersettings',  # Fetches the related UserSettings object
+        'reminder',  # Fetches the related Reminder object
+        'reminder__medication'  # Fetches the related Medication object
+    )
 
-    print(f"Checking for reminders due between {now.strftime('%Y-%m-%d %H:%M:%S %Z')} and {time_window_end.strftime('%Y-%m-%d %H:%M:%S %Z')}...")
-    logger.info(f"Checking for reminders due between {now.strftime('%Y-%m-%d %H:%M:%S %Z')} and {time_window_end.strftime('%Y-%m-%d %H:%M:%S %Z')}...")
-
-    base_filters = Q(status=DailyReminderLog.STATUS_PENDING) & \
-                   Q(is_notified=False) & \
-                   Q(user__usersettings__receive_email_reminders=True)
-
-    date_filters = Q(due_date=now.date())
-    if time_window_end.date() > now.date():
-        date_filters |= Q(due_date=time_window_end.date())
-        print(f"  Checking logs due today ({now.date()}) and tomorrow ({time_window_end.date()}).")
-        logger.info(f"  Checking logs due today ({now.date()}) and tomorrow ({time_window_end.date()}).")
-
-    else:
-        print(f"  Checking logs due today ({now.date()}).")
-        logger.info(f"  Checking logs due today ({now.date()}).")
-
-
-    potential_reminders = DailyReminderLog.objects.filter(
-        date_filters & base_filters
-    ).select_related('user', 'reminder__medication', 'reminder__dosage', 'reminder__schedule')
-
-    due_reminders = []
-    for log_entry in potential_reminders:
-        due_datetime_aware = log_entry.due_datetime
-        if now <= due_datetime_aware < time_window_end:
-            due_reminders.append(log_entry)
-
-    if not due_reminders:
-        print("No reminders found in the current window.")
-        logger.info("No reminders found in the current window.")
+    if not reminders.exists():
+        print(f"[{now_utc.isoformat()}] Cron: No pending medication reminders to process.")
+        logger.info(f"[{now_utc.isoformat()}] Cron: No pending medication reminders to process.")
         return
 
-    print(f"Found {len(due_reminders)} reminders to notify.")
-    logger.info(f"Found {len(due_reminders)} reminders to notify.")
-
     sent_count = 0
-    for log_entry in due_reminders:
-        user = log_entry.user
-        reminder_obj = log_entry.reminder # Renamed to avoid conflict with 'Reminder' model
+    processed_count = 0
 
-        if log_entry.status != DailyReminderLog.STATUS_PENDING or log_entry.is_notified:
-            print(f"Skipping log entry {log_entry.id} - status not pending or already notified during final check.")
-            logger.warning(f"Skipping log entry {log_entry.id} - status not pending or already notified during final check.")
-            continue
+    for reminder in reminders:
+        processed_count += 1
+        target_user = reminder.user
 
         try:
-            dashboard_url_path = reverse('medminder:dashboard') # Ensure 'medminder' is the correct app_name
-            dashboard_url = f"{settings.SITE_URL}{dashboard_url_path}"
+            user_settings = target_user.usersettings
+            user_tz_str = user_settings.timezone
 
-            context = {
-                'user': user,
-                'log_entry': log_entry,
-                'reminder': reminder_obj,
-                'dashboard_url': dashboard_url,
-                'due_time_display': timezone.localtime(log_entry.due_datetime).strftime('%H:%M %Z'),
-            }
+            print(f"[{now_utc.isoformat()}] Processing reminder ID {reminder.id} for user {target_user.username} in timezone {user_tz_str}")
+            logger.info(f"[{now_utc.isoformat()}] Processing reminder ID {reminder.id} for user {target_user.username} in timezone {user_tz_str}")
 
-            text_body = render_to_string('reminders/email/reminder_email_plain.txt', context)
-            html_body = render_to_string('reminders/email/template_reminder.html', context)
+            # Combine due_date and due_time into a naive datetime object
+            naive_due_datetime = datetime.combine(reminder.due_date, reminder.due_time)
 
-            subject = f"MedMinder Reminder: Time for {reminder_obj.medication.medication_name}"
-            email_from = settings.DEFAULT_FROM_EMAIL
-            recipient_list = [user.email]
+            # Localize the naive datetime to the user's timezone
+            local_due_datetime = user_tz.localize(naive_due_datetime)
 
-            msg = EmailMultiAlternatives(subject, text_body, email_from, recipient_list)
-            msg.attach_alternative(html_body, "text/html")
-            msg.send()
+            # Get the current time in the user's timezone
+            now_in_user_tz = now_utc.astimezone(user_tz)
 
-            log_entry.is_notified = True
-            # log_entry.notification_sent_at = timezone.now() # Already handled by model's auto_now_add or default
-            log_entry.save(update_fields=['is_notified'])
-            sent_count += 1
-            print(f"Successfully sent email for log entry {log_entry.id} to {user.email}")
-            logger.info(f"Successfully sent email for log entry {log_entry.id} to {user.email}")
+            # Calculate the time difference
+            time_difference = (local_due_datetime - now_in_user_tz).total_seconds()
 
-        except Exception as e:
-            print(f"ERROR: Failed to send email for log entry {log_entry.id} to {user.email}: {e}")
-            logger.error(f"Failed to send email for log entry {log_entry.id} to {user.email}: {e}")
+            print(f"[{now_utc.isoformat()}]   due_date: {reminder.due_date}")
+            print(f"[{now_utc.isoformat()}]   due_time: {reminder.due_time}")
+            print(f"[{now_utc.isoformat()}]   local_due_datetime: {local_due_datetime.isoformat()}")
+            print(f"[{now_utc.isoformat()}]   now_in_user_tz: {now_in_user_tz.isoformat()}")
+            print(f"[{now_utc.isoformat()}]   Time Difference (seconds): {time_difference}")
 
-    print(f"Finished sending {sent_count} reminders.")
-    logger.info(f"Finished sending {sent_count} reminders.")
+            logger.info(f"[{now_utc.isoformat()}]   due_date: {reminder.due_date}")
+            logger.info(f"[{now_utc.isoformat()}]   due_time: {reminder.due_time}")
+            logger.info(f"[{now_utc.isoformat()}]   local_due_datetime: {local_due_datetime.isoformat()}")
+            logger.info(f"[{now_utc.isoformat()}]   now_in_user_tz: {now_in_user_tz.isoformat()}")
+            logger.info(f"[{now_utc.isoformat()}]   Time Difference (seconds): {time_difference}")
+
+            if not user_tz_str:
+                print(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has an empty timezone string in UserSettings. Skipping reminder ID {reminder.id}.")
+                logger.warning(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has an empty timezone string in UserSettings. Skipping reminder ID {reminder.id}.")
+                continue
+            user_tz = pytz.timezone(user_tz_str)
+
+        except User.usersettings.RelatedObjectDoesNotExist:
+            print(f"[{now_utc.isoformat()}] Cron: UserSettings not found for {target_user.username} (ID: {target_user.id}). Skipping reminder ID {reminder.id}.")
+            logger.warning(f"[{now_utc.isoformat()}] Cron: UserSettings not found for {target_user.username} (ID: {target_user.id}). Skipping reminder ID {reminder.id}.")
+            continue
+        except pytz.exceptions.UnknownTimeZoneError:
+            print(f"[{now_utc.isoformat()}] Cron: Unknown timezone '{user_tz_str}' for {target_user.username} (ID: {target_user.id}). Skipping reminder ID {reminder.id}.")
+            logger.warning(f"[{now_utc.isoformat()}] Cron: Unknown timezone '{user_tz_str}' for {target_user.username} (ID: {target_user.id}). Skipping reminder ID {reminder.id}.")
+            continue
+
+        # Skip if user has disabled email reminders
+        if not user_settings.receive_email_reminders:
+            print(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has disabled email reminders. Skipping reminder ID {reminder.id}.")
+            logger.info(f"[{now_utc.isoformat()}] Cron: User {target_user.username} (ID: {target_user.id}) has disabled email reminders. Skipping reminder ID {reminder.id}.")
+            continue
+
+        # Convert reminder's due_datetime to user's local timezone
+        due_datetime_local = reminder.due_datetime.astimezone(user_tz)
+        now_in_user_local_tz = now_utc.astimezone(user_tz)
+
+        # Check if the reminder is due (within a 1-minute window)
+        time_difference = (due_datetime_local - now_in_user_local_tz).total_seconds()
+        if 0 <= time_difference <= 60:  # Due now or within the next minute
+
+            # Idempotency Check: Skip if already notified
+            if reminder.is_notified:
+                print(f"[{now_utc.isoformat()}] Cron: Reminder ID {reminder.id} already notified for {target_user.username}. Skipping.")
+                logger.info(f"[{now_utc.isoformat()}] Cron: Reminder ID {reminder.id} already notified for {target_user.username}. Skipping.")
+                continue
+
+            # Prepare email
+            try:
+                dashboard_url_path = reverse('medminder:dashboard')
+                dashboard_url = f"{settings.SITE_URL}{dashboard_url_path}"
+
+                context = {
+                    'user': target_user,
+                    'log_entry': reminder,  # Match original template context
+                    'reminder': reminder.reminder,
+                    'dashboard_url': dashboard_url,
+                    'due_time_display': due_datetime_local.strftime('%H:%M %Z'),
+                }
+
+                text_body = render_to_string('reminders/email/reminder_email_plain.txt', context)
+                html_body = render_to_string('reminders/email/template_reminder.html', context)
+
+                subject = f"MedMinder Reminder: Time for {reminder.reminder.medication.medication_name}"
+                email_from = settings.DEFAULT_FROM_EMAIL
+                recipient_list = [target_user.email]
+
+                msg = EmailMultiAlternatives(subject, text_body, email_from, recipient_list)
+                msg.attach_alternative(html_body, "text/html")
+                msg.send()
+
+                # Update the reminder's notified status
+                reminder.is_notified = True
+                reminder.save(update_fields=['is_notified'])
+                sent_count += 1
+                print(f"[{now_utc.isoformat()}] Cron: Successfully sent email for reminder ID {reminder.id} to {target_user.email}")
+                logger.info(f"[{now_utc.isoformat()}] Cron: Successfully sent email for reminder ID {reminder.id} to {target_user.email}")
+
+            except Exception as e:
+                print(f"[{now_utc.isoformat()}] Cron: ERROR: Failed to send email for reminder ID {reminder.id} to {target_user.email}: {e}")
+                logger.error(f"[{now_utc.isoformat()}] Cron: Failed to send email for reminder ID {reminder.id} to {target_user.email}: {e}")
+                continue
+        else:
+                print(f"[{now_utc.isoformat()}]   Reminder not due within the 1-minute window.")
+                logger.info(f"[{now_utc.isoformat()}]   Reminder not due within the 1-minute window.")
+
+                
+
+
+    print(f"[{now_utc.isoformat()}] Cron: Finished. Processed {processed_count} reminders. Sent {sent_count} new reminders.")
+    logger.info(f"[{now_utc.isoformat()}] Cron: Finished. Processed {processed_count} reminders. Sent {sent_count} new reminders.")
 
 
 # -----------------------------------------------------------------------------
@@ -375,3 +433,138 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS("All cron jobs finished."))
 """
+
+def check_and_notify_streaks():
+    """
+    Checks for users who have just achieved a 7-day streak and sends them
+    a congratulatory email with bonus points information.
+    """
+    print("[{}] Cron: Starting streak notification check...".format(
+        timezone.now().isoformat()
+    ))
+    
+    for user in User.objects.filter(is_active=True):
+        try:
+            # Check if user has exactly 7 days streak (not more)
+            current_streak = calculate_current_adherence_streak(user)
+            
+            if current_streak == 7:
+                # Check if we've already notified them about this streak
+                already_notified = UserStats.objects.filter(
+                    user=user,
+                    last_streak_notification_date=timezone.now().date()
+                ).exists()
+                
+                if not already_notified:
+                    # Prepare email context
+                    context = {
+                        'user': user,
+                        'streak_count': current_streak,
+                        'bonus_points': 100,  # Bonus points for 7-day streak
+                        'boost_url': f"{settings.SITE_URL}{reverse('medminder:dashboard')}"
+                    }
+                    
+                    # Render email templates
+                    html_content = render_to_string(
+                        'reminders/email/template_7day_streak.html', 
+                        context
+                    )
+                    text_content = render_to_string(
+                        'reminders/email/template_7day_streak.txt', 
+                        context
+                    )
+                    
+                    # Create email
+                    subject = f"🎉 Incredible! You've reached a {current_streak}-day streak!"
+                    from_email = settings.DEFAULT_FROM_EMAIL
+                    
+                    # Send email
+                    msg = EmailMultiAlternatives(
+                        subject,
+                        text_content,
+                        from_email,
+                        [user.email]
+                    )
+                    msg.attach_alternative(html_content, "text/html")
+                    msg.send()
+                    
+                    # Update UserStats to record notification
+                    UserStats.objects.update_or_create(
+                        user=user,
+                        defaults={'last_streak_notification_date': timezone.now().date()}
+                    )
+                    
+                    print(f"[{timezone.now().isoformat()}] Sent streak notification to {user.email}")
+                    logger.info(f"Sent streak notification to {user.email}")
+                
+        except Exception as e:
+            print(f"[{timezone.now().isoformat()}] Error processing streak for {user.email}: {e}")
+            logger.error(f"Error processing streak for {user.email}: {e}")
+            continue
+    
+    print(f"[{timezone.now().isoformat()}] Cron: Finished streak notification check.")
+    logger.info("Finished streak notification check.")
+
+def check_and_notify_lost_streaks():
+    """
+    Checks for users who have lost a streak of 3 or more days and sends them
+    an encouragement email to get back on track.
+    """
+    print(f"[{timezone.now().isoformat()}] Cron: Starting lost streak notification check...")
+    logger.info("Starting lost streak notification check...")
+    
+    # Get active users who haven't been notified today about a lost streak
+    for user in User.objects.filter(is_active=True):
+        try:
+            # Get the user's stats
+            user_stats, _ = UserStats.objects.get_or_create(user=user)
+            
+            # If they had a previous streak of 3+ days and current streak is 0
+            if (user_stats.previous_streak >= 3 and 
+                calculate_current_adherence_streak(user) == 0 and
+                user_stats.last_lost_streak_notification_date != timezone.now().date()):
+                
+                # Prepare email context
+                context = {
+                    'user': user,
+                    'previous_streak': user_stats.previous_streak,
+                    'dashboard_url': f"{settings.SITE_URL}{reverse('medminder:dashboard')}"
+                }
+                
+                # Render email templates
+                html_content = render_to_string(
+                    'reminders/email/template_lost_streak.html', 
+                    context
+                )
+                text_content = render_to_string(
+                    'reminders/email/template_lost_streak.txt', 
+                    context
+                )
+                
+                # Create and send email
+                subject = "Don't Give Up - Your MedMinder Streak"
+                from_email = settings.DEFAULT_FROM_EMAIL
+                
+                msg = EmailMultiAlternatives(
+                    subject,
+                    text_content,
+                    from_email,
+                    [user.email]
+                )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+                
+                # Update notification date to prevent multiple notifications
+                user_stats.last_lost_streak_notification_date = timezone.now().date()
+                user_stats.save(update_fields=['last_lost_streak_notification_date'])
+                
+                print(f"[{timezone.now().isoformat()}] Sent lost streak notification to {user.email}")
+                logger.info(f"Sent lost streak notification to {user.email}")
+                
+        except Exception as e:
+            print(f"[{timezone.now().isoformat()}] Error processing lost streak for {user.email}: {e}")
+            logger.error(f"Error processing lost streak for {user.email}: {e}")
+            continue
+    
+    print(f"[{timezone.now().isoformat()}] Cron: Finished lost streak notification check.")
+    logger.info("Finished lost streak notification check.")

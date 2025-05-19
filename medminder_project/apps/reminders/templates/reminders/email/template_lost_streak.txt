@@ -1,0 +1,26 @@
+Subject: MedMinder: Streak Reset Notification
+
+MedMinder
+
+Uh oh
+You lost your streak :(
+
+Get back on track: {{ dashboard_url }}
+
+Hey {{ user.username }},
+
+We all miss a dose sometimes - it happens to everyone! The important thing is not to get discouraged.
+
+Remember that building healthy habits is a journey with ups and downs. Each new day is an opportunity to start fresh and recommit to your medication routine.
+
+Here are some quick tips that might help:
+- Set additional reminders at strategic times
+- Keep your medication somewhere visible
+- Pair taking your medication with another daily habit
+- Ask a friend or family member to help remind you
+
+Your health is what matters most, and we're here to support you every step of the way!
+
+You can do this - we believe in you!
+
+© 2025 MedMinder • Unsubscribe • Privacy Policy

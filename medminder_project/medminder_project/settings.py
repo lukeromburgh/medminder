@@ -189,7 +189,7 @@ CRONJOBS = [
     ),
 
     # Schedule: Every 15 minutes
-    ('*/15 * * * *',
+    ('*/1 * * * *',
      'apps.reminders.cron.send_reminders',
      [],
      {},
@@ -202,6 +202,21 @@ CRONJOBS = [
      [],
      {},
      '>> /Users/lukedawson/Downloads/medminder_project/logs/update_reminders.log 2>&1'
+    ),
+
+    ('0 9 * * *',
+     'apps.reminders.cron.check_and_notify_lost_streaks',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/lost_streak_notifications.log 2>&1'
+    ),
+
+    # Check for 7-day streaks daily at 9:00 AM
+    ('0 9 * * *',
+     'apps.reminders.cron.check_and_notify_streaks',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/streak_notifications.log 2>&1'
     ),
 ]
 
