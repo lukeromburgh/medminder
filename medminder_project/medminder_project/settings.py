@@ -188,8 +188,8 @@ CRONJOBS = [
      '>> /Users/lukedawson/Downloads/medminder_project/logs/generate_upcoming_reminder_logs.log 2>&1'
     ),
 
-    # Schedule: Every 15 minutes
-    ('*/1 * * * *',
+    # Schedule: Every 10 minutes
+    ('*/10 * * * *',
      'apps.reminders.cron.send_reminders',
      [],
      {},
