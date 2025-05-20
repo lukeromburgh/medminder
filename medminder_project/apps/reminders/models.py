@@ -206,6 +206,7 @@ class UserStats(models.Model):
     last_streak_notification_date = models.DateField(null=True, blank=True)
     last_lost_streak_notification_date = models.DateField(null=True, blank=True)
     previous_streak = models.IntegerField(default=0)
+    last_inactivity_notification_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} stats - {self.date}"

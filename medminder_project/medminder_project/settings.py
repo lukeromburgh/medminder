@@ -189,7 +189,7 @@ CRONJOBS = [
     ),
 
     # Schedule: Every 15 minutes
-    ('*/15 * * * *',
+    ('*/1 * * * *',
      'apps.reminders.cron.send_reminders',
      [],
      {},
@@ -220,3 +220,21 @@ CRONJOBS = [
     ),
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'cron.log',
+        },
+    },
+    'loggers': {
+        'reminders.cron': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

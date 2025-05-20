@@ -1,0 +1,19 @@
+Hey {{ user.username }},
+
+We've noticed you haven't logged into MedMinder for a while, and we wanted to check in.
+
+Managing medications can be challenging, but staying consistent is key to feeling your best. We're here to help make that easier.
+
+Your health journey matters, and we've kept your data and streaks ready for when you return. Just one quick login and you'll be back on track.
+
+Is there anything we can help with? If you're having trouble with the app or have suggestions for improvements, we'd love to hear from you!
+
+Return to MedMinder: {{ app_url }}
+
+Wishing you good health,
+The MedMinder Team
+
+© 2025 MedMinder
+Support: [Support Link]
+Unsubscribe: [Unsubscribe Link]
+Privacy Policy: [Privacy Policy Link]

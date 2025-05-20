@@ -1,0 +1,21 @@
+Hey {{ user.username }},
+
+It's time for your medication dose!
+
+Reminder details:
+- Medication: {{ reminder.medication.medication_name }}
+- Dosage: {{ reminder.dosage.dosage }}
+- Scheduled Time: {{ due_time_display }}
+
+Please visit your dashboard to view and log your dose details.
+
+Go to dashboard: {{ dashboard_url }}
+View Full Details: {{ dashboard_url }}
+
+If the button above doesn't work, you can copy and paste this link into your browser:
+{{ dashboard_url }}
+
+Best regards,
+MedMinder Team
+
+Unsubscribe | Privacy Policy
