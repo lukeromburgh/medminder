@@ -34,7 +34,7 @@ from .views import calculate_current_adherence_streak # If this is in views.py
 # Let's assume a more direct import path if 'accounts' is a top-level app.
 # You'll need to verify this path based on your actual project structure.
 try:
-    from apps.accounts.models import UserSettings # Replace your_project_name
+    from apps.accounts.models import UserSettings 
 except ImportError:
     # Fallback if the above structure isn't quite right, adjust as needed
     # This is a common pattern if 'accounts' is an app at the same level as 'reminders'
