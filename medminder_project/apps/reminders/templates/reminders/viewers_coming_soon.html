@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+{% extends "base_dashboard.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Viewers Feature - Coming Soon | MedMinder{% endblock %}
+{% block content %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +17,7 @@
             box-sizing: border-box;
         }
 
-        body {
+        {% comment %} body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
             min-height: 100vh;
@@ -21,10 +27,9 @@
             padding: 20px;
             position: relative;
             overflow-x: hidden;
-        }
+        } {% endcomment %}
 
         .container {
-            max-width: 900px;
             width: 100%;
             background: #ffffff;
             border-radius: 12px;
@@ -427,9 +432,10 @@
             <button type="submit" class="notify-btn">Notify Me</button>
         </form>
 
-        <a href="{% url 'dashboard' %}" class="back-link">
+        <a href="{% url 'medminder:dashboard' %}" class="back-link">
             ← Back to Dashboard
         </a>
     </div>
 </body>
 </html>
+{% endblock %}

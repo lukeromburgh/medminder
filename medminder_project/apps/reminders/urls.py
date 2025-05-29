@@ -17,7 +17,7 @@ urlpatterns = [
     path('account/update-settings/', views.update_user_settings, name='update_user_settings'),
     path('account/manage-plan/', views.manage_plan, name='manage_plan'),
     path('delete-reminder/<int:reminder_id>/', views.delete_reminder, name='delete_reminder'),
-    path('viewers', views)
+    path('viewers', views.viewers, name='viewers'),
     # path('profile/', views.profile, name='profile'),
     # path('invite-viewer/', views.invite_viewer, name='invite_viewer'),
 ]
