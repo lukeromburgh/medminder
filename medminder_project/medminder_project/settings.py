@@ -189,7 +189,7 @@ CRONJOBS = [
     ),
 
     # Schedule: Every 10 minutes
-    ('*/10 * * * *',
+    ('*/1 * * * *',
      'apps.reminders.cron.send_reminders',
      [],
      {},
@@ -217,6 +217,14 @@ CRONJOBS = [
      [],
      {},
      '>> /Users/lukedawson/Downloads/medminder_project/logs/streak_notifications.log 2>&1'
+    ),
+
+    # Check for inactive users every day at 9:00 AM
+    ('0 9 * * *',
+     'apps.reminders.cron.check_and_notify_inactive_users',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/inactive_user_notifications.log 2>&1'
     ),
 ]
 

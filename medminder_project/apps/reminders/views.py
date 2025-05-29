@@ -913,3 +913,12 @@ def ProfileColor():
     ]
 
     return colors;
+
+def viewers(request):
+    """
+    View to handle the viewer's page.
+    This is a placeholder for where you would implement your viewer logic.
+    """
+    # This is where you would implement your viewer logic
+    # For now, just redirect back to the account page
+    return render(request, 'reminders/viewers_coming_soon.html') # Assuming 'account' is the name for the user account page URL pattern

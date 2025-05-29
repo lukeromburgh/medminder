@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewers Feature - Coming Soon | MedMinder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e6ebf1;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 600;
+            color: #32325d;
+            margin-bottom: 40px;
+            letter-spacing: -0.5px;
+        }
+
+        .illustration {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 40px;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .illustration svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 600;
+            color: #1a1f36;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #6b7c95;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .description {
+            font-size: 18px;
+            color: #6b7c95;
+            line-height: 1.6;
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .feature {
+            background: #ffffff;
+            padding: 30px 25px;
+            border-radius: 8px;
+            border: 1px solid #e6ebf1;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .feature:nth-child(1) { animation-delay: 0.2s; }
+        .feature:nth-child(2) { animation-delay: 0.4s; }
+        .feature:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        .feature:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #c7d2fe;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: #6366f1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .feature h3 {
+            font-size: 20px;
+            color: #32325d;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .feature p {
+            color: #6b7c95;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .notify-form {
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .notify-input {
+            flex: 1;
+            padding: 16px 20px;
+            border: 1px solid #e6ebf1;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+
+        .notify-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .notify-btn {
+            padding: 16px 24px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .notify-btn:hover {
+            background: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            transform: translateX(-3px);
+        }
+
+        .floating-pills {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .pill {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(245, 87, 108, 0.1) 50%, rgba(79, 172, 254, 0.1) 100%);
+            animation: float-pill 6s ease-in-out infinite;
+        }
+
+        .pill:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .pill:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .pill:nth-child(3) {
+            bottom: 30%;
+            left: 5%;
+            animation-delay: 4s;
+        }
+
+        .pill:nth-child(4) {
+            bottom: 15%;
+            right: 10%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float-pill {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 0.7;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .subtitle {
+                font-size: 20px;
+            }
+
+            .notify-form {
+                flex-direction: column;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-pills">
+        <div class="pill"></div>
+        <div class="pill"></div>
+        <div class="pill"></div>
+        <div class="pill"></div>
+    </div>
+
+    <div class="container">
+        <div class="logo">MedMinder</div>
+        
+        <div class="illustration">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Main circle representing connection -->
+                <circle cx="100" cy="100" r="80" fill="url(#gradient1)" opacity="0.2"/>
+                <circle cx="100" cy="100" r="60" fill="url(#gradient1)" opacity="0.3"/>
+                
+                <!-- Central user icon -->
+                <circle cx="100" cy="85" r="15" fill="url(#gradient2)"/>
+                <path d="M85 115 Q100 105 115 115 L115 130 L85 130 Z" fill="url(#gradient2)"/>
+                
+                <!-- Surrounding viewer icons -->
+                <circle cx="70" cy="60" r="8" fill="url(#gradient3)"/>
+                <path d="M65 72 Q70 68 75 72 L75 80 L65 80 Z" fill="url(#gradient3)"/>
+                
+                <circle cx="130" cy="60" r="8" fill="url(#gradient3)"/>
+                <path d="M125 72 Q130 68 135 72 L135 80 L125 80 Z" fill="url(#gradient3)"/>
+                
+                <circle cx="60" cy="120" r="8" fill="url(#gradient3)"/>
+                <path d="M55 132 Q60 128 65 132 L65 140 L55 140 Z" fill="url(#gradient3)"/>
+                
+                <circle cx="140" cy="120" r="8" fill="url(#gradient3)"/>
+                <path d="M135 132 Q140 128 145 132 L145 140 L135 140 Z" fill="url(#gradient3)"/>
+                
+                <!-- Connection lines -->
+                <line x1="100" y1="100" x2="70" y2="70" stroke="url(#gradient4)" stroke-width="2" opacity="0.6"/>
+                <line x1="100" y1="100" x2="130" y2="70" stroke="url(#gradient4)" stroke-width="2" opacity="0.6"/>
+                <line x1="100" y1="100" x2="60" y2="120" stroke="url(#gradient4)" stroke-width="2" opacity="0.6"/>
+                <line x1="100" y1="100" x2="140" y2="120" stroke="url(#gradient4)" stroke-width="2" opacity="0.6"/>
+                
+                <!-- Pills floating around -->
+                <rect x="45" y="45" width="8" height="12" rx="4" fill="url(#pillGrad1)" opacity="0.8"/>
+                <rect x="150" y="40" width="8" height="12" rx="4" fill="url(#pillGrad2)" opacity="0.8"/>
+                <rect x="35" y="150" width="8" height="12" rx="4" fill="url(#pillGrad3)" opacity="0.8"/>
+                <rect x="160" y="155" width="8" height="12" rx="4" fill="url(#pillGrad4)" opacity="0.8"/>
+                
+                <defs>
+                    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea"/>
+                        <stop offset="25%" style="stop-color:#764ba2"/>
+                        <stop offset="50%" style="stop-color:#f093fb"/>
+                        <stop offset="75%" style="stop-color:#f5576c"/>
+                        <stop offset="100%" style="stop-color:#4facfe"/>
+                    </linearGradient>
+                    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea"/>
+                        <stop offset="25%" style="stop-color:#764ba2"/>
+                        <stop offset="50%" style="stop-color:#f093fb"/>
+                        <stop offset="75%" style="stop-color:#f5576c"/>
+                        <stop offset="100%" style="stop-color:#4facfe"/>
+                    </linearGradient>
+                    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#e0e7ff"/>
+                        <stop offset="50%" style="stop-color:#fce7f3"/>
+                        <stop offset="100%" style="stop-color:#dbeafe"/>
+                    </linearGradient>
+                    <linearGradient id="gradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea"/>
+                        <stop offset="25%" style="stop-color:#764ba2"/>
+                        <stop offset="50%" style="stop-color:#f093fb"/>
+                        <stop offset="75%" style="stop-color:#f5576c"/>
+                        <stop offset="100%" style="stop-color:#4facfe"/>
+                    </linearGradient>
+                    <linearGradient id="pillGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#f093fb"/>
+                        <stop offset="100%" style="stop-color:#f5576c"/>
+                    </linearGradient>
+                    <linearGradient id="pillGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4facfe"/>
+                        <stop offset="100%" style="stop-color:#667eea"/>
+                    </linearGradient>
+                    <linearGradient id="pillGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#764ba2"/>
+                        <stop offset="100%" style="stop-color:#f093fb"/>
+                    </linearGradient>
+                    <linearGradient id="pillGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea"/>
+                        <stop offset="100%" style="stop-color:#4facfe"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <h1>Viewers Coming Soon</h1>
+        <p class="subtitle">Stay accountable with your support network</p>
+        
+        <p class="description">
+            We're building something special to help you stay on track with your medication routine. 
+            Soon you'll be able to invite trusted family members and friends to view your progress, 
+            celebrate your successes, and provide gentle reminders when you need them most.
+        </p>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">👥</div>
+                <h3>Trusted Network</h3>
+                <p>Invite family members, caregivers, or friends to be part of your health journey</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>Progress Sharing</h3>
+                <p>Let your viewers see your medication adherence progress and celebrate milestones together</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🔔</div>
+                <h3>Gentle Accountability</h3>
+                <p>Receive encouraging check-ins from people who care about your wellbeing</p>
+            </div>
+        </div>
+
+        <form class="notify-form" method="post">
+            {% csrf_token %}
+            <input type="email" class="notify-input" placeholder="Enter your email for updates" required>
+            <button type="submit" class="notify-btn">Notify Me</button>
+        </form>
+
+        <a href="{% url 'dashboard' %}" class="back-link">
+            ← Back to Dashboard
+        </a>
+    </div>
+</body>
+</html>
