@@ -32,6 +32,7 @@ class UserSettings(models.Model):
     receive_sms_reminders = models.BooleanField(default=False) # Keep existing setting
     avatar_bg_color = models.CharField(max_length=50, default='bg-gray-200', help_text="Background color for the user's avatar.")
     avatar_text_color = models.CharField(max_length=50, default='text-gray-800', help_text="Text color for the user's avatar.")
+    timezone = models.CharField(max_length=50, default='UTC', help_text="User's preferred timezone.")
     # Fields for payment/tier integration:
 
     # Link to the user's account tier.
@@ -157,3 +158,11 @@ def ProfileColor():
     ]
 
     return random.choice(colors)
+
+class ReceiveUpdates(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='waitlist')
+    email = models.EmailField(max_length=255, unique=True)
+    notifications = models.BooleanField(default=True, help_text="Receive notifications about updates and new features.")
+
+    def __str__(self):
+        return f"Waitlist for {self.user.username} ({self.email})"

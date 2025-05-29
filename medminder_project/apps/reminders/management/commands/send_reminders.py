@@ -102,7 +102,7 @@ class Command(BaseCommand):
 
             # Render plain text and HTML versions
             text_body = render_to_string('reminders/email/reminder_email_plain.txt', context)
-            html_body = render_to_string('reminders/email/reminder_email.html', context)
+            html_body = render_to_string('reminders/email/template_reminder.html', context)
             # ------------------------------------
 
 

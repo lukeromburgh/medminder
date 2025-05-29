@@ -85,3 +85,9 @@ def logout_view(request):
 #     return redirect(reverse('core'))
 
 
+def manage_plan(request):
+    """
+    Render the manage plan page.
+    """
+    print("Rendering manage plan page")  # Debug
+    return render(request, 'accounts/user_plan.html')

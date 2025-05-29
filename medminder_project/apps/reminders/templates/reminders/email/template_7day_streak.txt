@@ -1,0 +1,16 @@
+Subject: MedMinder: {{ streak_count }} Day Streak!
+
+MedMinder
+
+Nice!
+{{ streak_count }} Day streak!
+
+Claim boost: {{ boost_url }}
+
+Nice job, {{ user.username }}!
+
+A {{ streak_count }} day streak means any reminders you complete today will give you {{ bonus_points }} extra points!
+
+Keep up the great work with your medication routine!
+
+© 2025 MedMinder • Unsubscribe • Privacy Policy
