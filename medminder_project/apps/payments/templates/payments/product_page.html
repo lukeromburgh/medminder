@@ -1,22 +1,23 @@
+<!-- templates/home.html -->
+
+{% load static %}
+
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Health Hero Checkout</title>
-    <script src="[https://js.stripe.com/v3/](https://js.stripe.com/v3/)"></script>
-</head>
-<body>
-    <h1>Purchase Health Hero</h1>
-    <p>Click the button below to proceed to payment.</p>
-
-    <form action="{% url 'create_checkout_session' %}" method="POST">
-        {% csrf_token %}
-        <button type="submit" id="checkout-button">Pay with Stripe</button>
-    </form>
-
-    <script type="text/javascript">
-        // You don't strictly need client-side Stripe.js for server-side redirects,
-        // but it's good to include if you plan to expand to client-side payment elements later.
-        // var stripe = Stripe('{{ stripe_publishable_key }}');
-    </script>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Django + Stripe Checkout</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://js.stripe.com/v3/"></script>  <!-- new -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
+  </head>
+  <body>
+  <section class="section">
+    <div class="container">
+      <button class="button is-primary" id="checkout-button">Purchase!</button>
+    </div>
+  </section>
+  </body>
 </html>

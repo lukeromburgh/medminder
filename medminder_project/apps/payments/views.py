@@ -1,3 +1,5 @@
+# payments/views.py
+
 import stripe
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
@@ -5,34 +7,38 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt # Only for simplicity in this example
 
+from django.conf import settings # new
+from django.http.response import JsonResponse # new
+from django.views.decorators.csrf import csrf_exempt # new
+from django.views.generic.base import TemplateView
+
 # Initialize Stripe with your secret key
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Replace this with your actual Price ID from the Stripe Dashboard
-HEALTH_HERO_PRICE_ID = 'price_YOUR_HEALTH_HERO_PRICE_ID' # <<< IMPORTANT: Update this!
+HEALTH_HERO_PRICE_ID = 'price_1RUnxqFRa8uCnmTD91rvnTpe' # <<< IMPORTANT: Update this!
 
-class CreateCheckoutSessionView(View):
-    def post(self, request, *args, **kwargs):
-        YOUR_DOMAIN = "[http://127.0.0.1:8000](http://127.0.0.1:8000)" # Change to your domain in production
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == 'GET':
+        domain_url = 'http://localhost:8000/'
+        stripe.api_key = settings.STRIPE_SECRET_KEY
         try:
             checkout_session = stripe.checkout.Session.create(
+                success_url=domain_url + 'success?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=domain_url + 'cancelled/',
                 payment_method_types=['card'],
+                mode='subscription',  # <-- Use 'subscription' for recurring payments
                 line_items=[
                     {
-                        'price': HEALTH_HERO_PRICE_ID,
+                        'price': HEALTH_HERO_PRICE_ID,  # <-- Use your Stripe Price ID here
                         'quantity': 1,
-                    },
-                ],
-                mode='payment',
-                success_url=YOUR_DOMAIN + '/payments/success/',
-                cancel_url=YOUR_DOMAIN + '/payments/cancel/',
+                    }
+                ]
             )
-            # In a real application, you might want to save checkout_session.id
-            # to your database associated with the user or order.
-            return redirect(checkout_session.url, code=303)
+            return JsonResponse({'sessionId': checkout_session['id']})
         except Exception as e:
-            print(f"Error creating Stripe session: {e}")
-            return HttpResponse(f"Error: {e}", status=500)
+            return JsonResponse({'error': str(e)})
 
 def payment_success_view(request):
     # Here you would typically:
@@ -52,3 +58,9 @@ def product_landing_page_view(request):
         'health_hero_price_id': HEALTH_HERO_PRICE_ID
     }
     return render(request, 'payments/product_page.html', context)
+
+@csrf_exempt
+def stripe_config(request):
+    if request.method == 'GET':
+        stripe_config = {'publicKey': settings.STRIPE_PUBLISHABLE_KEY}
+        return JsonResponse(stripe_config, safe=False)
