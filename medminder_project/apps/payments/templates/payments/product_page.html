@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Hero Checkout</title>
+    <script src="[https://js.stripe.com/v3/](https://js.stripe.com/v3/)"></script>
+</head>
+<body>
+    <h1>Purchase Health Hero</h1>
+    <p>Click the button below to proceed to payment.</p>
+
+    <form action="{% url 'create_checkout_session' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" id="checkout-button">Pay with Stripe</button>
+    </form>
+
+    <script type="text/javascript">
+        // You don't strictly need client-side Stripe.js for server-side redirects,
+        // but it's good to include if you plan to expand to client-side payment elements later.
+        // var stripe = Stripe('{{ stripe_publishable_key }}');
+    </script>
+</body>
+</html>

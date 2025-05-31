@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.reminders.apps.RemindersConfig',
     'django_crontab',
+    'apps.payments',
     
 ]
 
@@ -247,5 +248,5 @@ LOGGING = {
     },
 }
 
-STRIPE_SECRRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
