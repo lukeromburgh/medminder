@@ -203,10 +203,6 @@ class UserStats(models.Model):
     average_compliance = models.FloatField(default=0.0)
     other_stats = models.JSONField(null=True, blank=True)
     achievement_points = models.IntegerField(default=0)  # Add achievement_points field
-    last_streak_notification_date = models.DateField(null=True, blank=True)
-    last_lost_streak_notification_date = models.DateField(null=True, blank=True)
-    previous_streak = models.IntegerField(default=0)
-    last_inactivity_notification_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} stats - {self.date}"

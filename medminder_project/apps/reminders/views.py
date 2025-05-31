@@ -1,12 +1,10 @@
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect, render
 from formtools.wizard.views import SessionWizardView
+# import pdb # Keep or remove based on your debugging needs
 from datetime import timedelta, date # Import date
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
-from django.views.decorators.http import require_POST
-import pytz
-
 from django.urls import reverse
 # Import necessary models
 # Note: ReminderStats model definition is assumed for check_streak
@@ -751,20 +749,6 @@ def account_page_view(request):
     Passes the current user object and related data to the template context.
     """
     user = request.user
-    
-    common_timezones_list = pytz.common_timezones
-
-    formatted_timezones = []
-    for tz_name in common_timezones_list:
-        # You might want to format tz_name for display,
-        # e.g., replace underscores with spaces, or derive a more descriptive name.
-        # For simplicity here, we'll use the IANA name as the display name as well,
-        # but you could add logic to make it prettier.
-        # Example of a slightly nicer display:
-        display_name = tz_name.replace('_', ' ')
-        # You could also try to get current UTC offset, but this can be complex
-        # due to DST and historical changes. For a dropdown, the name is often enough.
-        formatted_timezones.append({'value': tz_name, 'display': display_name})
 
     # Fetch the UserSettings object for the current user
     # Use .first() or handle DoesNotExist if a User might not have UserSettings
@@ -801,7 +785,7 @@ def account_page_view(request):
     # Corrected field names from avatar_bg_color/avatar_text_color to bg_color/text_color
     bg_color = user_settings.avatar_bg_color if user_settings else 'bg-gray-200'
     text_color = user_settings.avatar_text_color if user_settings else 'text-gray-800'
-    colors = ProfileColor() # Assuming this function returns a list of color tuples
+
 
     context = {
         'user': user,
@@ -811,114 +795,7 @@ def account_page_view(request):
         'badge_image': badge_image_url, # Pass badge image URL
         'bg_color': bg_color, # Pass background color class
         'text_color': text_color, # Pass text color class
-        'colors': colors, # Pass the list of color options
         'user_settings': user_settings, # Optionally pass the whole settings object
-        'timezones': formatted_timezones, # Pass the list of timezones
     }
 
     return render(request, 'reminders/account_page.html', context) # Ensure template path is correct
-
-from apps.accounts.models import UserSettings
-
-@login_required
-@require_POST
-def update_user_settings(request):
-    """
-    View to handle AJAX requests for updating user settings.
-    Updates the user's settings based on form data and returns JSON response.
-    """
-    # Check if the request was made via AJAX
-    is_ajax_request = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-
-
-    if is_ajax_request:
-        # --- This block handles the AJAX request ---
-
-        # Get current user settings
-        user_settings = request.user.usersettings
-
-        # Update settings from form data
-        try:
-            # Avatar colors
-            avatar_bg_color = request.POST.get('avatar_bg_color')
-            avatar_text_color = request.POST.get('avatar_text_color')
-            if avatar_bg_color and avatar_text_color:
-                user_settings.avatar_bg_color = avatar_bg_color
-                user_settings.avatar_text_color = avatar_text_color
-
-            # Timezone
-            # You need to import pytz at the top of your views.py file
-            # import pytz
-            timezone_str = request.POST.get('timezone') # Renamed variable to avoid conflict with import
-            if timezone_str and timezone_str in pytz.all_timezones:
-                user_settings.timezone = timezone_str # Save the string
-
-            # Email notifications
-            # Checkbox values are 'on' if checked, None otherwise
-            user_settings.receive_email_reminders = request.POST.get('receive_email_reminders') == 'on'
-
-            # Save updated settings
-            user_settings.save()
-
-            # Return success JSON response
-            return JsonResponse({'success': True})
-
-        except Exception as e:
-            # Return error JSON response if something goes wrong
-            return JsonResponse({'success': False, 'errors': str(e)})
-
-    else:
-        # --- This block handles non-AJAX requests (optional fallback) ---
-        # Since your template uses AJAX, this path might not be needed for form submission,
-        # but you might want a more informative response than letting it fall through.
-        # A redirect with a message is common for non-AJAX form submissions.
-        # For this specific view designed for AJAX, returning an error is also fine.
-        print("Warning: Non-AJAX request received by update_user_settings view.") # Log this
-        return JsonResponse({'success': False, 'errors': 'This endpoint only accepts AJAX requests.'}, status=400)
-
-
-# Keep the manage_plan view as is
-@login_required
-def manage_plan(request):
-    """
-    View to handle redirecting to plan management page.
-    This is a placeholder for where you would implement your subscription management logic.
-    """
-    # This is where you would implement your subscription management logic
-    # For now, just redirect back to the account page
-    return redirect('medminder:account') # Assuming 'account' is the name for the user account page URL pattern
-
-def ProfileColor():
-
-    colors = [
-    ('bg-red-200', 'text-red-800'),
-    ('bg-blue-200', 'text-blue-800'),
-    ('bg-green-200', 'text-green-800'),
-    ('bg-yellow-200', 'text-yellow-800'),
-    ('bg-purple-200', 'text-purple-800'),
-    ('bg-pink-200', 'text-pink-800'),
-    ('bg-indigo-200', 'text-indigo-800'),
-    ('bg-teal-200', 'text-teal-800'),
-    ('bg-orange-200', 'text-orange-800'),
-    ('bg-gray-200', 'text-gray-800'), 
-    ('bg-emerald-200', 'text-emerald-800'),
-    ('bg-lime-200', 'text-lime-800'),
-    ('bg-cyan-200', 'text-cyan-800'),
-    ('bg-sky-200', 'text-sky-800'),
-    ('bg-fuchsia-200', 'text-fuchsia-800'),
-    ('bg-violet-200', 'text-violet-800'),
-    ('bg-rose-200', 'text-rose-800'),
-    ('bg-zinc-200', 'text-zinc-800'),
-    ('bg-neutral-200', 'text-neutral-800')
-    ]
-
-    return colors;
-
-def viewers(request):
-    """
-    View to handle the viewer's page.
-    This is a placeholder for where you would implement your viewer logic.
-    """
-    # This is where you would implement your viewer logic
-    # For now, just redirect back to the account page
-    return render(request, 'reminders/viewers_coming_soon.html')
