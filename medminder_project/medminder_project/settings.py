@@ -246,3 +246,6 @@ LOGGING = {
         },
     },
 }
+
+STRIPE_SECRRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
