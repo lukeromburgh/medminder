@@ -35,6 +35,8 @@ USE_TZ = True
 # Application definition
 
 INSTALLED_APPS = [
+    'unfold',
+    'unfold.contrib.filters',
     'theme',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -167,10 +169,80 @@ if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
     # Corrected message to match the variables being checked
     print("WARNING: Email credentials (EMAIL_HOST_USER, EMAIL_HOST_PASSWORD) are not set as environment variables!")
 
-
+CRONTAB_PYTHON_EXECUTABLE = '/Users/lukedawson/Downloads/medminder_project/venv/bin/python3.10'
 
 CRONJOBS = [
-    ('0 2 * * *', 'apps.reminders.management.commands.populate_reminder_stats', 'populate_reminder_stats'),
-    ('0 2 * * *', 'apps.reminders.management.commands.generate_upcoming_reminder_logs', 'populate_reminder_stats'),
-    ('*/15 * * * *', 'apps.reminders.management.commands.populate_reminder_stats', 'send_reminders'),
+    # Schedule: At 02:00 AM every day
+    ('0 2 * * *',
+     'apps.reminders.cron.populate_reminder_stats',  # This is the name of your management command
+     [],                         # Optional: list of arguments for the command
+     {},                         # Optional: dict of keyword arguments for the command
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/populate_reminder_stats.log 2>&1' # Log output
+    ),
+
+    # Schedule: At 02:00 AM every day
+    ('0 2 * * *',
+     'apps.reminders.cron.generate_upcoming_reminder_logs',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/generate_upcoming_reminder_logs.log 2>&1'
+    ),
+
+    # Schedule: Every 10 minutes
+    ('*/1 * * * *',
+     'apps.reminders.cron.send_reminders',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/send_reminders.log 2>&1'
+    ),
+
+    # Schedule: Every 15 minutes
+    ('*/15 * * * *',
+     'apps.reminders.cron.update_reminders',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/update_reminders.log 2>&1'
+    ),
+
+    ('0 9 * * *',
+     'apps.reminders.cron.check_and_notify_lost_streaks',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/lost_streak_notifications.log 2>&1'
+    ),
+
+    # Check for 7-day streaks daily at 9:00 AM
+    ('0 9 * * *',
+     'apps.reminders.cron.check_and_notify_streaks',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/streak_notifications.log 2>&1'
+    ),
+
+    # Check for inactive users every day at 9:00 AM
+    ('0 9 * * *',
+     'apps.reminders.cron.check_and_notify_inactive_users',
+     [],
+     {},
+     '>> /Users/lukedawson/Downloads/medminder_project/logs/inactive_user_notifications.log 2>&1'
+    ),
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'cron.log',
+        },
+    },
+    'loggers': {
+        'reminders.cron': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

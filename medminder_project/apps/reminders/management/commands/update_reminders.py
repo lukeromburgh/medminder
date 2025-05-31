@@ -38,7 +38,7 @@ class Command(BaseCommand):
         for reminder in reminders:
             # Ensure reminder has a grace_period attribute or handle its absence
             # Using getattr with a default is safer if grace_period might not exist
-            grace_period = getattr(reminder, 'grace_period', timedelta(minutes=15))
+            grace_period = getattr(reminder, 'grace_period', timedelta(minutes=60))
 
             # Filter pending logs for this specific reminder within the cutoff date
             # Using .filter(reminder=reminder) is efficient here

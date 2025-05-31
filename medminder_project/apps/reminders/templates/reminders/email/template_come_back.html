@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedMinder: We Miss You!</title>
+    <style>
+        /* Reset styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            line-height: 1.6;
+        }
+        
+        /* Main container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* Header section with purple gradient */
+        .header {
+            background: linear-gradient(180deg, #DBCAF4 0%, #0E0277 100%);
+            color: white;
+            text-align: center;
+            padding: 30px 20px 40px;
+        }
+        
+        /* Logo styling */
+        .logo {
+            text-align: left;
+            margin-bottom: 30px;
+            padding-left: 10px;
+        }
+        
+        .logo-text {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        /* Illustration container */
+        .illustration {
+            text-align: center;
+            margin: 30px auto;
+            max-width: 300px;
+        }
+        
+        /* Personal greeting */
+        .personal-greeting {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Main question heading */
+        .question-title {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 15px 0 30px;
+            color: white;
+            line-height: 1.2;
+        }
+        
+        /* Main content area */
+        .content {
+            padding: 30px;
+            color: #333333;
+        }
+        
+        /* Message */
+        .message {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        
+        /* Button styling */
+        .button {
+            display: inline-block;
+            background-color: #0A63E5;
+            color: #ffffff !important;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+        
+        /* Footer section */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: #6c757d;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 100%;
+                border-radius: 0;
+            }
+            
+            .question-title {
+                font-size: 32px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="https://i.ibb.co/FkXCndqx/white-logo.png" height="24px" width="auto" alt="white-logo" border="0">
+            </div>
+            <div class="illustration">
+                <!-- Replace with your actual illustration image URL -->
+                <img src="https://i.ibb.co/dsJrRSVR/check-in.png" alt="Character illustration" style="max-width: 100%;">
+            </div>
+            <div class="personal-greeting">Hey, {{ user.username }}</div>
+            <div class="question-title">
+                Are you still there?
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="message">
+                <p>We've noticed you haven't logged into MedMinder for a while, and we wanted to check in.</p>
+                
+                <p>Managing medications can be challenging, but staying consistent is key to feeling your best. We're here to help make that easier.</p>
+                
+                <p>Your health journey matters, and we've kept your data and streaks ready for when you return. Just one quick login and you'll be back on track.</p>
+
+                <p>Is there anything we can help with? If you're having trouble with the app or have suggestions for improvements, we'd love to hear from you!</p>
+                
+                <p style="text-align: center; margin-top: 30px;">
+                    <a href="{{ app_url }}" class="button">Return to MedMinder</a>
+                </p>
+                
+                <p style="margin-top: 30px;">
+                    Wishing you good health,<br>
+                    The MedMinder Team
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 MedMinder • <a href="#support" style="color: #6c757d;">Support</a> • <a href="#unsubscribe" style="color: #6c757d;">Unsubscribe</a> • <a href="#privacy" style="color: #6c757d;">Privacy Policy</a></p>
+        </div>
+    </div>
+</body>
+</html>

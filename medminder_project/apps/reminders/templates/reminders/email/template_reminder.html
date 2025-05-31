@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedMinder Reminder: {{ reminder.medication.medication_name }}</title>
+    <style>
+        /* Reset styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            line-height: 1.6;
+        }
+        
+        /* Main container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* Header section with gradient */
+        .header {
+            background: linear-gradient(180deg, #0088DC 0%, #93C5FF 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 20px 30px;
+        }
+        
+        /* Logo styling */
+        .logo {
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        /* Main title */
+        .header-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+        
+        /* Button styling */
+        .button {
+            display: inline-block;
+            background-color: #FFD54F;
+            color: #000000 !important;
+            padding: 12px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+        
+        /* Blue button alternative */
+        .blue-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #ffffff !important;
+            padding: 12px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 10px; /* Add some space above button */
+        }
+        
+        /* Illustration container */
+        .illustration {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        /* Main content area */
+        .content {
+            padding: 20px 30px 40px;
+        }
+        
+        /* User greeting */
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        /* Main message */
+        .message {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        /* Section title */
+        .details-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        /* Details box */
+        .details-box {
+            background-color: #f9f9f9;
+            border-left: 5px solid #1a73e8;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+        }
+        
+        .details-box p {
+            margin: 8px 0;
+        }
+        
+        /* Footer section */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: #6c757d;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+        
+        /* Text alignment utilities */
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Small text */
+        .small-text {
+            font-size: 0.8rem;
+            margin-top: 20px;
+        }
+        
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 100%;
+                border-radius: 0;
+            }
+            
+            .header-title {
+                font-size: 30px;
+            }
+            
+            .content {
+                padding: 15px 20px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="https://i.ibb.co/FkXCndqx/white-logo.png" height="24px" width="auto" alt="white-logo" border="0">
+            </div>
+            <div class="header-title">
+                Your reminder<br>is here!
+            </div>
+            <a href="{{ dashboard_url }}" class="button">Go to dashboard</a>
+            <div class="illustration">
+                <!-- Replace with your actual illustration image URL -->
+                <img src="https://i.ibb.co/czGHSGP/reminder.png" alt="Medication reminder illustration" style="max-width: 320px;">
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                Hey {{ user.username }},
+            </div>
+            <div class="message">
+                It's time for your medication dose!
+            </div>
+            <div class="details-title">
+                Reminder details:
+            </div>
+            <div class="details-box">
+                <p><strong>Medication:</strong> {{ reminder.medication.medication_name }}</p>
+                <p><strong>Dosage:</strong> {{ reminder.dosage.dosage }}</p>
+                <p><strong>Scheduled Time:</strong> {{ due_time_display }}</p>
+            </div>
+            
+            <p>Please visit your dashboard to view and log your dose details.</p>
+            
+            <p class="text-center">
+                <a href="{{ dashboard_url }}" class="blue-button">View Full Details</a>
+            </p>
+            
+            <p class="text-center small-text">
+                If the button above doesn't work, you can copy and paste this link into your browser:
+            </p>
+            <p class="text-center">
+                <small><a href="{{ dashboard_url }}" style="color: #007bff; text-decoration: underline;">{{ dashboard_url }}</a></small>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>Best regards,<br>MedMinder Team</p>
+            <p><a href="#unsubscribe" style="color: #6c757d;">Unsubscribe</a> | <a href="#privacy" style="color: #6c757d;">Privacy Policy</a></p>
+        </div>
+    </div>
+</body>
+</html>
