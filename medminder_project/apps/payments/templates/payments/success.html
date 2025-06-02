@@ -1,11 +1,32 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Payment Successful{% endblock %}
+{% block content %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Payment Successful</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* ...styles as before... */
+    </style>
 </head>
 <body>
-    <h1>Thank You!</h1>
-    <p>Your payment for Health Hero was successful.</p>
-    <a href="{% url 'product_page' %}">Go to Product Page</a>
+    <div class="container">
+        <div class="checkmark">✔️</div>
+        <h1>Thank You!</h1>
+        <p>
+            {% if customer_email %}
+                Payment for <strong>Health Hero</strong> was successful.<br>
+                Confirmation sent to: <strong>{{ customer_email }}</strong>
+            {% else %}
+                Your payment for <strong>Health Hero</strong> was successful.<br>
+            {% endif %}
+            You now have access to your subscription features.
+        </p>
+        <a href="{% url 'product_landing_page' %}" class="button">Back to Product Page</a>
+    </div>
 </body>
 </html>
+{% endblock %}

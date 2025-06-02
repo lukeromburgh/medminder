@@ -11,6 +11,7 @@ from django.conf import settings # new
 from django.http.response import JsonResponse # new
 from django.views.decorators.csrf import csrf_exempt # new
 from django.views.generic.base import TemplateView
+import json
 
 # Initialize Stripe with your secret key
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -25,8 +26,8 @@ def create_checkout_session(request):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         try:
             checkout_session = stripe.checkout.Session.create(
-                success_url=domain_url + 'success?session_id={CHECKOUT_SESSION_ID}',
-                cancel_url=domain_url + 'cancelled/',
+                success_url=domain_url + 'payments/success?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=domain_url + 'payments/cancelled/',
                 payment_method_types=['card'],
                 mode='subscription',  # <-- Use 'subscription' for recurring payments
                 line_items=[
@@ -41,11 +42,21 @@ def create_checkout_session(request):
             return JsonResponse({'error': str(e)})
 
 def payment_success_view(request):
-    # Here you would typically:
-    # 1. Verify the session if using webhooks (recommended for production).
-    # 2. Fulfill the order (e.g., grant access to "Health Hero").
-    # 3. Display a success message to the user.
-    return render(request, 'payments/success.html')
+    session_id = request.GET.get('session_id')
+    session = None
+    customer_email = None
+    if session_id:
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        try:
+            session = stripe.checkout.Session.retrieve(session_id)
+            customer_email = session.get('customer_details', {}).get('email')
+        except Exception as e:
+            session = None
+
+    return render(request, 'payments/success.html', {
+        'session_id': session_id,
+        'customer_email': customer_email,
+    })
 
 def payment_cancel_view(request):
     # Handle payment cancellation
@@ -64,3 +75,44 @@ def stripe_config(request):
     if request.method == 'GET':
         stripe_config = {'publicKey': settings.STRIPE_PUBLISHABLE_KEY}
         return JsonResponse(stripe_config, safe=False)
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET  # Set this in your .env or settings
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
+
+    # Handle the event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        customer_id = session.get('customer')
+        subscription_id = session.get('subscription')
+        email = session.get('customer_details', {}).get('email')
+
+        # Find the user by email (or by customer_id if you store it)
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=email)
+            usersettings = user.usersettings
+            usersettings.subscription_status = 'active'
+            usersettings.payment_customer_id = customer_id
+            usersettings.payment_subscription_id = subscription_id
+            usersettings.save()
+        except User.DoesNotExist:
+            pass  # Optionally log this
+
+    # Handle other event types as needed
+
+    return HttpResponse(status=200)

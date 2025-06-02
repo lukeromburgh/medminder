@@ -1,23 +1,559 @@
-<!-- templates/home.html -->
-
+{% extends "base_dashboard.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Django + Stripe Checkout</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <script src="https://js.stripe.com/v3/"></script>  <!-- new -->
+{% block title %}Health Hero Premium | MedMinder{% endblock %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Hero Premium | MedMinder</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <script src="{% static 'js/main.js' %}"></script>
-    <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
-  </head>
-  <body>
-  <section class="section">
-    <div class="container">
-      <button class="button is-primary" id="checkout-button">Purchase!</button>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e6ebf1;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            animation: slideUp 0.8s ease-out;
+            overflow: hidden;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #6366f1;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 600;
+            color: #32325d;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-illustration {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 40px;
+            position: relative;
+            animation: heroFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(1deg); }
+            50% { transform: translateY(-12px) rotate(0deg); }
+            75% { transform: translateY(-8px) rotate(-1deg); }
+        }
+
+        .hero-illustration svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        h1 {
+            font-size: 56px;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 20px;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+        }
+
+        .subtitle {
+            font-size: 26px;
+            color: #6b7c95;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .description {
+            font-size: 20px;
+            color: #6b7c95;
+            line-height: 1.6;
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .pricing-card {
+            background: #6366f1;
+            border-radius: 20px;
+            padding: 3px;
+            margin: 0 auto 40px;
+            max-width: 400px;
+            animation: priceGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes priceGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .pricing-inner {
+            background: white;
+            border-radius: 17px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .price {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1a1f36;
+            margin-bottom: 10px;
+        }
+
+        .price-period {
+            color: #6b7c95;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .value-prop {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-size: 16px;
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            background: rgba(99, 102, 241, 0.05);
+            padding: 35px 25px;
+            border-radius: 16px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.8s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.2s; }
+        .feature-card:nth-child(2) { animation-delay: 0.4s; }
+        .feature-card:nth-child(3) { animation-delay: 0.6s; }
+        .feature-card:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: #6366f1;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            position: relative;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            color: #1a1f36;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: #6b7c95;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .cta-section {
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 20px;
+            padding: 50px 40px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(99, 102, 241, 0.1);
+            position: relative;
+        }
+
+        .purchase-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .purchase-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .purchase-btn:hover::before {
+            left: 100%;
+        }
+
+        .purchase-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .purchase-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .guarantee {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+            color: #6b7c95;
+            font-size: 16px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-pill {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            border-radius: 20px;
+            opacity: 0.1;
+            animation: floatPill 8s ease-in-out infinite;
+        }
+
+        .floating-pill:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            animation-delay: 0s;
+        }
+
+        .floating-pill:nth-child(2) {
+            top: 20%;
+            right: 8%;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            animation-delay: 2s;
+        }
+
+        .floating-pill:nth-child(3) {
+            bottom: 30%;
+            left: 3%;
+            background: linear-gradient(135deg, #4facfe, #667eea);
+            animation-delay: 4s;
+        }
+
+        .floating-pill:nth-child(4) {
+            bottom: 10%;
+            right: 5%;
+            background: linear-gradient(135deg, #764ba2, #f093fb);
+            animation-delay: 6s;
+        }
+
+        @keyframes floatPill {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.1;
+            }
+            50% {
+                transform: translateY(-30px) rotate(180deg);
+                opacity: 0.3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 42px;
+            }
+
+            .subtitle {
+                font-size: 22px;
+            }
+
+            .description {
+                font-size: 18px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .purchase-btn {
+                padding: 18px 40px;
+                font-size: 18px;
+            }
+
+            .hero-illustration {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-pill"></div>
+        <div class="floating-pill"></div>
+        <div class="floating-pill"></div>
+        <div class="floating-pill"></div>
     </div>
-  </section>
-  </body>
+
+    <div class="container">
+        <div class="logo">MedMinder</div>
+        
+        <div class="hero-badge">
+            🏆 Premium Tier
+        </div>
+        
+        <div class="hero-illustration">
+            <svg viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Hero shield background -->
+                <path d="M125 25 L200 75 L200 175 Q200 200 175 212.5 L125 225 L75 212.5 Q50 200 50 175 L50 75 Z" fill="url(#heroGradient)" opacity="0.2"/>
+                
+                <!-- Inner shield -->
+                <path d="M125 45 L180 85 L180 165 Q180 185 160 195 L125 205 L90 195 Q70 185 70 165 L70 85 Z" fill="url(#heroGradient)" opacity="0.4"/>
+                
+                <!-- Central crown/hero symbol -->
+                <path d="M125 85 L140 100 L155 85 L155 120 L95 120 L95 85 L110 100 Z" fill="url(#goldGradient)"/>
+                <circle cx="110" cy="95" r="3" fill="url(#goldGradient)"/>
+                <circle cx="125" cy="90" r="4" fill="url(#goldGradient)"/>
+                <circle cx="140" cy="95" r="3" fill="url(#goldGradient)"/>
+                
+                <!-- Medical cross -->
+                <rect x="120" y="130" width="10" height="30" rx="2" fill="url(#heroGradient)"/>
+                <rect x="110" y="140" width="30" height="10" rx="2" fill="url(#heroGradient)"/>
+                
+                <!-- Floating achievement icons -->
+                <circle cx="85" cy="70" r="8" fill="url(#achievementGrad)" opacity="0.8"/>
+                <text x="85" y="75" text-anchor="middle" font-size="10" fill="white">📊</text>
+                
+                <circle cx="165" cy="70" r="8" fill="url(#achievementGrad)" opacity="0.8"/>
+                <text x="165" y="75" text-anchor="middle" font-size="10" fill="white">📅</text>
+                
+                <circle cx="75" cy="140" r="8" fill="url(#achievementGrad)" opacity="0.8"/>
+                <text x="75" y="145" text-anchor="middle" font-size="10" fill="white">🔔</text>
+                
+                <circle cx="175" cy="140" r="8" fill="url(#achievementGrad)" opacity="0.8"/>
+                <text x="175" y="145" text-anchor="middle" font-size="10" fill="white">⚡</text>
+                
+                <!-- Sparkles -->
+                <path d="M60 50 L62 55 L67 53 L62 58 L60 63 L58 58 L53 60 L58 55 Z" fill="url(#sparkleGrad)" opacity="0.6"/>
+                <path d="M190 60 L192 65 L197 63 L192 68 L190 73 L188 68 L183 70 L188 65 Z" fill="url(#sparkleGrad)" opacity="0.6"/>
+                <path d="M70 190 L72 195 L77 193 L72 198 L70 203 L68 198 L63 200 L68 195 Z" fill="url(#sparkleGrad)" opacity="0.6"/>
+                <path d="M180 190 L182 195 L187 193 L182 198 L180 203 L178 198 L173 200 L178 195 Z" fill="url(#sparkleGrad)" opacity="0.6"/>
+                
+                <defs>
+                    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea"/>
+                        <stop offset="25%" style="stop-color:#764ba2"/>
+                        <stop offset="50%" style="stop-color:#f093fb"/>
+                        <stop offset="75%" style="stop-color:#f5576c"/>
+                        <stop offset="100%" style="stop-color:#4facfe"/>
+                    </linearGradient>
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fbbf24"/>
+                        <stop offset="50%" style="stop-color:#f59e0b"/>
+                        <stop offset="100%" style="stop-color:#d97706"/>
+                    </linearGradient>
+                    <linearGradient id="achievementGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10b981"/>
+                        <stop offset="100%" style="stop-color:#059669"/>
+                    </linearGradient>
+                    <linearGradient id="sparkleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fbbf24"/>
+                        <stop offset="100%" style="stop-color:#f59e0b"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <h1>Health Hero</h1>
+        <p class="subtitle">Unlock your medication management superpowers</p>
+        
+        <p class="description">
+            Elevate your health journey with premium features designed for serious health enthusiasts. 
+            Get advanced insights, early access to cutting-edge features, and powerful tools to 
+            maintain perfect medication adherence.
+        </p>
+
+        <div class="pricing-card">
+            <div class="pricing-inner">
+                <div class="price">$9.99</div>
+                <div class="price-period">per month</div>
+                <div class="value-prop">
+                    ✨ Save 20% with annual billing - Just $7.99/month!
+                </div>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Early Access</h3>
+                <p>Be the first to experience new features and improvements before anyone else</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Advanced Insights</h3>
+                <p>Detailed analytics, trends, and personalized health recommendations based on your data</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Calendar View</h3>
+                <p>Beautiful calendar interface for crystal-clear medication scheduling and planning</p>
+            </div>
+            
+        </div>
+
+        <div class="cta-section">
+            <button class="purchase-btn" id="checkout-button">
+                Become a Health Hero
+            </button>
+            <div class="guarantee">
+                🛡️ 30-day money-back guarantee
+            </div>
+        </div>
+
+        <a href="{% url 'medminder:dashboard' %}" class="back-link">
+            ← Back to Dashboard
+        </a>
+    </div>
+</body>
 </html>
+{% endblock %}

@@ -1,3 +1,8 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Payment Successful{% endblock %}
+{% block content %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,3 +14,4 @@
     <a href="{% url 'product_page' %}">Try Again</a>
 </body>
 </html>
+{% endblock %}

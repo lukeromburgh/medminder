@@ -81,9 +81,9 @@
                       </a>
 
                       {# Viewers Link with "Coming Soon" Tag #}
-                      <a href="#"
+                      <a href="{% url 'medminder:viewers' %}"
                          class="flex items-center rounded-md gap-2 px-2 py-1.5 text-sm font-medium underline-offset-2 focus-visible:underline focus:outline-hidden
-                                {% if current_url_name == 'viewers_page_url_name' %} {# Replace with actual URL name #}
+                                {% if current_url_name == 'viewers' %} {# Replace with actual URL name #}
                                    bg-black/10 text-neutral-900 {# Active classes #}
                                 {% else %}
                                    text-neutral-600 hover:bg-black/5 hover:text-neutral-900 {# Inactive classes #}

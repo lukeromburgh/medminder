@@ -5,6 +5,7 @@ from .views import (
     payment_cancel_view,
     product_landing_page_view,
     stripe_config,
+    stripe_webhook,
 )
 
 urlpatterns = [
@@ -14,4 +15,5 @@ urlpatterns = [
     path('success/', payment_success_view, name='payment_success'),
     path('cancel/', payment_cancel_view, name='payment_cancel'),
     path('config/', stripe_config, name='stripe_config'),
+    path('webhook/', stripe_webhook, name='stripe_webhook'),
 ]
