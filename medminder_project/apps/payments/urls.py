@@ -13,7 +13,7 @@ urlpatterns = [
     path('create-checkout-session/', create_checkout_session, name='create_checkout_session'), 
     path('', product_landing_page_view, name='product_landing_page'),
     path('success/', payment_success_view, name='payment_success'),
-    path('cancel/', payment_cancel_view, name='payment_cancel'),
+    path('cancelled/', payment_cancel_view, name='payment_cancel'),
     path('config/', stripe_config, name='stripe_config'),
     path('webhook/', stripe_webhook, name='stripe_webhook'),
 ]
