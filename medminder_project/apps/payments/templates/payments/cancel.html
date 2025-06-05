@@ -1,3 +1,8 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Health Hero Premium | MedMinder{% endblock %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -525,10 +530,10 @@
         </div>
 
         <div class="action-buttons">
-            <a href="#" class="primary-btn">
+            <a href="{% url 'product_landing_page' %}" class="primary-btn">
                 Try Again
             </a>
-            <a href="#" class="secondary-btn">
+            <a href="{% url 'medminder:dashboard' %}" class="secondary-btn">
                 Back to Dashboard
             </a>
         </div>
@@ -545,3 +550,4 @@
     </div>
 </body>
 </html>
+{% endblock content %}
