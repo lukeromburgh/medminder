@@ -80,39 +80,38 @@ def stripe_config(request):
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET  # Set this in your .env or settings
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
 
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, endpoint_secret
         )
-    except ValueError as e:
-        # Invalid payload
+    except ValueError:
         return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
+    except stripe.error.SignatureVerificationError:
         return HttpResponse(status=400)
 
-    # Handle the event
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         customer_id = session.get('customer')
         subscription_id = session.get('subscription')
         email = session.get('customer_details', {}).get('email')
 
-        # Find the user by email (or by customer_id if you store it)
         from django.contrib.auth import get_user_model
+        from apps.accounts.models import Tier, UserSettings
         User = get_user_model()
         try:
             user = User.objects.get(email=email)
             usersettings = user.usersettings
+            # Set subscription status and Stripe IDs
             usersettings.subscription_status = 'active'
             usersettings.payment_customer_id = customer_id
             usersettings.payment_subscription_id = subscription_id
+            # Set the premium tier
+            premium_tier = Tier.objects.get(name__iexact='Premium')
+            usersettings.account_tier = premium_tier
             usersettings.save()
-        except User.DoesNotExist:
+        except (User.DoesNotExist, Tier.DoesNotExist):
             pass  # Optionally log this
-
-    # Handle other event types as needed
 
     return HttpResponse(status=200)

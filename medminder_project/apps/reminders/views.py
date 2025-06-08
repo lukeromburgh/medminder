@@ -660,6 +660,13 @@ def get_user_tier(points):
 
 @login_required
 def dashboard_calendar(request):
+    # Ensure UserSettings exists
+    user_settings, _ = UserSettings.objects.get_or_create(user=request.user)
+
+    if not user_settings.is_on_paid_plan() or not user_settings.account_tier or user_settings.account_tier.name.lower() != "premium":
+        messages.error(request, "You need a Premium subscription to access the calendar.")
+        return render(request, 'reminders/calendar_paywall.html')  
+
     user = request.user
     today = timezone.now().date()
     # Fetch upcoming active reminders for the user (QuerySet 1)
