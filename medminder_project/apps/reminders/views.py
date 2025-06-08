@@ -552,7 +552,7 @@ def complete_reminder(request, reminder_id):
 def check_streak(user, days):
     """
     Checks if the user has a consecutive streak of days where *at least one*
-    ReminderStats entry exists for a reminder owned by that user and is marked as 'completed=True'.
+    ReminderStats entry exists for a reminder owned by that user and is marked as 'completed'.
 
     This function assumes ReminderStats has a 'reminder' ForeignKey (linking to a Reminder model),
     a 'date' field (DateField), and a boolean field named 'completed'.
@@ -823,57 +823,33 @@ from apps.accounts.models import UserSettings
 @login_required
 @require_POST
 def update_user_settings(request):
-    """
-    View to handle AJAX requests for updating user settings.
-    Updates the user's settings based on form data and returns JSON response.
-    """
-    # Check if the request was made via AJAX
     is_ajax_request = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
-
     if is_ajax_request:
-        # --- This block handles the AJAX request ---
+        # Ensure UserSettings exists for this user
+        user_settings, created = UserSettings.objects.get_or_create(user=request.user)
 
-        # Get current user settings
-        user_settings = request.user.usersettings
-
-        # Update settings from form data
         try:
-            # Avatar colors
             avatar_bg_color = request.POST.get('avatar_bg_color')
             avatar_text_color = request.POST.get('avatar_text_color')
             if avatar_bg_color and avatar_text_color:
                 user_settings.avatar_bg_color = avatar_bg_color
                 user_settings.avatar_text_color = avatar_text_color
 
-            # Timezone
-            # You need to import pytz at the top of your views.py file
-            # import pytz
-            timezone_str = request.POST.get('timezone') # Renamed variable to avoid conflict with import
+            timezone_str = request.POST.get('timezone')
             if timezone_str and timezone_str in pytz.all_timezones:
-                user_settings.timezone = timezone_str # Save the string
+                user_settings.timezone = timezone_str
 
-            # Email notifications
-            # Checkbox values are 'on' if checked, None otherwise
             user_settings.receive_email_reminders = request.POST.get('receive_email_reminders') == 'on'
 
-            # Save updated settings
             user_settings.save()
-
-            # Return success JSON response
             return JsonResponse({'success': True})
 
         except Exception as e:
-            # Return error JSON response if something goes wrong
             return JsonResponse({'success': False, 'errors': str(e)})
 
     else:
-        # --- This block handles non-AJAX requests (optional fallback) ---
-        # Since your template uses AJAX, this path might not be needed for form submission,
-        # but you might want a more informative response than letting it fall through.
-        # A redirect with a message is common for non-AJAX form submissions.
-        # For this specific view designed for AJAX, returning an error is also fine.
-        print("Warning: Non-AJAX request received by update_user_settings view.") # Log this
+        print("Warning: Non-AJAX request received by update_user_settings view.")
         return JsonResponse({'success': False, 'errors': 'This endpoint only accepts AJAX requests.'}, status=400)
 
 
