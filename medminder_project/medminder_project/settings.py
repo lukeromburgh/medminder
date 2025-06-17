@@ -229,19 +229,56 @@ CRONJOBS = [
     ),
 ]
 
+import os
+
+# Make sure BASE_DIR is correctly defined
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+
+# Create logs directory if it doesn't exist
+os.makedirs(LOGS_DIR, exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {module} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': 'cron.log',
+            'filename': os.path.join(LOGS_DIR, 'cron.log'),
+        },
+        'payments_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'payments.log'),
+            'formatter': 'verbose',
+        },
+        'webhook_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'stripe_webhook.log'),
+            'formatter': 'verbose',
         },
     },
     'loggers': {
         'reminders.cron': {
             'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'apps.payments': {
+            'handlers': ['payments_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'stripe.webhook': {
+            'handlers': ['webhook_file'],
             'level': 'DEBUG',
             'propagate': True,
         },

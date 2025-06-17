@@ -661,93 +661,102 @@ def get_user_tier(points):
 @login_required
 def dashboard_calendar(request):
     # Ensure UserSettings exists
-    user_settings, _ = UserSettings.objects.get_or_create(user=request.user)
+    print("Checking calendar access...")
+    
+    user_settings = UserSettings.objects.get_or_create(user=request.user)[0]
+    print(f"User settings: subscription_status={user_settings.subscription_status}, account_tier={user_settings.account_tier}")
 
-    if not user_settings.is_on_paid_plan() or not user_settings.account_tier or user_settings.account_tier.name.lower() != "premium":
-        messages.error(request, "You need a Premium subscription to access the calendar.")
-        return render(request, 'reminders/calendar_paywall.html')  
+    if user_settings.subscription_status == 'premium':
+        print("User has premium access, showing calendar")
+        user = request.user
+        today = timezone.now().date()
 
-    user = request.user
-    today = timezone.now().date()
-    # Fetch upcoming active reminders for the user (QuerySet 1)
-    queryset_1 = Reminder.objects.filter(
-        user=user,
-        is_active=True,
-        schedule__start_date__lte=today + timedelta(days=30),  # Adjust the range as needed
-        schedule__end_date__isnull=True
-    ).select_related('medication', 'schedule')
+        user = request.user
+        today = timezone.now().date()
+        # Fetch upcoming active reminders for the user (QuerySet 1)
+        queryset_1 = Reminder.objects.filter(
+            user=user,
+            is_active=True,
+            schedule__start_date__lte=today + timedelta(days=30),  # Adjust the range as needed
+            schedule__end_date__isnull=True
+        ).select_related('medication', 'schedule')
 
-    # Fetch upcoming active reminders for the user (QuerySet 2)
-    queryset_2 = Reminder.objects.filter(
-        user=user,
-        is_active=True,
-        schedule__start_date__lte=today + timedelta(days=30),  # Adjust the range as needed
-        schedule__end_date__gte=today
-    ).select_related('medication', 'schedule')
+        # Fetch upcoming active reminders for the user (QuerySet 2)
+        queryset_2 = Reminder.objects.filter(
+            user=user,
+            is_active=True,
+            schedule__start_date__lte=today + timedelta(days=30),  # Adjust the range as needed
+            schedule__end_date__gte=today
+        ).select_related('medication', 'schedule')
 
-    # Combine the QuerySets
-    upcoming_reminders = queryset_1.union(queryset_2).order_by('schedule__start_date', 'schedule__time_of_day')
+        # Combine the QuerySets
+        upcoming_reminders = queryset_1.union(queryset_2).order_by('schedule__start_date', 'schedule__time_of_day')
 
-    events = []
-    for reminder in upcoming_reminders:
-        schedule = reminder.schedule
-        start_date = schedule.start_date
-        end_date = schedule.end_date
-        time_of_day = schedule.time_of_day
+        events = []
+        for reminder in upcoming_reminders:
+            schedule = reminder.schedule
+            start_date = schedule.start_date
+            end_date = schedule.end_date
+            time_of_day = schedule.time_of_day
 
-        if schedule.repeat_type == 'daily':
-            current_date = start_date
-            while current_date <= (end_date if end_date else today + timedelta(days=30)):
+            if schedule.repeat_type == 'daily':
+                current_date = start_date
+                while current_date <= (end_date if end_date else today + timedelta(days=30)):
+                    events.append({
+                        'title': f'{reminder.medication} ({reminder.dosage})',
+                        'start': f'{current_date.isoformat()}T{time_of_day.strftime("%H:%M:%S")}',
+                        'allDay': False,
+                        'url': f'/reminders/{reminder.pk}/',
+                        'color': 'lightblue',
+                    })
+                    current_date += timedelta(days=1)
+            elif schedule.repeat_type == 'weekly' and schedule.weekly_days:
+                days_of_week = [int(day) for day in schedule.weekly_days.split(',') if day.strip()]
+                current_date = start_date
+                while current_date <= (end_date if end_date else today + timedelta(days=30)):
+                    if current_date.weekday() in days_of_week:
+                        events.append({
+                            'title': f'{reminder.medication} ({reminder.dosage})',
+                            'start': f'{current_date.isoformat()}T{time_of_day.strftime("%H:%M:%S")}',
+                            'allDay': False,
+                            'url': f'/reminders/{reminder.pk}/',
+                            'color': 'lightgreen',
+                        })
+                    current_date += timedelta(days=1)
+            elif schedule.repeat_type == 'monthly' and schedule.monthly_dates:
+                dates_of_month = [int(day) for day in schedule.monthly_dates.split(',') if day.strip()]
+                current_date = start_date
+                while current_date <= (end_date if end_date else today + timedelta(days=30)):
+                    if current_date.day in dates_of_month:
+                        events.append({
+                            'title': f'{reminder.medication} ({reminder.dosage})',
+                            'start': f'{current_date.isoformat()}T{time_of_day.strftime("%H:%M:%S")}',
+                            'allDay': False,
+                            'url': f'/reminders/{reminder.pk}/',
+                            'color': 'lightcoral',
+                        })
+                    if current_date.month < 12:
+                        current_date = current_date.replace(month=current_date.month + 1, day=1)
+                    else:
+                        current_date = current_date.replace(year=current_date.year + 1, month=1, day=1)
+            elif schedule.repeat_type == 'once' and start_date >= today and start_date <= today + timedelta(days=30):
                 events.append({
                     'title': f'{reminder.medication} ({reminder.dosage})',
-                    'start': f'{current_date.isoformat()}T{time_of_day.strftime("%H:%M:%S")}',
+                    'start': f'{start_date.isoformat()}T{time_of_day.strftime("%H:%M:%S")}',
                     'allDay': False,
                     'url': f'/reminders/{reminder.pk}/',
                     'color': 'lightblue',
                 })
-                current_date += timedelta(days=1)
-        elif schedule.repeat_type == 'weekly' and schedule.weekly_days:
-            days_of_week = [int(day) for day in schedule.weekly_days.split(',') if day.strip()]
-            current_date = start_date
-            while current_date <= (end_date if end_date else today + timedelta(days=30)):
-                if current_date.weekday() in days_of_week:
-                    events.append({
-                        'title': f'{reminder.medication} ({reminder.dosage})',
-                        'start': f'{current_date.isoformat()}T{time_of_day.strftime("%H:%M:%S")}',
-                        'allDay': False,
-                        'url': f'/reminders/{reminder.pk}/',
-                        'color': 'lightgreen',
-                    })
-                current_date += timedelta(days=1)
-        elif schedule.repeat_type == 'monthly' and schedule.monthly_dates:
-            dates_of_month = [int(day) for day in schedule.monthly_dates.split(',') if day.strip()]
-            current_date = start_date
-            while current_date <= (end_date if end_date else today + timedelta(days=30)):
-                if current_date.day in dates_of_month:
-                    events.append({
-                        'title': f'{reminder.medication} ({reminder.dosage})',
-                        'start': f'{current_date.isoformat()}T{time_of_day.strftime("%H:%M:%S")}',
-                        'allDay': False,
-                        'url': f'/reminders/{reminder.pk}/',
-                        'color': 'lightcoral',
-                    })
-                if current_date.month < 12:
-                    current_date = current_date.replace(month=current_date.month + 1, day=1)
-                else:
-                    current_date = current_date.replace(year=current_date.year + 1, month=1, day=1)
-        elif schedule.repeat_type == 'once' and start_date >= today and start_date <= today + timedelta(days=30):
-            events.append({
-                'title': f'{reminder.medication} ({reminder.dosage})',
-                'start': f'{start_date.isoformat()}T{time_of_day.strftime("%H:%M:%S")}',
-                'allDay': False,
-                'url': f'/reminders/{reminder.pk}/',
-                'color': 'lightblue',
-            })
 
-    context = {
-        'events_json': json.dumps(events),
-    }
-    return render(request, 'reminders/dashboard_calendar.html', context)
+        context = {
+            'events_json': json.dumps(events),
+        }
+        return render(request, 'reminders/dashboard_calendar.html', context)
+    else:
+        print(f"Access denied. Status: {user_settings.subscription_status}")
+        messages.warning(request, "You need a Premium subscription to access the calendar view.")
+        messages.error(request, "You need a Premium subscription to access the calendar.")
+        return render(request, 'reminders/calendar_paywall.html')  
 
 @login_required
 def account_page_view(request):

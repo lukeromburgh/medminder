@@ -2,6 +2,7 @@
 
 import stripe
 import logging
+import json
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
@@ -13,12 +14,14 @@ from django.conf import settings # new
 from django.http.response import JsonResponse # new
 from django.views.decorators.csrf import csrf_exempt # new
 from django.views.generic.base import TemplateView
-import json
 
 from apps.accounts.models import Tier, User, UserSettings
 
 
 logger = logging.getLogger(__name__)
+# Configure logger at the top of the file
+logger = logging.getLogger('stripe.webhook')
+
 # Initialize Stripe with your secret key
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -28,25 +31,29 @@ HEALTH_HERO_PRICE_ID = 'price_1RUnxqFRa8uCnmTD91rvnTpe' # <<< IMPORTANT: Update 
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == 'GET':
-        domain_url = 'http://localhost:8000/'
-        stripe.api_key = settings.STRIPE_SECRET_KEY
+        domain_url = 'http://localhost:8000'
         try:
             checkout_session = stripe.checkout.Session.create(
-                success_url=domain_url + 'payments/success?session_id={CHECKOUT_SESSION_ID}',
-                cancel_url=domain_url + 'payments/cancelled/',
+                success_url=f"{domain_url}/payments/success/?session_id={{CHECKOUT_SESSION_ID}}",
+                cancel_url=f"{domain_url}/payments/cancelled/",
                 payment_method_types=['card'],
                 mode='subscription',
-                client_reference_id=request.user.id,  # <-- Add this line!
-                line_items=[
-                    {
-                        'price': HEALTH_HERO_PRICE_ID,
-                        'quantity': 1,
-                    }
-                ]
+                customer_email=request.user.email,
+                metadata={
+                    'user_id': request.user.id,  # Add metadata to track the user
+                },
+                line_items=[{
+                    'price': settings.HEALTH_HERO_PRICE_ID,
+                    'quantity': 1,
+                }]
             )
-            return JsonResponse({'sessionId': checkout_session['id']})
+            print(f"Created checkout session: {checkout_session.id}")
+            return JsonResponse({'sessionId': checkout_session.id})
         except Exception as e:
+            print(f"Error creating checkout session: {e}")
             return JsonResponse({'error': str(e)})
+    
+    return JsonResponse({'error': 'Invalid request method'})
 
 def payment_success_view(request):
     session_id = request.GET.get('session_id')
@@ -85,79 +92,94 @@ def stripe_config(request):
 
 @csrf_exempt
 def stripe_webhook(request):
-    """
-    Stripe webhook view to handle checkout session completion.
-    """
-    print("Stripe webhook called")
+    logger.info("⭐️ Webhook endpoint called")
+    logger.debug(f"Request method: {request.method}")
+    logger.debug(f"Headers: {dict(request.headers)}")
+    
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
-
+    
+    if not sig_header:
+        logger.error("❌ No Stripe signature found in headers")
+        return HttpResponse(status=400)
+    
+    logger.info(f"📝 Signature header found: {sig_header[:20]}...")
+    
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
-        print(f"Stripe event constructed: {event['type']}")
-    except ValueError:
-        logger.warning("Stripe webhook received an invalid payload.")
-        print("Invalid payload")
+        logger.info(f"✅ Event constructed successfully: {event['type']}")
+        logger.debug(f"Full event data: {json.dumps(event, indent=2)}")
+        
+    except ValueError as e:
+        logger.error(f"❌ Invalid payload: {str(e)}")
         return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
-        logger.warning("Stripe webhook received an invalid signature.")
-        print("Invalid signature")
+    except stripe.error.SignatureVerificationError as e:
+        logger.error(f"❌ Invalid signature: {str(e)}")
         return HttpResponse(status=400)
 
-    # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
-        print("Handling checkout.session.completed event")
-        session = event['data']['object']
-        print(f"Session object: {session}")
-        user_id = session.get('client_reference_id')
-        print(f"client_reference_id: {user_id}")
-        if user_id is None:
-            logger.error(f"client_reference_id not found in session {session.get('id')}. Cannot process order.")
-            print(f"client_reference_id not found in session {session.get('id')}. Cannot process order.")
-            return HttpResponse(status=200)
+            logger.info("🎉 Processing checkout.session.completed event")
+            session = event['data']['object']
+            
+            # Get customer email from session
+            customer_email = session.get('customer_details', {}).get('email')
+            if not customer_email:
+                logger.error("❌ No customer email found in session")
+                return HttpResponse(status=200)
+                
+            logger.info(f"📧 Found customer email: {customer_email}")
+            
+            try:
+                with transaction.atomic():
+                    # Get user and settings by email
+                    logger.info(f"Looking up user with email: {customer_email}")
+                    user = User.objects.select_for_update().get(email=customer_email)
+                    logger.info(f"Found user: {user.username} ({user.id})")
+                    
+                    logger.info("Getting user settings")
+                    usersettings = UserSettings.objects.select_for_update().get(user=user)
+                    logger.info("Found user settings")
+                    
+                    logger.info("Getting or creating Premium tier")
+                    premium_tier, created = Tier.objects.get_or_create(
+                        name="Premium",
+                        defaults={
+                            'description': "Premium subscription with all features",
+                            'priority': 1,
+                            'is_default': False,
+                            'max_reminders': None,
+                            'max_viewers': None,
+                            'can_use_sms_reminders': True
+                        }
+                    )
+                    logger.info(f"Premium tier {'created' if created else 'found'}")
+                    
+                    # Update settings with explicit values
+                    logger.info("Updating user settings")
+                    usersettings.account_tier = premium_tier
+                    usersettings.subscription_status = 'premium'
+                    usersettings.payment_customer_id = session.get('customer')
+                    usersettings.payment_subscription_id = session.get('subscription')
+                    
+                    logger.info("About to save user settings")
+                    usersettings.save()
+                    logger.info("User settings saved successfully")
+                    
+                    # Verify the update immediately after save
+                    refreshed_settings = UserSettings.objects.get(user=user)
+                    logger.info(f"Verified settings after save: tier={refreshed_settings.account_tier}, status={refreshed_settings.subscription_status}")
 
-        try:
-            with transaction.atomic():
-                print(f"Looking up user with id: {user_id}")
-                user = User.objects.get(id=user_id)
-                print(f"User found: {user}")
-                usersettings = user.usersettings
-                print(f"UserSettings found: {usersettings}")
-
-                # Idempotency check
-                if usersettings.subscription_status == 'premium':
-                    logger.info(f"User {user_id} is already a premium member. Webhook for session {session.get('id')} already processed.")
-                    print(f"User {user_id} is already a premium member. Webhook for session {session.get('id')} already processed.")
-                    return HttpResponse(status=200)
-
-                premium_tier = Tier.objects.get(name__iexact='Premium')
-                print(f"Premium tier found: {premium_tier}")
-                usersettings.account_tier = premium_tier
-                usersettings.subscription_status = 'premium'
-                usersettings.payment_customer_id = session.get('customer')
-                usersettings.payment_subscription_id = session.get('subscription')
-                usersettings.save()
-                print(f"UserSettings updated and saved for user {user.email} (ID: {user.id})")
-
-                logger.info(f"Successfully upgraded user {user.email} (ID: {user.id}) to premium.")
-
-        except User.DoesNotExist:
-            logger.error(f"User with ID {user_id} does not exist. Cannot upgrade.")
-            print(f"User with ID {user_id} does not exist. Cannot upgrade.")
-        except UserSettings.DoesNotExist:
-            logger.error(f"UserSettings for user with ID {user_id} do not exist.")
-            print(f"UserSettings for user with ID {user_id} do not exist.")
-        except Tier.DoesNotExist:
-            logger.error("Premium tier does not exist in the database.")
-            print("Premium tier does not exist in the database.")
-        except Exception as e:
-            logger.error(f"Unexpected error processing webhook for user {user_id}: {e}")
-            print(f"Unexpected error processing webhook for user {user_id}: {e}")
-
-    else:
-        print(f"Unhandled event type: {event['type']}")
+            except User.DoesNotExist:
+                logger.error(f"❌ User with email {customer_email} not found")
+            except UserSettings.DoesNotExist:
+                logger.error(f"❌ UserSettings for user {user.username} not found")
+            except Exception as e:
+                logger.error(f"❌ Error updating user settings: {str(e)}", exc_info=True)
+            
+            except Exception as e:
+                logger.error(f"❌ Webhook processing failed: {str(e)}", exc_info=True)
+            return HttpResponse(status=400)
 
     return HttpResponse(status=200)
