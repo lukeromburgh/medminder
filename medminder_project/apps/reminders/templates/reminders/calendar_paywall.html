@@ -1,0 +1,394 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Calendar View - Premium Feature | MedMinder{% endblock %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar View - Premium Feature | MedMinder</title>
+    <script src="{% static 'js/main.js' %}"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #1f2328;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #d1d9e0;
+            padding: 48px;
+            position: relative;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logo::before {
+            content: "⚕️";
+            font-size: 24px;
+        }
+
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 24px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #bfdbfe;
+        }
+
+        .paywall-section {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .calendar-preview {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 32px;
+            background: linear-gradient(135deg, #f6f8fa 0%, #ffffff 100%);
+            border: 2px dashed #d1d9e0;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #656d76;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calendar-preview::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(209, 217, 224, 0.3) 50%, transparent 70%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .lock-icon {
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            width: 32px;
+            height: 32px;
+            background: #0969da;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 16px;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #656d76;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #656d76;
+            line-height: 1.6;
+            max-width: 500px;
+            margin: 0 auto 48px;
+        }
+
+        .feature-highlight {
+            background: #f6f8fa;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .feature-highlight h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            color: #656d76;
+            font-size: 14px;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: #059669;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #f6f8fa 0%, #ffffff 100%);
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .price-info {
+            margin-bottom: 20px;
+        }
+
+        .price {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 4px;
+        }
+
+        .trial-notice {
+            background: #ecfdf5;
+            color: #059669;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #d1fae5;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 24px;
+        }
+
+        .trial-notice::before {
+            content: "✨";
+        }
+
+        .upgrade-btn {
+            background: #0969da;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            text-decoration: none;
+        }
+
+        .upgrade-btn:hover {
+            background: #0550ae;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(9, 105, 218, 0.2);
+        }
+
+        .upgrade-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #0969da;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #0550ae;
+            text-decoration: underline;
+        }
+
+        .back-link::before {
+            content: "←";
+            font-size: 16px;
+        }
+
+        /* Subtle background pattern */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(9, 105, 218, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(9, 105, 218, 0.03) 0%, transparent 50%);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .container > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+                margin: 16px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .calendar-preview {
+                width: 100px;
+                height: 100px;
+                font-size: 40px;
+            }
+
+            .paywall-section {
+                margin-bottom: 32px;
+            }
+        }
+
+        /* GitHub-style focus states */
+        .upgrade-btn:focus {
+            outline: 2px solid #0969da;
+            outline-offset: 2px;
+        }
+
+        .back-link:focus {
+            outline: 2px solid #0969da;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">MedMinder</div>
+            <div class="premium-badge">
+                ⭐ Premium Feature
+            </div>
+        </header>
+
+        <section class="paywall-section">
+            <div class="calendar-preview">
+                📅
+                <div class="lock-icon">🔒</div>
+            </div>
+            <h1>Calendar View</h1>
+            <p class="subtitle">Unlock beautiful medication scheduling</p>
+            <p class="description">
+                The Calendar View is available exclusively for Health Hero members. 
+                Visualize your medication schedule in a beautiful, intuitive calendar interface.
+            </p>
+        </section>
+
+        <section class="feature-highlight">
+            <h3>📅 What you'll get with Calendar View</h3>
+            <ul class="feature-list">
+                <li>Beautiful monthly and weekly calendar layouts</li>
+                <li>Color-coded medication scheduling</li>
+                <li>Drag-and-drop medication management</li>
+                <li>Quick overview of upcoming doses</li>
+                <li>Visual medication adherence tracking</li>
+                <li>Integration with your existing medication reminders</li>
+            </ul>
+        </section>
+
+        <section class="cta-section">
+            <a href="{% url 'product_landing_page' %}" class="upgrade-btn">
+                Upgrade your plan now
+            </a>
+            <p style="color: #656d76; font-size: 12px; margin: 0;">
+                30-day money-back guarantee
+            </p>
+        </section>
+
+        <a href="{% url 'medminder:dashboard' %}" class="back-link">
+            Back to Dashboard
+        </a>
+    </div>
+</body>
+</html>
+{% endblock %}

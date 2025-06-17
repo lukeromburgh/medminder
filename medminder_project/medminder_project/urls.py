@@ -23,4 +23,5 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.urls')),  # Include the URLs from the accounts app
     path('medminder/', include('apps.reminders.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
+    path('payments/', include('apps.payments.urls')),  # Include the URLs from the payments app
 ]

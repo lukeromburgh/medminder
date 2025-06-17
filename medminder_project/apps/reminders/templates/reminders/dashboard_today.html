@@ -11,7 +11,7 @@
   <article class="grid grid-cols-2 gap-4 lg:flex lg:flex-row lg:gap-4 lg:space-between lg:justify-center lg:items-center"> {# Added items-center for vertical alignment on lg #}
 
     {# Updated Div classes - removed mobile/small width, keeping padding/margin and lg width/padding #}
-    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-yellow-50 text-yellow-700 lg:w-1/4 border-yellow-300">
+    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-yellow-50 text-yellow-700 lg:w-1/4 border-yellow-300 hover:shadow-md transition-all duration-300 ease-out hover:scale-[1.02]">
         <div class="flex items-center justify-between mb-2">
             <h3 class="text-sm font-medium">Total Medications</h3>
             {# Heroicon: outline/archive-box (or solid/pills if preferred) #}
@@ -27,7 +27,7 @@
     </div>
 
     {# Updated Div classes #}
-    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-green-50 text-green-700 lg:w-1/4 border-green-300">
+    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-green-50 text-green-700 lg:w-1/4 border-green-300 hover:shadow-md transition-all duration-300 ease-out hover:scale-[1.02]">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-medium ">Next Reminder</h3>
         {# Heroicon: outline/clock #}
@@ -48,7 +48,7 @@
     </div>
 
     {# Updated Div classes #}
-    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-blue-50 text-blue-700 lg:w-1/4 border-blue-300">
+    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-blue-50 text-blue-700 lg:w-1/4 border-blue-300 hover:shadow-md transition-all duration-300 ease-out hover:scale-[1.02]">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-medium">Weekly Adherence</h3>
         {# Heroicon: outline/check-circle #}
@@ -64,7 +64,7 @@
     </div>
 
     {# Updated Div classes #}
-    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-purple-50 text-purple-700 lg:w-1/4 border-purple-300">
+    <div class="p-4 sm:p-6 lg:p-8 my-1 lg:my-4 rounded-lg border bg-purple-50 text-purple-700 lg:w-1/4 border-purple-300 hover:shadow-md transition-all duration-300 ease-out hover:scale-[1.02]">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-medium">Points & Rank</h3>
         {# Heroicon: solid/star #}
@@ -92,7 +92,7 @@
   3. A URL and view are needed for the "Skip" action (currently commented out).
 {% endcomment %}
 
-<section class="p-6 lg:p-8 my-4 lg:my-0 rounded-xl border border-gray-200 bg-white shadow-sm" x-data="{ showAll: false, rowLimit: 5, remindersCount: {{ todays_reminders|length }} }"> {# Increased default rowLimit slightly #}
+<section class="p-6 lg:p-8 my-4 lg:my-0 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-sm transition-all duration-300 ease-out hover:scale-[1.02]" x-data="{ showAll: false, rowLimit: 5, remindersCount: {{ todays_reminders|length }} }"> {# Increased default rowLimit slightly #}
   <h2 class="text-2xl font-semibold text-gray-800 mb-6">Today's Medications</h2>
   <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
 
@@ -237,7 +237,7 @@
 </section>
 
     {# --- NEW MEDICATION ADHERENCE TRACKER WIDGET --- #}
-    <section class="w-full lg:w-1/2 p-4 sm:p-6 mt-6 rounded-xl border border-gray-300 bg-white"
+    <section class="w-full lg:w-1/2 p-4 sm:p-6 mt-6 rounded-xl border border-gray-300 bg-white hover:shadow-sm transition-all duration-300 ease-out hover:scale-[1.02]"
            x-data="adherenceTracker()" {# <= REMOVE the argument here #}
            x-init="init()"> {# <= Keep x-init to trigger initialization #}
 
@@ -284,14 +284,43 @@
   </section>
 {# --- END OF NEW WIDGET --- #}
 
-<div class="bg-gradient-to-r from-blue-400 to-purple-400 border border-[#E2E2E2] rounded-lg p-12 mt-6 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
-  <div class="flex-grow text-center md:text-left">
-    <h2 class="text-2xl font-bold mb-2">Unlock More with Premium!</h2>
-    <p class="text-sm opacity-90">Get access to Calendar view, Viewer sharing, and more advanced features.</p>
+<div class="bg-white border border-gray-200 rounded-xl p-8 mt-6 shadow-lg hover:shadow-xl transition-all duration-300 ease-out flex flex-col md:flex-row items-center justify-between gap-6 group hover:scale-[1.02] hover:border-gray-300 relative overflow-hidden">
+  <!-- Subtle hover glow effect -->
+  <div class="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+  
+  <div class="flex-grow text-center md:text-left relative z-10">
+    <div class="flex items-center justify-center md:justify-start gap-2 mb-3">
+      <div class="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+      <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Premium</span>
+    </div>
+    <h2 class="text-2xl font-bold mb-2 text-gray-900 group-hover:text-gray-700 transition-colors">Unlock More with Premium!</h2>
+    <p class="text-gray-600 text-sm leading-relaxed">Get access to Calendar view, Viewer sharing, and more advanced features.</p>
+    
+    <!-- Feature indicators -->
+    <div class="flex items-center justify-center md:justify-start gap-4 mt-4">
+      <div class="flex items-center gap-1.5 text-xs text-gray-500">
+        <div class="w-1 h-1 bg-green-500 rounded-full"></div>
+        <span>Calendar View</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs text-gray-500">
+        <div class="w-1 h-1 bg-blue-500 rounded-full"></div>
+        <span>Viewer Sharing</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs text-gray-500">
+        <div class="w-1 h-1 bg-purple-500 rounded-full"></div>
+        <span>Advanced Features</span>
+      </div>
+    </div>
   </div>
-  <div class="shrink-0">
-    <a href="" class="inline-block bg-black hover:bg-gray-800 text-white font-semibold py-2 px-6 rounded-full transition duration-200">
-      Upgrade Now
+  
+  <div class="shrink-0 relative z-10">
+    <a href="{% url 'product_landing_page'%}" class="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg group/btn relative overflow-hidden">
+      <span class="relative z-10">Upgrade Now</span>
+      <svg class="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <!-- Button hover effect -->
+      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-500"></div>
     </a>
   </div>
 </div>

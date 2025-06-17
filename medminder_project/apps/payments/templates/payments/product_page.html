@@ -1,0 +1,437 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Health Hero Premium | MedMinder{% endblock %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Hero Premium | MedMinder</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #1f2328;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #d1d9e0;
+            padding: 48px;
+            position: relative;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logo::before {
+            content: "⚕️";
+            font-size: 24px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 24px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #0969da 0%, #0550ae 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(9, 105, 218, 0.2);
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 16px;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #656d76;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #656d76;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 48px;
+        }
+
+        .pricing-section {
+            background: #f6f8fa;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 48px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .price-container {
+            margin-bottom: 24px;
+        }
+
+        .price {
+            font-size: 36px;
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 4px;
+        }
+
+        .price-period {
+            color: #656d76;
+            font-size: 14px;
+        }
+
+        .trial-notice {
+            background: #ecfdf5;
+            color: #059669;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #d1fae5;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 24px;
+        }
+
+        .trial-notice::before {
+            content: "✨";
+        }
+
+        .features-section {
+            margin-bottom: 48px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .feature-card {
+            background: #ffffff;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .feature-card:hover {
+            border-color: #0969da;
+            box-shadow: 0 4px 12px rgba(9, 105, 218, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .feature-icon-small {
+            width: 32px;
+            height: 32px;
+            background: #f6f8fa;
+            border: 1px solid #d1d9e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .feature-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2328;
+            margin: 0;
+        }
+
+        .feature-card p {
+            color: #656d76;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .cta-section {
+            background: #f6f8fa;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .purchase-btn {
+            background: #0969da;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .purchase-btn:hover {
+            background: #0550ae;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(9, 105, 218, 0.2);
+        }
+
+        .purchase-btn:active {
+            transform: translateY(0);
+        }
+
+        .guarantee {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #656d76;
+            font-size: 12px;
+        }
+
+        .guarantee::before {
+            content: "🛡️";
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #0969da;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #0550ae;
+            text-decoration: underline;
+        }
+
+        .back-link::before {
+            content: "←";
+            font-size: 16px;
+        }
+
+        /* Subtle background pattern */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(9, 105, 218, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(9, 105, 218, 0.03) 0%, transparent 50%);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .container > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+                margin: 16px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .hero-section {
+                margin-bottom: 48px;
+            }
+
+            .features-section {
+                margin-bottom: 32px;
+            }
+        }
+
+        /* GitHub-style focus states */
+        .purchase-btn:focus {
+            outline: 2px solid #0969da;
+            outline-offset: 2px;
+        }
+
+        .back-link:focus {
+            outline: 2px solid #0969da;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">MedMinder</div>
+            <div class="badge">
+                ⭐ Premium
+            </div>
+        </header>
+
+        <section class="hero-section">
+            <div class="hero-icon">🏆</div>
+            <h1>Health Hero</h1>
+            <p class="subtitle">Unlock your medication management superpowers</p>
+            <p class="description">
+                Elevate your health journey with premium features designed for serious health enthusiasts. 
+                Get advanced insights, early access to cutting-edge features, and powerful tools to 
+                maintain perfect medication adherence.
+            </p>
+        </section>
+
+        <section class="pricing-section">
+            <div class="price-container">
+                <div class="price">£2.99</div>
+                <div class="price-period">per month</div>
+            </div>
+            <div class="trial-notice">
+                Free 14-day trial available
+            </div>
+        </section>
+
+        <section class="features-section">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon-small">⚡</div>
+                        <h3>Early Access</h3>
+                    </div>
+                    <p>Be the first to experience new features and improvements before anyone else</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon-small">📊</div>
+                        <h3>Advanced Insights</h3>
+                    </div>
+                    <p>Detailed analytics, trends, and personalized health recommendations based on your data</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon-small">📅</div>
+                        <h3>Calendar View</h3>
+                    </div>
+                    <p>Beautiful calendar interface for crystal-clear medication scheduling and planning</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <button class="purchase-btn" id="checkout-button">
+                Become a Health Hero
+            </button>
+            <div class="guarantee">
+                30-day money-back guarantee
+            </div>
+        </section>
+
+        <a href="{% url 'medminder:dashboard' %}" class="back-link">
+            Back to Dashboard
+        </a>
+    </div>
+</body>
+</html>
+{% endblock %}

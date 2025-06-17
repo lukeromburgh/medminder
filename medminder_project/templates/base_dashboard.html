@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
-    <title>{% block title %}{% endblock %} - MedMinder</title> {# Added app name to title #}
+    <title>{% block title %}{% endblock %} - MedMinder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script
@@ -12,147 +12,140 @@
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
     {% block extra_css %}{% endblock %}
-    {# Add any necessary custom CSS here if Tailwind isn't enough #}
     <style>
       [x-cloak] { display: none !important; }
       .premium-tag {
-        @apply ml-1 px-1.5 py-0.5 !important rounded-md !important text-xs font-semibold bg-yellow-200!important text-yellow-800 !important;
+        @apply ml-1 px-1.5 py-0.5 !important rounded-md !important text-xs font-semibold bg-yellow-400!important text-yellow-900 !important shadow-sm;
+      }
+      .coming-soon-tag {
+        @apply ml-1 px-1.5 py-0.5 !important rounded-md !important text-xs font-semibold bg-sky-200!important text-sky-700 !important shadow-sm;
       }
     </style>
   </head>
   <body>
     <main>
-        <div class="flex lg:flex-row flex-col items-center justify-center w-screen h-screen">
+        <div class="flex lg:flex-row flex-col items-center justify-center w-screen h-screen bg-slate-100"> {# Light bg for the overall page container #}
           <div x-data="{ showSidebar: false }" class="relative flex w-full flex-col md:flex-row">
               <a class="sr-only" href="#main-content">skip to the main content</a>
 
-              <div x-cloak x-show="showSidebar" class="fixed inset-0 z-10 bg-neutral-950/10 backdrop-blur-xs md:hidden" aria-hidden="true" x-on:click="showSidebar = false" x-transition.opacity></div>
+              <div x-cloak x-show="showSidebar" class="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm md:hidden" aria-hidden="true" x-on:click="showSidebar = false" x-transition.opacity></div>
 
-              <nav x-cloak class="fixed left-0 z-20 flex h-svh w-60 shrink-0 flex-col border-r border-neutral-300 bg-neutral-50 p-4 transition-transform duration-300 md:w-64 md:translate-x-0 md:relative" x-bind:class="showSidebar ? 'translate-x-0' : '-translate-x-60'" aria-label="sidebar navigation">
-                  <a href="/" class="ml-2 w-fit text-2xl font-bold text-neutral-900">
-                      <span class="sr-only">homepage</span>
-                      <img src="{% static 'images/medminder.png' %}" alt="MedMinder Logo" class="h-6 lg:h-8 mt-2 mb-8 lg:mb-12 align-middle" />
+              {# --- Modern SaaS Sidebar --- #}
+              <nav x-cloak class="fixed left-0 z-40 flex h-svh w-64 shrink-0 flex-col border-r border-gray-700 bg-gray-900 p-4 transition-transform duration-300 md:relative md:translate-x-0" x-bind:class="showSidebar ? 'translate-x-0' : '-translate-x-full'" aria-label="sidebar navigation">
+                  <a href="/" class="ml-2 flex items-center gap-2 w-fit text-2xl font-bold text-white mb-8 lg:mb-10">
+                      <img src="{% static 'images/medminder-white.png' %}" alt="MedMinder Logo" class="h-8 lg:h-8 align-middle" />
+                      <span class="sr-only">MedMinder homepage</span>
                   </a>
 
-                  <div class="flex flex-col gap-2 overflow-y-auto pb-6">
+                  <div class="flex flex-col gap-1.5 overflow-y-auto pb-6 text-sm">
 
-                    {# Simplest way: Get the current URL name from the request object #}
                     {% with current_url_name=request.resolver_match.url_name %}
 
-                      {# Check if the current URL name matches the dashboard URL name #}
                       <a href="{% url 'medminder:dashboard' %}"
-                         class="flex items-center rounded-md gap-2 px-2 py-1.5 text-sm font-medium underline-offset-2 focus-visible:underline focus:outline-hidden
+                         class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium
                                 {% if current_url_name == 'dashboard' %}
-                                   bg-black/10 text-neutral-900 {# Active classes #}
+                                   bg-blue-600 text-white shadow-md
                                 {% else %}
-                                   text-neutral-600 hover:bg-black/5 hover:text-neutral-900 {# Inactive classes #}
+                                   text-gray-400 hover:bg-gray-800 hover:text-white
                                 {% endif %}">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" class="size-5 shrink-0" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 shrink-0" aria-hidden="true">
                               <path d="M10 2a1 1 0 0 1 .707.293l6 6a1 1 0 0 1-1.414 1.414L16 10v6a2 2 0 0 1-2 2h-2v-5H8v5H6a2 2 0 0 1-2-2v-6l.707.707A1 1 0 0 1 3.293 8.293l6-6A1 1 0 0 1 10 2Z"/>
                           </svg>
                           <span>Dashboard</span>
                       </a>
 
-                      {# Check if the current URL name matches the medications URL name #}
                       <a href="{% url 'medminder:medications' %}"
-                         class="flex items-center rounded-md gap-2 px-2 py-1.5 text-sm font-medium underline-offset-2 focus-visible:underline focus:outline-hidden
+                         class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium
                                 {% if current_url_name == 'medications' %}
-                                   bg-black/10 text-neutral-900 {# Active classes #}
+                                   bg-blue-600 text-white shadow-md
                                 {% else %}
-                                   text-neutral-600 hover:bg-black/5 hover:text-neutral-900 {# Inactive classes #}
+                                   text-gray-400 hover:bg-gray-800 hover:text-white
                                 {% endif %}">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" class="size-5 shrink-0" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 shrink-0" aria-hidden="true">
                               <path d="M8.5 1a.5.5 0 0 1 .5.5V4h2V1.5a.5.5 0 0 1 1 0V4h1a2 2 0 0 1 2 2v1H4V6a2 2 0 0 1 2-2h1V1.5a.5.5 0 0 1 1 0V4h2V1.5a.5.5 0 0 1 .5-.5zM4 8h12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z"/>
                           </svg>
                           <span>Medications</span>
                       </a>
 
-                      {# Calendar Link with "Premium" Tag #}
                       <a href="{% url 'medminder:dashboard_calendar' %}"
-                         class="flex items-center rounded-md gap-2 px-2 py-1.5 text-sm font-medium underline-offset-2 focus-visible:underline focus:outline-hidden
+                         class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium
                                 {% if current_url_name == 'dashboard_calendar' %}
-                                   bg-black/10 text-neutral-900 {# Active classes #}
+                                   bg-blue-600 text-white shadow-md
                                 {% else %}
-                                   text-neutral-600 hover:bg-black/5 hover:text-neutral-900 {# Inactive classes #}
+                                   text-gray-400 hover:bg-gray-800 hover:text-white
                                 {% endif %}">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="size-5 shrink-0" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                          </svg>
                           <span>Calendar</span>
-                          <span class="ml-1 px-1.5 py-0.5 !important rounded-md !important text-xs font-semibold bg-yellow-200 !important text-yellow-800 !important shadow-xs !important">Premium</span>
+                          <span class="premium-tag">Premium</span>
                       </a>
 
-                      {# Viewers Link with "Coming Soon" Tag #}
-                      <a href="#"
-                         class="flex items-center rounded-md gap-2 px-2 py-1.5 text-sm font-medium underline-offset-2 focus-visible:underline focus:outline-hidden
-                                {% if current_url_name == 'viewers_page_url_name' %} {# Replace with actual URL name #}
-                                   bg-black/10 text-neutral-900 {# Active classes #}
+                      <a href="{% url 'medminder:viewers' %}"
+                         class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium
+                                {% if current_url_name == 'viewers' %}
+                                   bg-blue-600 text-white shadow-md
                                 {% else %}
-                                   text-neutral-600 hover:bg-black/5 hover:text-neutral-900 {# Inactive classes #}
+                                   text-gray-400 hover:bg-gray-800 hover:text-white
                                 {% endif %}">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" class="size-5 shrink-0" aria-hidden="true">
-                              <path d="M10 4a6 6 0 0 1 5.996 5.775L16 10a6 6 0 1 1-12 0l.004-.225A6 6 0 0 1 10 4Zm0 2a4 4 0 0 0-3.995 3.8L6 10a4 4 0 1 0 8 0l-.005-.2A4 4 0 0 0 10 6Zm0 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"/>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.94-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.06 2.772m0 0a3 3 0 0 0-4.681 2.72m.94-3.198c-.023.22-.037.441-.037.666A11.944 11.944 0 0 0 12 21c2.17 0 4.207-.576 5.963-1.584A6.062 6.062 0 0 0 18 18.72Zm-9.231-4.782a4.5 4.5 0 0 1 6.462 0m-6.462 0a4.5 4.5 0 0 0-6.462 0M12 12.75a4.5 4.5 0 0 1 4.5 4.5m-9 0a4.5 4.5 0 0 1 4.5-4.5M12 3.75a3 3 0 0 0-3 3v1.5a3 3 0 0 0 6 0v-1.5a3 3 0 0 0-3-3Z" />
                           </svg>
                           <span>Viewers</span>
-                          <span class="ml-1 px-1.5 py-0.5 !important rounded-md !important text-xs font-semibold bg-blue-100 !important text-blue-600 !important shadow-xs !important">Coming Soon</span>
+                          <span class="coming-soon-tag">Coming Soon</span>
                       </a>
 
-                      {# Replace '#' with actual URL and compare URL name if implemented #}
                       <a href="{% url 'medminder:account_page' %}"
-                         class="flex items-center rounded-md gap-2 px-2 py-1.5 text-sm font-medium underline-offset-2 focus-visible:underline focus:outline-hidden
-                                {% if current_url_name == 'account_page' %} {# Replace with actual URL name #}
-                                   bg-black/10 text-neutral-900 {# Active classes #}
+                         class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium
+                                {% if current_url_name == 'account_page' %}
+                                   bg-blue-600 text-white shadow-md
                                 {% else %}
-                                   text-neutral-600 hover:bg-black/5 hover:text-neutral-900 {# Inactive classes #}
+                                   text-gray-400 hover:bg-gray-800 hover:text-white
                                 {% endif %}">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" class="size-5 shrink-0" aria-hidden="true">
-                              <path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM2 16a6 6 0 0 1 12 0H2Z"/>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                           </svg>
                           <span>Account</span>
                       </a>
+                    {% endwith %}
 
-                    {% endwith %} {# End with block #}
+                    {# Spacer before buttons, pushes them to the bottom if sidebar content is short #}
+                    <div class="mt-auto pt-6">
+                        <a href="{% url 'medminder:new_plan' %}"
+                           class="mb-2 flex items-center justify-center rounded-lg gap-2 px-4 py-2.5 text-sm font-semibold
+                                  bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 transition-colors duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            <span>Add Plan</span>
+                        </a>
 
-                    {# --- Add Plan Button --- #}
-                    {# Added mt-4 for spacing and button styling classes #}
-                    <a href="{% url 'medminder:new_plan' %}"
-                       class="mt-4 flex items-center justify-center rounded-md gap-2 px-4 py-2 text-sm font-semibold
-                              bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        {# Plus Icon SVG #}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        <span>Add Plan</span>
-                    </a>
-
-                    {# --- Invite Viewer Button --- #}
-                    {# Added mt-2 for spacing and green button styling classes #}
-                    <a href="" {# Link to the invite viewer page #}
-                       class="mt-2 flex items-center justify-center rounded-md gap-2 px-4 py-2 text-sm font-semibold
-                              bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        {# User Plus Icon SVG #}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v-.75a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v6.75m16.5 0l-3.5 3.5m0 0l3.5 3.5M8.25 6H12a2.25 2.25 0 0 1 2.25 2.25V12M2.25 12h12.75m0 0v6.75C15 19.94 13.06 21 10.688 21H5.625a2.25 2.25 0 0 1-2.25-2.25V12" />
-                        </svg>
-                        <span>Invite Viewer</span>
-                    </a>
-
+                        <a href="" {# Link to the invite viewer page #}
+                           class="flex items-center justify-center rounded-lg gap-2 px-4 py-2.5 text-sm font-semibold
+                                  bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-green-500 transition-colors duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v-.75a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v6.75m16.5 0-3.5 3.5m0 0-3.5 3.5M8.25 6H12a2.25 2.25 0 0 1 2.25 2.25V12m2.25 0h-15M15 12v6.75a2.25 2.25 0 0 1-2.25 2.25H7.5A2.25 2.25 0 0 1 5.25 16.5V12" />
+                            </svg>
+                            <span>Invite Viewer</span>
+                        </a>
+                    </div>
                 </div>
               </nav>
 
-              {# Added id for skip link #}
-              <div id="main-content" class="h-svh w-full overflow-y-auto p-4 bg-white">
+              <div id="main-content" class="h-svh w-full overflow-y-auto p-6 md:p-8 bg-slate-50"> {# Main content area styling #}
                 {% block content %}
 
                 {% endblock %}
               </div>
 
-              <button class="fixed right-4 top-4 z-20 rounded-full bg-black p-4 md:hidden text-neutral-100" x-on:click="showSidebar = ! showSidebar">
-                  <svg x-show="showSidebar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-5" aria-hidden="true">
-                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
+              <button class="fixed right-4 top-4 z-50 rounded-full bg-gray-800 p-3 md:hidden text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 focus:ring-gray-700" x-on:click="showSidebar = ! showSidebar">
+                  <svg x-show="showSidebar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+                      <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
                   </svg>
-                  <svg x-show="! showSidebar" xmlns="http://www.w3.org/000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-5" aria-hidden="true">
-                      <path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5-1v12h9a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM4 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h2z"></path>
+                  <svg x-show="! showSidebar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                   </svg>
-                  <span class="sr-only">sidebar toggle</span>
+                  <span class="sr-only">Toggle sidebar</span>
               </button>
           </div>
         </div>
