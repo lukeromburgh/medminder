@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.reminders.apps.RemindersConfig',
     'django_crontab',
     'apps.payments',
+    'apps.documentation',
     
 ]
 
