@@ -16,7 +16,7 @@
       [x-cloak] { display: none !important; }
     </style>
   </head>
-  <body>
+  <body style="background-color: #FFFFFFF;">
     <main>
         <div class="flex lg:flex-row flex-col items-center justify-center w-screen h-screen bg-gray-100">
           <div x-data="{ showSidebar: false }" class="relative flex w-full flex-col md:flex-row">
@@ -112,7 +112,7 @@
                   </div>
               </nav>
 
-              <div id="main-content" class="h-svh w-full overflow-y-auto p-6 md:p-8 bg-transparent">
+              <div id="main-content" class="h-svh w-full overflow-y-auto p-6 md:p-8 bg-transparent" style="background-color: {{ background_color|default:'#fef08a' }};>
                 {% block content %}
                     <h1 class="text-4xl font-bold text-gray-800">Welcome to the MedMinder Docs!</h1>
                     <p class="mt-4 text-gray-600">Select a topic from the sidebar to get started.</p>
