@@ -1,0 +1,136 @@
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
+    <title>{% block title %}{% endblock %} - MedMinder Docs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    {% block extra_css %}{% endblock %}
+    <style>
+      [x-cloak] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main>
+        <div class="flex lg:flex-row flex-col items-center justify-center w-screen h-screen bg-gray-100">
+          <div x-data="{ showSidebar: false }" class="relative flex w-full flex-col md:flex-row">
+              <a class="sr-only" href="#main-content">skip to the main content</a>
+
+              <div x-cloak x-show="showSidebar" class="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm md:hidden" aria-hidden="true" x-on:click="showSidebar = false" x-transition.opacity></div>
+
+              <nav x-cloak class="fixed left-0 z-40 flex h-svh w-72 shrink-0 flex-col border-r border-gray-200 bg-white p-4 transition-transform duration-300 md:relative md:translate-x-0" x-bind:class="showSidebar ? 'translate-x-0' : '-translate-x-full'" aria-label="sidebar navigation">
+                  <a href="/" class="ml-2 flex items-center gap-3 w-fit text-2xl font-bold text-white mb-8 lg:mb-10">
+                      <img src="{% static 'images/medminder-dark.png' %}" alt="MedMinder Logo" class="h-9 lg:h-9 align-middle" />
+                      <span class="text-gray-700">Docs</span>
+                  </a>
+
+                  <div x-data="{ isFivePlanesOpen: true, isDevelopmentOpen: true }" class="flex flex-col gap-1.5 overflow-y-auto pb-6 text-sm">
+
+                    {% with current_url_name=request.resolver_match.url_name %}
+
+                      <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                          <span>MedMinder Overview</span>
+                      </a>
+
+                      <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                        <span>Who is MedMinder For?</span>
+                      </a>
+
+                      <div>
+                        <button @click="isFivePlanesOpen = !isFivePlanesOpen" class="flex items-center justify-between w-full px-3 pt-4 pb-2 text-xs font-semibold text-gray-500 uppercase rounded-lg hover:bg-gray-100">
+                          <span>The Five Planes</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 transition-transform" :class="{'rotate-90': isFivePlanesOpen}">
+                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clip-rule="evenodd" />
+                          </svg>
+                        </button>
+                        <div x-show="isFivePlanesOpen" x-collapse>
+                          <div class="flex flex-col gap-1.5 mt-1 pl-3">
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium bg-blue-50 text-blue-700">
+                              <span>Design Deep Dive</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                                <span>Strategy Plane</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                              <span>Scope Plane</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                                <span>Structure Plane</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                                <span>Skeleton Plane</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                              <span>Surface Plane</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <button @click="isDevelopmentOpen = !isDevelopmentOpen" class="flex items-center justify-between w-full px-3 pt-4 pb-2 text-xs font-semibold text-gray-500 uppercase rounded-lg hover:bg-gray-100">
+                          <span>Development</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 transition-transform" :class="{'rotate-90': isDevelopmentOpen}">
+                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clip-rule="evenodd" />
+                          </svg>
+                        </button>
+                         <div x-show="isDevelopmentOpen" x-collapse>
+                          <div class="flex flex-col gap-1.5 mt-1 pl-3">
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                              <span>User Stories</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                              <span>Under the Hood</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                              <span>Core Technologies</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                              <span>API Integrations</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                              <span>Development Journey</span>
+                            </a>
+                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                              <span>Ensuring Quality</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+
+                      <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 mt-3 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                        <span>Get Involved (GitHub)</span>
+                      </a>
+                    {% endwith %}
+
+                  </div>
+              </nav>
+
+              <div id="main-content" class="h-svh w-full overflow-y-auto p-6 md:p-8 bg-gray-50">
+                {% block content %}
+                    <h1 class="text-4xl font-bold text-gray-800">Welcome to the MedMinder Docs!</h1>
+                    <p class="mt-4 text-gray-600">Select a topic from the sidebar to get started.</p>
+                {% endblock %}
+              </div>
+
+              <button class="fixed right-4 top-4 z-50 rounded-full bg-white p-3 md:hidden text-gray-800 shadow-md ring-1 ring-gray-900/10 hover:bg-gray-50 focus:outline-none" x-on:click="showSidebar = ! showSidebar">
+                  <svg x-show="showSidebar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+                      <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                  </svg>
+                  <svg x-show="! showSidebar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="sr-only">Toggle sidebar</span>
+              </button>
+          </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+  </body>
+</html>
