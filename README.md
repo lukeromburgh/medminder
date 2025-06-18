@@ -1,4 +1,5 @@
 ![alt text](<Slide 16x9.png>)
+![alt text](readme-header.png)
 
 #MedMinder
 
