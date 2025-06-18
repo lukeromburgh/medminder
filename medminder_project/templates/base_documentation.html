@@ -11,9 +11,42 @@
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
+    
     {% block extra_css %}{% endblock %}
     <style>
+
+      .fade-out {
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .fade-in {
+        opacity: 1;
+        transition: opacity 0.4s;
+      }
+      body {
+        opacity: 1;
+        transition: opacity 0.4s;
+      }
+
+      .prose pre {
+        background: #f6f8fa;
+        color: #24292f;
+        border-radius: 6px;
+        padding: 1em;
+        font-size: 0.95em;
+        overflow-x: auto;
+        margin-bottom: 1.5em;
+    }
+    .prose code {
+        background: #f6f8fa;
+        color: #e83e8c;
+        border-radius: 4px;
+        padding: 0.2em 0.4em;
+        font-size: 0.95em;
+    }
+
       [x-cloak] { display: none !important; }
+
     </style>
   </head>
   <body style="background-color: #FFFFFFF;">
@@ -34,11 +67,11 @@
 
                     {% with current_url_name=request.resolver_match.url_name %}
 
-                      <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                      <a href="overview" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                           <span>MedMinder Overview</span>
                       </a>
 
-                      <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                      <a href="the-why" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                         <span>Who is MedMinder For?</span>
                       </a>
 
@@ -85,7 +118,7 @@
                             <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                               <span>User Stories</span>
                             </a>
-                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                            <a href="under-the-hood" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                               <span>Under the Hood</span>
                             </a>
                             <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
@@ -131,6 +164,33 @@
           </div>
         </div>
     </main>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Fade in on load
+  document.body.classList.add('fade-in');
+
+  // Fade out on link click
+  document.querySelectorAll('a').forEach(function(link) {
+    // Only fade for internal links
+    link.addEventListener('click', function(e) {
+      const href = link.getAttribute('href');
+      if (
+        href &&
+        !href.startsWith('#') &&
+        !href.startsWith('http') &&
+        !link.hasAttribute('target')
+      ) {
+        e.preventDefault();
+        document.body.classList.remove('fade-in');
+        document.body.classList.add('fade-out');
+        setTimeout(function() {
+          window.location = href;
+        }, 400); // Match the CSS transition duration
+      }
+    });
+  });
+});
+</script>
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
   </body>
 </html>

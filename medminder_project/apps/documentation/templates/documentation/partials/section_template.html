@@ -2,28 +2,23 @@
 {% load static %}
 
 {% block content %}
-    <div class="container mx-auto px-8 py-12 max-w-7xl" style="color: {{ text_color|default:'#000000' }};">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start h-full">
-
-            <!-- Left Column - Title and Subtitle -->
-            <div class="space-y-6 mt-auto">
-                <h1 class="text-2xl lg:text-3xl font-bold leading-tight" style="color: {{ text_color|default:'#000000' }};">
-                    {{ left_title|default:"MedMinder" }}
-                </h1>
-                <p class="text-sm font-extralight leading-tight" style="color: {{ text_color|default:'#000000' }};">
-                    {{ left_subtitle|default:"apps.reminders" }}
-                </p>
-            </div>
-
-            <!-- Right Column - Title and Body Content -->
-            <div class="space-y-6">
-                <h2 class="text-2xl font-semibold" style="color: {{ text_color|default:'#000000' }};">
-                    {{ right_title }}
-                </h2>
-                <p style="color: {{ text_color|default:'#000000' }};"> {{ body_1}}</p>
-                <p style="color: {{ text_color|default:'#000000' }};"> {{ body_2}}</p>
-                   
-            </div>
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="mb-10">
+        <h1 class="text-4xl font-bold mb-2" style="color: {{ text_color|default:'#000000' }};">
+            {{ left_title|default:"MedMinder" }}
+        </h1>
+        <p class="text-lg font-light" style="color: {{ text_color|default:'#000000' }};">
+            {{ left_subtitle|default:"apps.reminders"|safe }}
+        </p>
+    </div>
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-3" style="color: {{ text_color|default:'#000000' }};">
+            {{ right_title }}
+        </h2>
+        <div class="prose max-w-none" style="color: {{ text_color|default:'#000000' }};">
+            {{ body_1|safe }}
+            {{ body_2|safe }}
         </div>
     </div>
+</div>
 {% endblock content %}
