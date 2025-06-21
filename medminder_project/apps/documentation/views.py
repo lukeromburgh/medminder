@@ -18,12 +18,50 @@ def home(request):
     }
     return render(request, 'base_documentation.html', context)
 
+def overview(request):
+    context = {
+        'page_title': 'MedMinder Documentation',
+        'background_color': "#FFFFFF",
+        'text_color': "#171717",
+        'left_title': 'Project Overview',
+        'left_subtitle': (
+            "MedMinder is a modern, gamified medication management platform built with Django. "
+            "It empowers users to take control of their health by providing smart reminders, adherence tracking, "
+            "and a beautiful calendar view—all tailored to each user’s timezone and schedule."
+        ),
+        'right_title': 'Key Features',
+        'body_1': """
+<ul class="list-disc pl-6 space-y-2">
+  <li><b>Smart Medication Reminders:</b> Set up complex schedules (daily, weekly, monthly, or custom), receive reminders via email or SMS, and never miss a dose.</li>
+  <li><b>Gamified Adherence:</b> Earn points, streaks, badges, and ranks for consistent medication adherence, making health management engaging and rewarding.</li>
+  <li><b>Premium Calendar View:</b> Visualize upcoming and past doses, plan ahead, and see your progress at a glance (premium users only).</li>
+  <li><b>Family & Accountability (Coming Soon):</b> Invite family or caregivers to view your progress and provide encouragement.</li>
+  <li><b>Personalized Analytics:</b> Get insights and statistics to understand your adherence patterns and improve your routines.</li>
+  <li><b>Timezone Awareness:</b> All reminders and logs are timezone-aware, ensuring accuracy for users anywhere in the world.</li>
+  <li><b>Secure & Scalable:</b> Built on Django with robust authentication and secure data handling.</li>
+</ul>
+""",
+        'body_2': """
+        <br>
+<h3 class="text-lg font-semibold mb-2">Technical Highlights</h3>
+<ul class="list-disc pl-6 space-y-1 mb-4">
+  <li><b>Django Backend:</b> Modular app structure (<code>accounts</code>, <code>reminders</code>, <code>payments</code>, <code>core</code>, etc.) for clean separation of concerns.</li>
+  <li><b>Stripe Integration:</b> Handles premium subscriptions and paywall logic for advanced features.</li>
+  <li><b>Custom Cron Jobs:</b> Automated background tasks for sending reminders, updating stats, and more.</li>
+  <li><b>Responsive UI:</b> Modern, mobile-friendly templates using Tailwind CSS and Alpine.js.</li>
+  <li><b>Extensible:</b> Easily add new features, integrations, or notification channels.</li>
+</ul>
+""",
+'banner_url': '/static/images/documentation/readme-header.png',  # Adjust the path as needed
+    }
+    return render(request, 'documentation/partials/section_template.html', context)
+
 def the_why(request):
     context = {
         'page_title': 'MedMinder Documentation',
         'background_color': "#FFFFFF",
         'text_color': "#171717",
-        'banner_url': '/static/images/documentation/readme-header.png',  # Adjust the path as needed
+        'banner_url': '/static/images/medminder.png',  # Adjust the path as needed
         'left_title': 'Why I Built MedMinder',
         'left_subtitle': """
 <ul class="list-disc pl-6 space-y-2">
@@ -71,43 +109,6 @@ def the_why(request):
 </ul>
 """,
         'body_2': ""  # Optionally add more here
-    }
-    return render(request, 'documentation/partials/section_template.html', context)
-
-def overview(request):
-    context = {
-        'page_title': 'MedMinder Documentation',
-        'background_color': "#FFFFFF",
-        'text_color': "#171717",
-        'left_title': 'Project Overview',
-        'left_subtitle': (
-            "MedMinder is a modern, gamified medication management platform built with Django. "
-            "It empowers users to take control of their health by providing smart reminders, adherence tracking, "
-            "and a beautiful calendar view—all tailored to each user’s timezone and schedule."
-        ),
-        'right_title': 'Key Features',
-        'body_1': """
-<ul class="list-disc pl-6 space-y-2">
-  <li><b>Smart Medication Reminders:</b> Set up complex schedules (daily, weekly, monthly, or custom), receive reminders via email or SMS, and never miss a dose.</li>
-  <li><b>Gamified Adherence:</b> Earn points, streaks, badges, and ranks for consistent medication adherence, making health management engaging and rewarding.</li>
-  <li><b>Premium Calendar View:</b> Visualize upcoming and past doses, plan ahead, and see your progress at a glance (premium users only).</li>
-  <li><b>Family & Accountability (Coming Soon):</b> Invite family or caregivers to view your progress and provide encouragement.</li>
-  <li><b>Personalized Analytics:</b> Get insights and statistics to understand your adherence patterns and improve your routines.</li>
-  <li><b>Timezone Awareness:</b> All reminders and logs are timezone-aware, ensuring accuracy for users anywhere in the world.</li>
-  <li><b>Secure & Scalable:</b> Built on Django with robust authentication and secure data handling.</li>
-</ul>
-""",
-        'body_2': """
-        <br>
-<h3 class="text-lg font-semibold mb-2">Technical Highlights</h3>
-<ul class="list-disc pl-6 space-y-1 mb-4">
-  <li><b>Django Backend:</b> Modular app structure (<code>accounts</code>, <code>reminders</code>, <code>payments</code>, <code>core</code>, etc.) for clean separation of concerns.</li>
-  <li><b>Stripe Integration:</b> Handles premium subscriptions and paywall logic for advanced features.</li>
-  <li><b>Custom Cron Jobs:</b> Automated background tasks for sending reminders, updating stats, and more.</li>
-  <li><b>Responsive UI:</b> Modern, mobile-friendly templates using Tailwind CSS and Alpine.js.</li>
-  <li><b>Extensible:</b> Easily add new features, integrations, or notification channels.</li>
-</ul>
-""",
     }
     return render(request, 'documentation/partials/section_template.html', context)
 
@@ -162,6 +163,45 @@ reminder = Reminder.objects.create(
 
 
 # --------------------------------------------------------------------------------#
+
+def design_deep_dive(request):
+    context = {
+        'page_title': 'Design Deep Dive',
+        'background_color': "#FFE500",
+        'text_color': "#0E0F10",
+        'left_title': 'Design',
+        'left_subtitle': 'Exploring the design principles and user experience of MedMinder.',
+        'right_title': 'User-Centric Design Principles',
+        'body_1': """
+<p>At MedMinder, we believe that design is not just about aesthetics; it's about creating a seamless, intuitive experience that empowers users to take control of their health. Our design philosophy is rooted in understanding user needs, simplifying complex tasks, and making medication management engaging and rewarding.</p>
+<h3 class="text-lg font-semibold mb-2">Key Design Principles</h3>
+<ul class="list-disc pl-6 mb-4">
+    <li><b>Empathy-Driven:</b> We start with a deep understanding of our users' challenges and motivations, ensuring that every feature addresses real needs.</li>
+    <li><b>Simplicity & Clarity:</b> We strive for a clean, uncluttered interface that makes it easy for users to navigate and find what they need without confusion.</li>
+    <li><b>Engagement & Motivation:</b> By incorporating gamification elements, we transform medication adherence from a chore into a rewarding experience, encouraging users to stay consistent.</li>
+    <li><b>Accessibility & Inclusivity:</b> Our design is inclusive, ensuring that users of all ages and abilities can easily interact with the app.</li>
+    <li><b>Feedback & Iteration:</b> We continuously gather user feedback and iterate on our designs to improve usability and satisfaction.</li>
+</ul>
+<h3 class="text-lg font-semibold mb-2">Visual Design & Branding</h3>
+<p>MedMinder's visual design reflects our commitment to clarity and engagement. We use a modern, clean aesthetic with a calming color palette that promotes trust and reliability. Key design elements include:</p>
+<ul class="list-disc pl-6 mb-4">
+    <li><b>Color Palette:</b> Simple light colors to evoke a sense of calm and health, contrasted with vibrant accents for interactive elements.</li>
+    <li><b>Typography:</b> Clear, legible fonts that enhance readability and accessibility.</li>
+    <li><b>Iconography:</b> Intuitive icons that guide users through the app, making navigation straightforward and engaging.</li>
+    <li><b>Responsive Design:</b> A mobile-first approach ensures that the app is fully functional and visually appealing on all devices, from smartphones to tablets.</li>
+</ul>
+<h3 class="text-lg font-semibold mb-2">User Experience (UX) Flow</h3>
+<p>The user experience flow of MedMinder is designed to be intuitive and engaging. Key user journeys include:</p>
+<ul class="list-disc pl-6 mb-4">
+    <li><b>Onboarding:</b> A simple, guided setup process that helps users quickly add their medications and set up reminders.</li>
+    <li><b>Daily Use:</b> Users receive timely reminders, can easily log their medication intake, and view their adherence statistics in a visually appealing dashboard.</li>
+    <li><b>Gamification:</b> Users earn points, badges, and streaks for consistent adherence, with clear visual feedback on their progress.</li>
+    <li><b>Settings & Customization:</b> Users can easily manage their profiles, notification preferences, and subscription options through a straightforward settings interface.</li>
+</ul>
+<p>By focusing on these design principles and user experiences, MedMinder aims to create a medication management app that is not only functional but also enjoyable to use, ultimately improving health outcomes for our users.</p>
+""",
+    }
+    return render(request, 'documentation/partials/introduction_template.html', context)
 
 def strategy_plane(request):
     context = {
@@ -544,3 +584,68 @@ def structure_plane(request):
     }
     return render(request, 'documentation/partials/section_template.html', context)
 
+def skeleton_plane(request):
+    context = {
+        'page_title': 'Skeleton Plane',
+        'background_color': "#F9FAFB",
+        'text_color': "#111827",
+        'left_title': 'Skeleton Plane',
+        'left_subtitle': 'Interface, Navigation, and Information Design of the MedMinder App.',
+        'right_title': 'Interface Blueprint & UI Logic',
+        'body_1': """
+<p><strong>4. Skeleton Plane</strong></p>
+<p>The Skeleton Plane meticulously outlines the application's interface, navigation, and information design, ensuring a seamless and intuitive user experience.</p>
+
+<hr class="my-4">
+
+<p><strong>Interface Design</strong></p>
+<p>Our interface prioritizes a clean, responsive, and modern aesthetic achieved through the strategic implementation of <strong>Tailwind CSS</strong>. This utility-first framework allows for rapid development of highly customizable and adaptable layouts that look excellent on any device.</p>
+<p>A <strong>persistent sidebar navigation</strong> will provide users with quick and easy access to all core features and comprehensive documentation, minimizing the need for extensive searching and improving overall efficiency.</p>
+""",
+        'body_2': """
+<p><strong>Navigation Design</strong></p>
+<p>The navigation structure is designed for ultimate clarity and ease of use. Features are logically grouped into intuitive categories such as <em>Reminders</em>, <em>Calendar</em>, <em>Analytics</em>, and <em>Account</em>, mirroring common user mental models.</p>
+<p>This organization ensures that users can effortlessly locate the tools they need.</p>
+<p>Furthermore, clear and prominent <strong>Call-to-Action (CTA)</strong> buttons will guide users towards key actions, such as upgrading their account or completing specific tasks, improving user engagement and conversion rates.</p>
+
+<hr class="my-4">
+
+<p><strong>Information Design</strong></p>
+<p>Effective information design is crucial for user comprehension and retention. We will establish a strong <strong>visual hierarchy</strong> to effectively present critical information, including reminders, statistical data, and detailed documentation. This hierarchy will be achieved through the thoughtful use of:</p>
+
+<ul class="list-disc pl-6">
+  <li><strong>Icons:</strong> Employing universally recognized icons to visually represent actions and categories, reducing cognitive load.</li>
+  <li><strong>Color:</strong> Utilizing a consistent and meaningful color palette to highlight important information, differentiate elements, and guide the user's eye.</li>
+  <li><strong>Spacing:</strong> Applying appropriate white space and padding to create visual breaks, improve readability, and prevent information overload, ensuring a clean and uncluttered presentation.</li>
+</ul>
+"""
+    }
+    return render(request, 'documentation/partials/section_template.html', context)
+
+def surface_plane(request):
+    context = {
+        'page_title': 'Surface Plane',
+        'background_color': "#F9FAFB",
+        'text_color': "#111827",
+        'left_title': 'Surface Plane',
+        'left_subtitle': 'The final layer—what the user sees, feels, and interacts with.',
+        'right_title': 'Visual & Sensory Experience',
+        'body_1': """
+<p><strong>5. Surface Plane</strong></p>
+<p>The Surface Plane focuses on the application's aesthetic and sensory experience, ensuring a delightful and intuitive interaction for every user.</p>
+
+<hr class="my-4">
+
+<p><strong>Visual Design</strong></p>
+<p>Our visual design emphasizes a modern, accessible color palette that's not only aesthetically pleasing but also adheres to <strong>WCAG</strong> (Web Content Accessibility Guidelines) standards. This ensures high contrast and readability for all users.</p>
+<p>We'll maintain consistent <strong>typography</strong> and <strong>iconography</strong> throughout the application, creating a cohesive and professional look that reinforces brand identity.</p>
+<p>For our documentation, we're drawing inspiration from <strong>Stripe's</strong> renowned documentation pages, incorporating clear code blocks and informative callouts to make complex information easily digestible and actionable for developers.</p>
+""",
+        'body_2': """
+<p><strong>Sensory Design</strong></p>
+<p>Beyond just looking good, the application will <em>feel</em> good to use. We'll implement <strong>subtle animations</strong>, such as smooth page fade transitions, to create a fluid and engaging user experience without being distracting.</p>
+<p><strong>Responsive feedback</strong> on user actions will be immediate and clear, whether it's a button click or a form submission, providing users with confidence and a sense of control.</p>
+<p>To further boost engagement, we'll integrate <strong>engaging gamification visuals</strong>, including visually appealing <em>badges</em> and intuitive <em>progress bars</em>, to motivate users and celebrate their achievements within the application.</p>
+"""
+    }
+    return render(request, 'documentation/partials/section_template.html', context)
