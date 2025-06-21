@@ -159,3 +159,101 @@ reminder = Reminder.objects.create(
 """,
     }
     return render(request, 'documentation/partials/section_template.html', context)
+
+
+# --------------------------------------------------------------------------------#
+
+def strategy_plane(request):
+    context = {
+        'page_title': 'Strategy Plane',
+        'background_color': "#F7FAFC",
+        'text_color': "#2D3748",
+        'left_title': 'Strategy Plane',
+        'left_subtitle': 'Defining the foundation of MedMinder’s purpose and direction.',
+        'right_title': 'User Needs & Business Objectives',
+        'body_1': f"""
+<p>The Strategy Plane is the foundation of MedMinder, aligning every decision with a clear understanding of our users' needs and our core business objectives. It ensures we are building the right product for the right people, creating a sustainable and impactful business.</p>
+<br>
+<h3 class="text-xl font-semibold mb-2">1.1 User Needs: The "Why"</h3>
+<p><strong>Core Problem:</strong><br>
+Non-adherence to medication is a critical and widespread health issue. The consequences range from decreased quality of life and preventable hospitalisations to significant emotional and financial strain for individuals and their families. This problem is exacerbated by forgetfulness, complex multi-dose schedules, lack of motivation, and poor understanding of treatment regimens.</p>
+<br>
+<p><strong>Primary User Needs:</strong></p>
+<ul class="list-disc pl-6 mb-4">
+  <li><strong>Reliability & Simplicity:</strong> Users need a completely dependable system that is intuitive and removes complexity from their daily routine.</li>
+  <li><strong>Motivation & Engagement:</strong> Users need encouragement to stay consistent. Positive reinforcement transforms a chore into a rewarding habit.</li>
+  <li><strong>Information & Insight:</strong> Clear, accessible data helps users and caregivers feel in control and informed.</li>
+  <li><strong>Support & Connection:</strong> Users benefit from feeling supported through shared progress and community connection.</li>
+  <li><strong>Discretion & Trust:</strong> Absolute confidence in data privacy and security is essential.</li>
+</ul>
+
+<br>
+<hr>
+<br>
+
+<h3 class="text-lg font-semibold mb-2">User Personas</h3>
+
+<p><strong>Persona 1: "The Busy Professional" (Elena, 34)</strong><br>
+<strong>Scenario:</strong> Manages a demanding career while taking daily medication for a chronic condition.<br>
+<strong>Needs:</strong> Discrete, efficient reminders; values privacy.<br>
+<strong>Pain Points:</strong> Misses doses due to a hectic schedule; logging feels tedious.<br>
+<strong>MedMinder's Role:</strong> Persistent reminders and quick-logging features.</p>
+
+<br>
+
+<p><strong>Persona 2: "The Sandwich Carer" (David, 52)</strong><br>
+<strong>Scenario:</strong> Cares for his elderly mother with complex medication needs.<br>
+<strong>Needs:</strong> Centralized dashboard, refill alerts, report sharing.<br>
+<strong>Pain Points:</strong> Confusion over schedules; lack of adherence visibility.<br>
+<strong>MedMinder's Role:</strong> Multi-user caregiver accounts, shareable analytics, refill reminders.</p>
+
+<br>
+
+<p><strong>Persona 3: "The Newly Diagnosed Teen" (Leo, 16)</strong><br>
+<strong>Scenario:</strong> Adjusting to life with Type 1 Diabetes.<br>
+<strong>Needs:</strong> Engaging system, gamification, educational support.<br>
+<strong>Pain Points:</strong> Dislikes routine, finds it disruptive.<br>
+<strong>MedMinder's Role:</strong> Gamified experience with achievements, educational insights.</p>
+<br>
+
+""",
+        'body_2': f"""
+        <br>
+<hr>
+<br>
+
+<h3 class="text-lg font-semibold mb-2">1.2 Business Objectives: The "How"</h3>
+
+<p><strong>Value Proposition:</strong><br>
+For individuals and caregivers struggling with medication management, MedMinder is an engaging and reliable adherence partner. Unlike simple alarm apps, we provide intelligent reminders, motivational feedback, and insightful analytics to empower users, improve health outcomes, and provide peace of mind.</p>
+
+<br>
+
+<p><strong>Business Model:</strong><br>
+MedMinder operates on a freemium subscription model, offering essential features for free while monetizing advanced capabilities through a premium tier.</p>
+
+<br>
+
+<ul class="list-disc pl-6 mb-4">
+  <li><strong>Free Tier:</strong>
+    <ul class="list-disc pl-6">
+      <li>Core medication reminders</li>
+      <li>Basic adherence tracking</li>
+      <li>Limited medication history</li>
+    </ul>
+  </li>
+  <br>
+  <li><strong>Premium Tier (Monthly/Annual):</strong>
+    <ul class="list-disc pl-6">
+      <li>Advanced analytics & reporting (PDFs)</li>
+      <li>Calendar integration (Google, iCal)</li>
+      <li>Caregiver accounts</li>
+      <li>Refill reminders</li>
+      <li>Advanced gamification & customization</li>
+      <li>Pill ID & drug interaction info</li>
+    </ul>
+  </li>
+</ul>
+""",
+    }
+    return render(request, 'documentation/partials/section_template.html', context)

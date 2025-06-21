@@ -10,4 +10,5 @@ urlpatterns = [
     path('overview', views.overview, name='overview'),  # Adjust to your view function
     path('the-why', views.the_why, name='the_why'),
     path('under-the-hood', views.under_the_hood, name='under_the_hood'),
+    path('strategy-plane', views.strategy_plane, name='strategy_plane'),
 ]
