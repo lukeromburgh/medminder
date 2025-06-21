@@ -1,0 +1,25 @@
+databases:
+  - name: myprojectdb # Choose a name for your database
+    plan: free # Or starter, if you need more
+    databaseName: myprojectdb # Name of the actual database
+    user: myprojectuser # Database user
+
+services:
+  - type: web
+    name: myproject # Your service name
+    runtime: python
+    buildCommand: './build.sh' # Execute the build script we created
+    startCommand: 'gunicorn your_project_name.wsgi --log-file -' # Your Gunicorn command
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: myprojectdb
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true # Render will generate a strong secret key for you
+      - key: WEB_CONCURRENCY
+        value: 4 # Adjust based on your needs/plan
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "myproject.onrender.com,localhost" # Replace with your Render URL and any custom domains
