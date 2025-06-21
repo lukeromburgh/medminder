@@ -434,3 +434,113 @@ def scope_plane(request):
 """,
     }
     return render(request, 'documentation/partials/section_template.html', context)
+
+def structure_plane(request):
+    context = {
+        'page_title': 'Structure Plane',
+        'background_color': "#F9FAFB",
+        'text_color': "#111827",
+        'left_title': 'Structure Plane',
+        'left_subtitle': 'Information Architecture and Interaction Design of the MedMinder App.',
+        'right_title': 'App Layout & User Interaction',
+        'body_1': """
+<p><strong>3. Structure Plane</strong></p>
+<p>The Structure Plane defines the app's backbone, dictating how it is organised and how users interact with its features. It focuses on creating a logical <strong>Information Architecture (IA)</strong> and a deliberate, frictionless <strong>Interaction Design (IxD)</strong> to guide users seamlessly toward their goals.</p>
+
+<hr class="my-4">
+
+<p><strong>3.1 Information Architecture (IA)</strong></p>
+<p>The IA is the blueprint for how content and features are organised and accessed. Our goal is a clear, predictable structure that minimizes cognitive load and makes key features highly discoverable.</p>
+
+<p><strong>A. Sitemap & App Hierarchy</strong></p>
+<p>The application is structured around a primary tab bar for top-level navigation, with secondary views branching off logically.</p>
+
+<pre class="bg-gray-100 p-3 rounded">
+/ (Root)
+├── Login / Registration Flow (For unauthenticated users)
+├── Onboarding Flow (For first-time users post-registration)
+├── 1.0 Dashboard (Primary Tab)
+│   ├── 1.1 Today's Schedule View
+│   ├── 1.2 Adherence Snapshot
+│   └── 1.3 Quick Actions
+├── 2.0 Reminders (Primary Tab)
+│   ├── 2.1 Medication List
+│   ├── 2.2 Medication Detail View
+│   └── 2.3 Add/Edit Medication Flow
+├── 3.0 Calendar (Premium - Primary Tab)
+│   ├── 3.1 Monthly View
+│   └── 3.2 Daily Detail View
+├── 4.0 Analytics (Future Enhancement)
+│   ├── 4.1 Adherence Reports
+│   ├── 4.2 Streak & Gamification History
+│   └── 4.3 Export Functionality
+└── 5.0 Settings (Accessed via Account Tab)
+    ├── 5.1 Profile Management
+    ├── 5.2 Notification Preferences
+    ├── 5.3 Subscription Management
+    ├── 5.4 Documentation/Help Center
+    ├── 5.5 Legal
+    └── 5.6 Logout
+</pre>
+""",
+        'body_2': """
+<p><strong>3.2 Interaction Design (IxD)</strong></p>
+<p>IxD defines how users interact with the system. Our design will be guided by principles of clarity, feedback, and consistency, making the user journey feel intuitive and supportive.</p>
+
+<p><strong>A. Key User Flows</strong></p>
+
+<p><u>Flow: Adding a New Medication</u></p>
+<ul class="list-disc pl-6">
+  <li>Trigger: User taps "Add Medication" button.</li>
+  <li>Step 1 (Medication Name): A single, focused screen asks for the medication name.</li>
+  <li>Step 2 (Schedule Type and Timings): User chooses a schedule type (e.g., "Every Day," "Specific Days," "Interval"). The UI updates dynamically to show relevant options. Selects a time for a reminder.</li>
+  <li>Step 3 (Dosage): User selects a dosage amount for the selected medication.</li>
+  <li>Step 4 (Confirmation): A summary screen shows all details for review before saving.</li>
+  <li>Feedback: A confirmation toast/snackbar ("'Aspirin' has been added.") appears, and the user is navigated back to the Reminders list, where the new item is visibly present.</li>
+</ul>
+
+<p><u>Flow: Logging a Dose from a Notification</u></p>
+<ul class="list-disc pl-6">
+  <li>Trigger: User receives a scheduled push notification.</li>
+  <li>Interaction: The notification includes an interactive button: "Go to dashboard".</li>
+  <li>Feedback: Tapping "Take Now" dismisses the notification and sends a background request to the server. The app icon badge might update. Inside the app, the dose is immediately shown as 'taken'.</li>
+  <li>Principle: Designed to be frictionless — user can complete the core task without even opening the app.</li>
+</ul>
+
+<p><u>Flow: Upgrading to Premium</u></p>
+<ul class="list-disc pl-6">
+  <li>Trigger: User attempts to access a locked feature (e.g., Calendar tab) or taps an "Upgrade" CTA.</li>
+  <li>Step 1: Paywall screen presents premium benefits and pricing options (monthly and yearly).</li>
+  <li>Step 2: Tapping "Upgrade Now" opens Stripe Checkout (in-app or web view).</li>
+  <li>Step 3: Upon successful payment, the user sees a success modal ("Welcome to Premium!").</li>
+  <li>Feedback: Premium features are unlocked immediately, and "Upgrade" CTAs are removed.</li>
+</ul>
+
+<hr class="my-4">
+
+<p><strong>B. Core Interaction Patterns & Principles</strong></p>
+
+<p><u>Feedback & Microinteractions</u></p>
+<ul class="list-disc pl-6">
+  <li>State Changes: Button hover/press states; checkbox animations for marking doses.</li>
+  <li>Confirmation: Destructive actions (e.g., delete) use dialogs.</li>
+  <li>Loading States: Visual feedback (e.g., spinner) during network activity. (Future Enhancement)</li>
+</ul>
+
+<p><u>Gamification Elements</u></p>
+<ul class="list-disc pl-6">
+  <li>Streaks: Counter animates on dashboard. Future microinteractions for completing adherence goals.</li>
+  <li>Badges: Non-intrusive overlay to celebrate badge unlocks; can be dismissed quickly.</li>
+</ul>
+
+<p><u>Reducing Cognitive Load</u></p>
+<ul class="list-disc pl-6">
+  <li>Progressive Disclosure: Show only what's relevant (e.g., interval fields appear only if "Interval" is selected).</li>
+  <li>Clear CTAs: Each screen has one distinct primary action (e.g., "Save Reminder", "Upgrade Now").</li>
+  <li>Consistency: UI elements follow consistent design (typography, buttons, icons).</li>
+</ul>
+""",
+'image_url': '/static/images/documentation/structure.png',  # Adjust the path as needed
+    }
+    return render(request, 'documentation/partials/section_template.html', context)
+

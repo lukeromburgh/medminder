@@ -12,5 +12,5 @@ urlpatterns = [
     path('under-the-hood', views.under_the_hood, name='under_the_hood'),
     path('strategy-plane', views.strategy_plane, name='strategy_plane'),
     path('scope-plane', views.scope_plane, name='scope_plane'),
-
+    path('structure-plane', views.structure_plane, name='structure_plane'),
 ]
