@@ -167,10 +167,10 @@ reminder = Reminder.objects.create(
 def design_deep_dive(request):
     context = {
         'page_title': 'Design Deep Dive',
-        'background_color': "#FFE500",
-        'text_color': "#0E0F10",
+        'background_color': "#FF6200",
+        'text_color': "#01070E",
         'left_title': 'Design',
-        'left_subtitle': 'Exploring the design principles and user experience of MedMinder.',
+        'left_subtitle': 'MedMinder’s design is grounded in user needs and business goals (Strategy), delivers clear features and content (Scope), organizes them for intuitive use (Structure), presents them with clarity and ease (Skeleton), and wraps it all in a modern, engaging interface (Surface).',
         'right_title': 'User-Centric Design Principles',
         'body_1': """
 <p>At MedMinder, we believe that design is not just about aesthetics; it's about creating a seamless, intuitive experience that empowers users to take control of their health. Our design philosophy is rooted in understanding user needs, simplifying complex tasks, and making medication management engaging and rewarding.</p>
@@ -637,12 +637,15 @@ def surface_plane(request):
 <hr class="my-4">
 
 <p><strong>Visual Design</strong></p>
+<br>
 <p>Our visual design emphasizes a modern, accessible color palette that's not only aesthetically pleasing but also adheres to <strong>WCAG</strong> (Web Content Accessibility Guidelines) standards. This ensures high contrast and readability for all users.</p>
 <p>We'll maintain consistent <strong>typography</strong> and <strong>iconography</strong> throughout the application, creating a cohesive and professional look that reinforces brand identity.</p>
 <p>For our documentation, we're drawing inspiration from <strong>Stripe's</strong> renowned documentation pages, incorporating clear code blocks and informative callouts to make complex information easily digestible and actionable for developers.</p>
 """,
         'body_2': """
+        <br>
 <p><strong>Sensory Design</strong></p>
+<br>
 <p>Beyond just looking good, the application will <em>feel</em> good to use. We'll implement <strong>subtle animations</strong>, such as smooth page fade transitions, to create a fluid and engaging user experience without being distracting.</p>
 <p><strong>Responsive feedback</strong> on user actions will be immediate and clear, whether it's a button click or a form submission, providing users with confidence and a sense of control.</p>
 <p>To further boost engagement, we'll integrate <strong>engaging gamification visuals</strong>, including visually appealing <em>badges</em> and intuitive <em>progress bars</em>, to motivate users and celebrate their achievements within the application.</p>
