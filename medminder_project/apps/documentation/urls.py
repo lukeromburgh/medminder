@@ -11,4 +11,6 @@ urlpatterns = [
     path('the-why', views.the_why, name='the_why'),
     path('under-the-hood', views.under_the_hood, name='under_the_hood'),
     path('strategy-plane', views.strategy_plane, name='strategy_plane'),
+    path('scope-plane', views.scope_plane, name='scope_plane'),
+
 ]

@@ -257,3 +257,180 @@ MedMinder operates on a freemium subscription model, offering essential features
 """,
     }
     return render(request, 'documentation/partials/section_template.html', context)
+
+
+def scope_plane(request):
+    context = {
+        'page_title': 'Scope Plane',
+        'background_color': "#F9FAFB",
+        'text_color': "#1F2937",
+        'left_title': 'Scope Plane',
+        'left_subtitle': 'Defining the functional and content requirements that drive development.',
+        'right_title': 'Requirements & Structure',
+        'body_1': """
+<p>The Scope Plane translates our strategic goals into a tangible set of functional and content requirements. It explicitly defines the features, functions, and content that will be created, providing a detailed blueprint for the MedMinder application.</p>
+
+<hr class="my-4">
+
+<h3 class="text-lg font-semibold mb-2">2.1 Functional Requirements</h3>
+<p>These are the features and interactions that users will experience within the app. They are defined here as a series of epics, each containing specific user stories and acceptance criteria.</p>
+
+<h4 class="font-semibold mt-4">Epic 1: User Account & Profile Management</h4>
+<p><b>Description:</b> To provide users with a secure and personalised space to manage their information and settings.</p>
+<ul class="list-disc pl-6">
+  <li><b>User Stories:</b>
+    <ul class="list-disc pl-6">
+      <li>Registration: "As a new user, I want to sign up easily using my email and a password."</li>
+      <li>Authentication: "As a returning user, I want to log in securely and have a 'Forgot Password' option."</li>
+      <li>Profile Management: "As a user, I want to edit my profile information."</li>
+    </ul>
+  </li>
+  <li><b>Acceptance Criteria:</b>
+    <ul class="list-disc pl-6">
+      <li>Passwords must be hashed using a strong algorithm (e.g., Argon2).</li>
+      <li>Email verification required.</li>
+      <li>Secure session management.</li>
+      <li>GDPR compliance.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 class="font-semibold mt-4">Epic 2: Core Medication & Scheduling</h4>
+<p><b>Description:</b> Allows users to input medications and define complex reminder schedules.</p>
+<ul class="list-disc pl-6">
+  <li><b>User Stories:</b>
+    <ul class="list-disc pl-6">
+      <li>Add Medication: "As a user, I want to add a new medication and specify its dosage."</li>
+      <li>Set Schedule: "As a user, I want to create various schedule types."</li>
+      <li>Multiple Timings: "As a user, I want to set multiple reminder times per day."</li>
+      <li>Log Doses: "As a user, I want to mark a dose as 'Taken' or 'Skipped'."</li>
+    </ul>
+  </li>
+  <li><b>Acceptance Criteria:</b>
+    <ul class="list-disc pl-6">
+      <li>Support for varied schedule types.</li>
+      <li>Time localization.</li>
+      <li>Relational schema between medications, schedules, and logs.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 class="font-semibold mt-4">Epic 3: Smart Reminders & Notifications</h4>
+<p><b>Description:</b> Delivers timely reminders through multiple channels.</p>
+<ul class="list-disc pl-6">
+  <li><b>User Stories:</b>
+    <ul class="list-disc pl-6">
+      <li>Push Notifications: "As a user, I want to receive reminders on time."</li>
+      <li>Snooze Functionality: "As a user, I want to snooze reminders briefly."</li>
+      <li>Escalation: "As a user, I want backup notifications if I miss one."</li>
+    </ul>
+  </li>
+  <li><b>Acceptance Criteria:</b>
+    <ul class="list-disc pl-6">
+      <li>Reliable push delivery.</li>
+      <li>Use of Celery with Redis for scheduling.</li>
+      <li>Integration with SMS services like Twilio.</li>
+    </ul>
+  </li>
+</ul>
+""",
+        'body_2': """
+<h4 class="font-semibold mt-4">Epic 4: Gamification & Engagement</h4>
+<p><b>Description:</b> Motivates users through rewarding feedback loops.</p>
+<ul class="list-disc pl-6">
+  <li><b>User Stories:</b>
+    <ul class="list-disc pl-6">
+      <li>Streaks: "See a 'streak' counter for perfect adherence."</li>
+      <li>Points & Levels: "Earn points for taking medication on time."</li>
+      <li>Badges: "Unlock badges for milestones."</li>
+    </ul>
+  </li>
+  <li><b>Acceptance Criteria:</b>
+    <ul class="list-disc pl-6">
+      <li>Server-side logic for streaks and points.</li>
+      <li>Near real-time updates.</li>
+      <li>Visual badge assets.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 class="font-semibold mt-4">Epic 5: Premium Features & Subscription Management</h4>
+<p><b>Description:</b> Provides advanced functionality for paying users.</p>
+<ul class="list-disc pl-6">
+  <li><b>User Stories:</b>
+    <ul class="list-disc pl-6">
+      <li>Subscription: "Easily upgrade from within the app."</li>
+      <li>Payment: "Securely enter payment information."</li>
+      <li>Calendar View: "See full medication history on a calendar."</li>
+      <li>Management: "View billing history and cancel anytime."</li>
+    </ul>
+  </li>
+  <li><b>Acceptance Criteria:</b>
+    <ul class="list-disc pl-6">
+      <li>Full Stripe integration.</li>
+      <li>Secure key and webhook handling.</li>
+      <li>Robust webhook endpoint for subscription events.</li>
+      <li>Feature gating based on subscription status.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 class="font-semibold mt-4">Epic 6: Caregiver & Family View (Planned for v2.0)</h4>
+<p><b>Description:</b> Lets designated caregivers monitor user adherence.</p>
+<ul class="list-disc pl-6">
+  <li><b>User Stories:</b>
+    <ul class="list-disc pl-6">
+      <li>Invitation: "Invite family via email to view adherence data."</li>
+      <li>Caregiver Dashboard: "Simple view of schedule and history."</li>
+      <li>Missed Dose Alerts: "Get notified of missed critical doses."</li>
+    </ul>
+  </li>
+  <li><b>Acceptance Criteria:</b>
+    <ul class="list-disc pl-6">
+      <li>Access via revocable invitations.</li>
+      <li>Read-only caregiver access.</li>
+      <li>Explicit data consent and compliance.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr class="my-4">
+
+<h3 class="text-lg font-semibold mb-2">2.2 Content Requirements</h3>
+<p>This defines the information that needs to be created and managed to support the user experience.</p>
+
+<ul class="list-disc pl-6">
+  <li><b>Onboarding & User Guides:</b>
+    <ul class="list-disc pl-6">
+      <li>Content: Multi-step tutorial explaining app basics.</li>
+      <li>Format: In-app modals or Help section with FAQs.</li>
+    </ul>
+  </li>
+  <li><b>Adherence Statistics & Visualisations:</b>
+    <ul class="list-disc pl-6">
+      <li>Content: Charts showing adherence rates and logs.</li>
+      <li>Format: Graphs and tables in the dashboard.</li>
+    </ul>
+  </li>
+  <li><b>Medication Information (v1.5 Feature):</b>
+    <ul class="list-disc pl-6">
+      <li>Content: Basic drug facts including side effects.</li>
+      <li>Format: Pulled from third-party drug database API.</li>
+    </ul>
+  </li>
+  <li><b>Legal & Support Documentation:</b>
+    <ul class="list-disc pl-6">
+      <li>Content: Privacy Policy, Terms, Support Contact.</li>
+      <li>Format: Static settings and website pages.</li>
+    </ul>
+  </li>
+  <li><b>Gamification Content:</b>
+    <ul class="list-disc pl-6">
+      <li>Content: Names, descriptions, triggers for badges.</li>
+      <li>Format: Text strings and image assets.</li>
+    </ul>
+  </li>
+</ul>
+""",
+    }
+    return render(request, 'documentation/partials/section_template.html', context)
