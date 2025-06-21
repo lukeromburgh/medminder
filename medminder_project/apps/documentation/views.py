@@ -7,11 +7,23 @@ from django.shortcuts import render
 #     """
 #     return render(request, 'documentation/overview.html')
 
+def home(request):
+    """
+    Render the home page for the documentation.
+    """
+    context = {
+        'page_title': 'MedMinder Documentation',
+        'background_color': "#FFFFFF",
+        'text_color': "#171717",
+    }
+    return render(request, 'base_documentation.html', context)
+
 def the_why(request):
     context = {
         'page_title': 'MedMinder Documentation',
         'background_color': "#FFFFFF",
         'text_color': "#171717",
+        'banner_url': '/static/images/documentation/readme-header.png',  # Adjust the path as needed
         'left_title': 'Why I Built MedMinder',
         'left_subtitle': """
 <ul class="list-disc pl-6 space-y-2">
@@ -86,6 +98,7 @@ def overview(request):
 </ul>
 """,
         'body_2': """
+        <br>
 <h3 class="text-lg font-semibold mb-2">Technical Highlights</h3>
 <ul class="list-disc pl-6 space-y-1 mb-4">
   <li><b>Django Backend:</b> Modular app structure (<code>accounts</code>, <code>reminders</code>, <code>payments</code>, <code>core</code>, etc.) for clean separation of concerns.</li>

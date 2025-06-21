@@ -3,7 +3,10 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 py-12">
-    <div class="mb-10">
+    {% if banner_url %}
+        <img src="{{ banner_url }}" alt="Section Banner" class="mb-12 rounded-xs shadow max-w-full h-auto">
+    {% endif %}
+    <div class="mb-10 mt-4">
         <h1 class="text-4xl font-bold mb-2" style="color: {{ text_color|default:'#000000' }};">
             {{ left_title|default:"MedMinder" }}
         </h1>
@@ -20,5 +23,9 @@
             {{ body_2|safe }}
         </div>
     </div>
+    {% if image_url %}
+        <img src="{{ image_url }}" alt="Section illustration" class="my-6 rounded-xs shadow max-w-full h-auto">
+    {% endif %}
+
 </div>
 {% endblock content %}
