@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'formtools',
     'tailwind',
+    'theme',
     'django_browser_reload',
     'apps.accounts',
     'apps.core',
@@ -53,7 +54,6 @@ INSTALLED_APPS = [
     'django_crontab',
     'apps.payments',
     'apps.documentation',
-    'theme',
     
 ]
 
