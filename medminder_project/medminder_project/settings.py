@@ -38,7 +38,6 @@ USE_TZ = True
 INSTALLED_APPS = [
     'unfold',
     'unfold.contrib.filters',
-    'theme',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
