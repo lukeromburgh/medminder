@@ -1,0 +1,85 @@
+{% extends "base_documentation.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Simple fade-in from bottom animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Single animation class */
+    .animate-in {
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0;
+    }
+
+    /* Staggered delay classes */
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+
+    /* Reduce motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .animate-in {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+    }
+</style>
+
+<div class="max-w-4xl mx-auto px-4 py-12">
+    {% if banner_url %}
+        <img src="{{ banner_url }}" 
+             alt="Section Banner" 
+             class="mb-12 rounded-xs max-w-full h-auto animate-in delay-1">
+    {% endif %}
+    
+    <div class="mb-10 mt-4">
+        <h1 class="text-4xl font-bold mb-2 animate-in delay-2" 
+            style="color: {{ text_color|default:'#000000' }};">
+            {{ left_title|default:"MedMinder" }}
+        </h1>
+        <p class="text-lg font-light animate-in delay-3" 
+           style="color: {{ text_color|default:'#000000' }};">
+            {{ left_subtitle|default:"apps.reminders"|safe }}
+        </p>
+    </div>
+    
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-3 animate-in delay-4" 
+            style="color: {{ text_color|default:'#000000' }};">
+            {{ right_title }}
+        </h2>
+        <div class="prose max-w-none animate-in delay-5" 
+             style="color: {{ text_color|default:'#000000' }};">
+            {{ body_1|safe }}
+            {{ body_2|safe }}
+        </div>
+    </div>
+    
+    {% if image_url %}
+        <img src="{{ image_url }}" 
+             alt="Section illustration" 
+             class="my-6 rounded-xs max-w-full h-auto animate-in delay-5">
+    {% endif %}
+</div>
+
+<script>
+    // Simple animation trigger on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // All animations start automatically with their delays
+        console.log('Page loaded - animations starting');
+    });
+</script>
+{% endblock content %}

@@ -24,4 +24,5 @@ urlpatterns = [
     path('medminder/', include('apps.reminders.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
     path('payments/', include('apps.payments.urls')),  # Include the URLs from the payments app
+    path('documentation/', include('apps.documentation.urls')),  # Include the URLs from the documentation app
 ]
