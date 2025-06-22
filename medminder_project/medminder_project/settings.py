@@ -123,7 +123,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
+# Get the Render external hostname from the environment variable
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
