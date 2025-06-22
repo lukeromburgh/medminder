@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     
 ]
 
+TAILWIND_APP_NAME = 'theme'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -120,7 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-TAILWIND_APP_NAME = 'theme',
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
