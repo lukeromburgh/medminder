@@ -9,14 +9,14 @@ from django.shortcuts import render
 
 def home(request):
     """
-    Render the home page for the documentation.
+    Function-based view for documentation home page.
     """
     context = {
         'page_title': 'MedMinder Documentation',
-        'background_color': "#FFFFFF",
-        'text_color': "#171717",
+        'meta_description': 'Comprehensive documentation for MedMinder - the gamified medical reminder platform. Explore design, development, and technical guides.',
     }
-    return render(request, 'base_documentation.html', context)
+    
+    return render(request, 'documentation/doc_home.html', context)
 
 def overview(request):
     context = {
