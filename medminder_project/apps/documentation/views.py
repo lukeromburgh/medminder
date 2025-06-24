@@ -652,3 +652,147 @@ def surface_plane(request):
 """
     }
     return render(request, 'documentation/partials/section_template.html', context)
+
+
+#--------------------------------------------------------------------------------#
+
+def user_stories(request):
+    context = {
+        'page_title': 'User Stories',
+        'background_color': "#FFFFFF",
+        'text_color': "#171717",
+        'left_title': 'User Stories: MedMinder Application',
+        'left_subtitle': (
+            "This section details the functional requirements of the MedMinder application, presented as user stories "
+            "from the perspective of key personas. Each story outlines a user's role, their desired action, and the "
+            "specific benefit derived from that action."
+        ),
+        'right_title': 'Personas & Requirements',
+        'body_1': """
+<h3 class="text-xl font-bold mb-3">Persona 1: The Busy Professional (Elena, 34)</h3>
+<p class="mb-4 text-gray-600">Elena requires efficient and private medication management to fit her demanding schedule.</p>
+
+<h4 class="text-lg font-semibold mb-2">Account Management &amp; Privacy:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+  <li><b>Sign-Up &amp; Login:</b> As Elena, I want to securely sign up and log in, so that my personal health data is protected.</li>
+  <li><b>Notification Control:</b> As Elena, I want to customize my notification preferences (email, SMS, push), so that reminders integrate seamlessly into my busy day.</li>
+  <li><b>Secure Logout:</b> As Elena, I want to quickly log out from any device, so that my privacy is always maintained.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Medication &amp; Reminder Management:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+  <li><b>Medication Scheduling:</b> As Elena, I want to easily add medications and set up recurring schedules, so that I consistently take my doses.</li>
+  <li><b>Discrete Reminders:</b> As Elena, I want to receive unobtrusive reminders at my chosen times, so that my daily routine is not disrupted.</li>
+  <li><b>Quick Reminder Actions:</b> As Elena, I want to snooze or dismiss reminders with a single tap, so that I can manage them efficiently on the go.</li>
+  <li><b>Effortless Logging:</b> As Elena, I want to mark a dose as "Taken" or "Skipped" with one click, so that logging my adherence is quick and simple.</li>
+  <li><b>Dose Overview:</b> As Elena, I want to view my upcoming and past doses in a calendar format, so that I can effectively plan my medication schedule.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Motivation &amp; Progress Tracking:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+    <li><b>Adherence Rewards:</b> As Elena, I want to earn points and badges for consistent medication adherence, so that I feel motivated to maintain my routine.</li>
+    <li><b>Progress Visualization:</b> As Elena, I want to track my adherence streak and rank, so that I can easily monitor my long-term progress.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Data &amp; Insights:</h4>
+<ul class="list-disc pl-6 space-y-2">
+    <li><b>Simple Analytics:</b> As Elena, I want to view clear analytics about my medication adherence, so that I can identify patterns and improve my habits.</li>
+    <li><b>Report Export:</b> As Elena, I want to download or email my adherence reports, so that I can share them during doctor's appointments.</li>
+</ul>
+
+<hr class="my-6">
+
+<h3 class="text-xl font-bold mb-3">Persona 2: The Sandwich Carer (David, 52)</h3>
+<p class="mb-4 text-gray-600">David needs comprehensive tools to manage medication for multiple family members while coordinating care.</p>
+
+<h4 class="text-lg font-semibold mb-2">Multi-User &amp; Caregiver Management:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+  <li><b>Dependent Management:</b> As David, I want to create and manage medication schedules for my mother, so that I can ensure her adherence.</li>
+  <li><b>Family Coordination:</b> As David, I want to invite family members to join MedMinder, so that we can collaboratively coordinate care.</li>
+  <li><b>Centralized Overview:</b> As David, I want to view all family members’ medication plans and adherence from a central dashboard, so that I have complete visibility of their care.</li>
+  <li><b>Refill Alerts:</b> As David, I want to receive notifications when my mother’s medication is low, so that I can reorder in a timely manner.</li>
+  <li><b>Missed Dose Alerts:</b> As David, I want to be notified if my mother misses a dose, so that I can follow up with her.</li>
+  <li><b>Provider Sharing:</b> As David, I want to share adherence reports with healthcare providers, so that everyone involved in care is well-informed.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Advanced Reminders &amp; Scheduling:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+  <li><b>Complex Scheduling:</b> As David, I want to set up intricate medication schedules (e.g., alternating days, multiple times daily), so that my mother’s specific needs are met.</li>
+  <li><b>Visual Calendar:</b> As David, I want to see a color-coded calendar for all medications, so that I can quickly identify any scheduling conflicts or gaps.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Communication &amp; Support:</h4>
+<ul class="list-disc pl-6 space-y-2">
+  <li><b>In-App Communication:</b> As David, I want to send encouraging messages or reminders to my mother directly through the app, so that I can provide support.</li>
+  <li><b>Caregiver Resources:</b> As David, I want to access educational content about medication management for caregivers, so that I can enhance my caregiving knowledge.</li>
+</ul>
+
+<hr class="my-6">
+
+<h3 class="text-xl font-bold mb-3">Persona 3: The Newly Diagnosed Teen (Leo, 16)</h3>
+<p class="mb-4 text-gray-600">Leo seeks an engaging, easy-to-use, and supportive platform to manage his new diagnosis and medication routine.</p>
+
+<h4 class="text-lg font-semibold mb-2">Onboarding &amp; Education:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+    <li><b>Intuitive Onboarding:</b> As Leo, I want a clear, step-by-step onboarding process, so that I can easily understand how to use MedMinder.</li>
+    <li><b>Accessible Education:</b> As Leo, I want to access relevant educational content about my condition and medication adherence, so that I feel informed and empowered.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Gamification &amp; Engagement:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+    <li><b>Rewarding Adherence:</b> As Leo, I want to earn points, badges, and achievements for taking my medication on time, so that the process feels like a fun game.</li>
+    <li><b>Visible Progress:</b> As Leo, I want to see my progress visually (e.g., streaks, levels, leaderboards), so that I stay motivated to continue.</li>
+    <li><b>Positive Reinforcement:</b> As Leo, I want to receive positive feedback and encouragement when I reach milestones, so that I feel recognized for my efforts.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Reminders &amp; Logging:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+    <li><b>Engaging Reminders:</b> As Leo, I want reminders that are engaging and not intrusive, so that I don't feel annoyed by the routine.</li>
+    <li><b>Quick Logging:</b> As Leo, I want to log my doses rapidly, potentially with emojis or quick actions, so that it doesn't feel like a chore.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Community &amp; Sharing (Optional):</h4>
+<ul class="list-disc pl-6 space-y-2">
+    <li><b>Optional Sharing:</b> As Leo, I want to optionally share my achievements with friends or family, so that I can receive additional encouragement.</li>
+    <li><b>Group Challenges:</b> As Leo, I want to participate in challenges or group goals, so that I can experience extra motivation through competition or collaboration.</li>
+</ul>
+
+<hr class="my-6">
+
+<h3 class="text-xl font-bold mb-3">Universal User Stories (Applicable to All Personas)</h3>
+<p class="mb-4 text-gray-600">These stories cover core functionalities beneficial to every MedMinder user.</p>
+
+<h4 class="text-lg font-semibold mb-2">Calendar &amp; Scheduling:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+    <li><b>Comprehensive Calendar:</b> As a user, I want to view all my medications and reminders within a calendar, so that I can efficiently plan my week or month.</li>
+    <li><b>Calendar Filtering:</b> As a user, I want to filter the calendar by medication, status, or family member, so that I can easily focus on relevant information.</li>
+    <li><b>Flexible Schedule Management:</b> As a user, I want to easily edit or delete reminders, so that I can adapt to changes in my schedule.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Notifications:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+    <li><b>Customizable Delivery:</b> As a user, I want to choose my preferred reminder delivery method (email, SMS, push) and set quiet hours, so that notifications are received appropriately.</li>
+    <li><b>Escalation Alerts:</b> As a user, I want to receive escalation notifications if a dose is missed (e.g., a secondary reminder or alert to a caregiver), so that missed doses are addressed promptly.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Gamification:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+    <li><b>Dashboard Visibility:</b> As a user, I want to see my current points, badges, streaks, and rank on my personalized dashboard, so that my progress is always visible.</li>
+    <li><b>Achievement Unlocks:</b> As a user, I want to unlock new achievements for consistent adherence, personal improvement, or contributing positively to others, so that I remain engaged.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Analytics &amp; Reports:</h4>
+<ul class="list-disc pl-6 space-y-2 mb-4">
+    <li><b>Adherence Trends:</b> As a user, I want to view clear trends in my medication adherence over time, so that I can understand my patterns.</li>
+    <li><b>Data Export:</b> As a user, I want to easily export or share my adherence data, so that I can communicate my progress with healthcare providers or family members.</li>
+</ul>
+
+<h4 class="text-lg font-semibold mb-2">Premium Features:</h4>
+<ul class="list-disc pl-6 space-y-2">
+    <li><b>Premium Access:</b> As a user, I want to upgrade to a premium subscription, so that I can access advanced analytics, calendar integrations, and priority support.</li>
+    <li><b>Subscription Management:</b> As a user, I want to easily manage my subscription and payment details, so that I have full control over my premium features.</li>
+</ul>
+        """,
+        'body_2': "",
+    }
+    return render(request, 'documentation/partials/section_template.html', context)

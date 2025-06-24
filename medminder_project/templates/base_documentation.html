@@ -116,7 +116,7 @@
                         </button>
                          <div x-show="isDevelopmentOpen" x-collapse>
                           <div class="flex flex-col gap-1.5 mt-1 pl-3">
-                            <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium {% if current_url_name == 'user-stories' %}bg-blue-50 text-blue-700{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">
+                            <a href="{% url 'documentation:user-stories' %}" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium {% if current_url_name == 'user-stories' %}bg-blue-50 text-blue-700{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">
                               <span>User Stories</span>
                             </a>
                             <a href="#" class="flex items-center rounded-lg gap-3 px-3 py-2.5 font-medium {% if current_url_name == 'under-the-hood' %}bg-blue-50 text-blue-700{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">
