@@ -10,7 +10,10 @@ Medminder is a gamified medical reminder app with timezone specificty and a cale
 -[Overview](#-project-overview)
 
 -[Design](#medminder-design-overview)
-  - [The 5 Planes]()
+  - [The 5 Planes](#-strategy-plane)
+    - [Strategy Plane](#-strategy-plane)
+    - [Scope Plane](#-scope-plane)
+    - [Structure Plane](#-structure-plane)
 
 - [User Stories](#medminder-application-user-stories)
   - [Persona 1: The Busy Professional (Elena, 34)](#persona-1-the-busy-professional-elena-34)
