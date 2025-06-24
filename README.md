@@ -7,15 +7,15 @@ Medminder is a gamified medical reminder app with timezone specificty and a cale
 
 ## Table of Contents
 
--[Overview](#-project-overview)
+[Overview](#-project-overview)
 
--[Design](#medminder-design-overview)
+[Design](#medminder-design-overview)
   - [The 5 Planes](#-strategy-plane)
     - [Strategy Plane](#-strategy-plane)
     - [Scope Plane](#-scope-plane)
     - [Structure Plane](#-structure-plane)
 
-- [User Stories](#medminder-application-user-stories)
+[User Stories](#medminder-application-user-stories)
   - [Persona 1: The Busy Professional (Elena, 34)](#persona-1-the-busy-professional-elena-34)
   - [Persona 2: The Sandwich Carer (David, 52)](#persona-2-the-sandwich-carer-david-52)
   - [Persona 3: The Newly Diagnosed Teen (Leo, 16)](#persona-3-the-newly-diagnosed-teen-leo-16)
@@ -392,6 +392,7 @@ The IA outlines how MedMinder's content and features are structured. The goal: m
 
 The app uses a **primary tab bar navigation**, with logical secondary views branching from each section.
 
+<pre>
 / (Root)
 ├── Login / Registration Flow (Unauthenticated Users)
 ├── Onboarding Flow (First-time Users)
@@ -417,6 +418,7 @@ The app uses a **primary tab bar navigation**, with logical secondary views bran
 ├── 5.4 Documentation/Help Center
 ├── 5.5 Legal
 └── 5.6 Logout
+</pre>
 
 
 ---
