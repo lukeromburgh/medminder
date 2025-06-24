@@ -5,7 +5,42 @@
 Medminder is a gamified medical reminder app with timezone specificty and a calendar view 📆
 
 
-Table of contents goes here
+## Table of Contents
+
+- [User Stories](#medminder-application-user-stories)
+  - [Persona 1: The Busy Professional (Elena, 34)](#persona-1-the-busy-professional-elena-34)
+  - [Persona 2: The Sandwich Carer (David, 52)](#persona-2-the-sandwich-carer-david-52)
+  - [Persona 3: The Newly Diagnosed Teen (Leo, 16)](#persona-3-the-newly-diagnosed-teen-leo-16)
+  - [Universal User Stories](#universal-user-stories-applicable-to-all-personas)
+
+
+# MedMinder: A Gamified Medication Management Platform
+
+## 🚀 Project Overview
+
+MedMinder is a modern, gamified medication management platform built with Django. It empowers users to take control of their health by providing smart reminders, adherence tracking, and a beautiful calendar view—all tailored to each user’s timezone and schedule.
+
+---
+
+## ✨ Key Features
+
+* **Smart Medication Reminders:** Set up complex schedules (daily, weekly, monthly, or custom), receive reminders via email or SMS, and never miss a dose.
+* **Gamified Adherence:** Earn points, streaks, badges, and ranks for consistent medication adherence, making health management engaging and rewarding.
+* **Premium Calendar View:** Visualize upcoming and past doses, plan ahead, and see your progress at a glance (premium users only).
+* **Family & Accountability (Coming Soon):** Invite family or caregivers to view your progress and provide encouragement.
+* **Personalized Analytics:** Get insights and statistics to understand your adherence patterns and improve your routines.
+* **Timezone Awareness:** All reminders and logs are timezone-aware, ensuring accuracy for users anywhere in the world.
+* **Secure & Scalable:** Built on Django with robust authentication and secure data handling.
+
+---
+
+## 🛠️ Technical Highlights
+
+* **Django Backend:** Modular app structure (`accounts`, `reminders`, `payments`, `core`, etc.) for clean separation of concerns.
+* **Stripe Integration:** Handles premium subscriptions and paywall logic for advanced features.
+* **Custom Cron Jobs:** Automated background tasks for sending reminders, updating stats, and more.
+* **Responsive UI:** Modern, mobile-friendly templates using Tailwind CSS and Alpine.js.
+* **Extensible:** Easily add new features, integrations, or notification channels.
 
 
 # MedMinder Application: User Stories
