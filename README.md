@@ -14,6 +14,8 @@ Medminder is a gamified medical reminder app with timezone specificty and a cale
     - [Strategy Plane](#-strategy-plane)
     - [Scope Plane](#-scope-plane)
     - [Structure Plane](#-structure-plane)
+    - [Skeleton Plane](#-skeleton-plane)
+    - [Surface Plane](#-surface-plane)
 
 [User Stories](#medminder-application-user-stories)
   - [Persona 1: The Busy Professional (Elena, 34)](#persona-1-the-busy-professional-elena-34)
@@ -483,6 +485,185 @@ The app uses a **primary tab bar navigation**, with logical secondary views bran
 
 This structure ensures that **users can achieve their goals quickly and confidently**, while reinforcing MedMinder’s mission to make medication adherence simple, engaging, and effective.
 
+---
+
+## 🦴 Skeleton Plane
+
+**Interface, Navigation, and Information Design of the MedMinder App**
+
+The Skeleton Plane defines the **user interface layout**, **navigation patterns**, and **information design principles** that shape the MedMinder experience. It ensures that users can interact with the app intuitively, efficiently, and confidently.
+
+---
+
+### 🎨 Interface Design
+
+Our design philosophy emphasizes **clarity**, **consistency**, and **responsiveness**. The UI will be developed using **Tailwind CSS**, a utility-first framework that enables:
+
+- Rapid, consistent styling
+- Responsive layouts across mobile and desktop
+- Seamless theming for light/dark modes *(future enhancement)*
+
+#### 📚 Layout Strategy
+
+- **Persistent Sidebar Navigation** (for tablet & desktop)
+  - Quick access to core features: Dashboard, Reminders, Calendar, Analytics, Account
+  - Collapsible for smaller viewports
+- **Tab Navigation** (for mobile)
+  - Simplified bottom tab bar with icon-based labels
+- **Floating Action Button (FAB)**: 
+  - Prominently placed for primary actions (e.g., “Add Reminder”)
+
+---
+
+### 🧭 Navigation Design
+
+Navigation is designed to be **logical**, **predictable**, and aligned with user mental models.
+
+#### 🗂️ Logical Grouping
+
+- **Reminders**: View, add, edit medications and schedules
+- **Calendar** *(Premium)*: Visualize medication history
+- **Analytics** *(Future)*: Insights and adherence trends
+- **Account**: Profile, subscription, notification preferences, help
+
+#### 📢 Calls-to-Action (CTAs)
+
+Strategic CTA buttons will:
+- Direct users to key features (“Add Medication”, “View Calendar”)
+- Encourage conversion (“Upgrade to Premium”)
+- Promote goal completion (“Complete Onboarding”, “Log Dose”)
+
+CTAs will use **color and contrast** to stand out without disrupting flow.
+
+---
+
+### 🧠 Information Design
+
+Effective information design ensures that **critical content is understood at a glance**, with minimal friction.
+
+#### 🏗️ Visual Hierarchy Tactics
+
+- **Icons**:  
+  - Universal symbols (e.g., bell for reminders, star for achievements)  
+  - Provide instant recognition, reducing text dependency
+
+- **Color System**:  
+  - Primary action: MedMinder Blue  
+  - Success: Green (e.g., dose taken)  
+  - Warning/Error: Amber/Red (e.g., missed dose)  
+  - Neutral tones for structure and background
+
+- **Whitespace & Spacing**:  
+  - Generous padding to segment information  
+  - Prevents cognitive overload and improves scan-ability  
+  - Improves touch targets for accessibility
+
+---
+
+### 🔧 UI Patterns & Microinteractions
+
+- **Modals**: Used for onboarding steps, subscription prompts, and confirmations
+- **Toasts/Snackbars**: Display success/error messages (e.g., "Medication added")
+- **Tooltips**: Provide inline help without cluttering UI
+- **Interactive States**: Hover, focus, active states for all interactive elements
+
+---
+
+### 🧩 Example Component Structures
+
+#### 📋 Medication Card (Reminder List)
+
+
+
+## 🎨 Surface Plane
+
+**The final layer—what the user sees, feels, and interacts with.**
+
+The Surface Plane is where all previous layers converge into a seamless, polished, and emotionally resonant user experience. It encompasses the **visual**, **tactile**, and **emotional** elements that shape how users perceive and engage with MedMinder.
+
+---
+
+### ✨ Visual Design
+
+Our visual aesthetic is guided by modern, accessible, and brand-aligned design principles.
+
+#### 🌈 Color Palette
+
+- **Accessibility-first**: Adheres to [WCAG 2.1](https://www.w3.org/WAI/WCAG21/quickref/) AA guidelines for contrast and readability
+- **Primary Color**: MedMinder Blue `#0077CC` — conveys trust, reliability
+- **Secondary**: Soft lavender, mint, and coral — used for highlights, gamification, and progress
+- **Status Colors**:
+  - Green: Success (e.g., dose taken)
+  - Amber: Warnings (e.g., missed dose)
+  - Red: Errors or urgent actions
+
+#### 🅰️ Typography
+
+- **Font Family**: Inter or Roboto (depending on platform)
+- **Scale**: Hierarchical system (H1 > H2 > Body > Caption) for clarity and flow
+- **Consistency**: All headings, buttons, and body text use uniform sizing and spacing to reduce cognitive strain
+
+#### 🖼️ Iconography
+
+- **Style**: Outline-based, consistent stroke weight
+- **Set**: Lucide or Heroicons
+- **Function**: Enhances scannability and supports action recognition (e.g., calendar, pill, bell icons)
+
+#### 🧾 Documentation Aesthetic
+
+Inspired by **Stripe’s developer documentation**, our docs include:
+- Monospaced, syntax-highlighted code blocks
+- Informative callouts (Tips, Warnings, Notes)
+- Clear layout with side navigation and section anchors
+- Mobile-friendly formatting
+
+---
+
+### 🎛️ Sensory Design
+
+Good design doesn’t just look good — it **feels good**. The app will provide tactile and emotional feedback to build trust and confidence.
+
+#### 🔁 Motion & Animation
+
+- **Page transitions**: Smooth fades and slide-ins between views
+- **Microinteractions**:
+  - Button tap ripples or bounce effects
+  - Progress animations when achieving a goal
+- **Gamification Celebrations**:
+  - Badge unlocks accompanied by celebratory animations
+  - Streak counters animate with visual energy
+
+> **Principle**: Animations enhance engagement, never distract
+
+#### 🪟 Feedback & Control
+
+- **Real-time UI updates**:
+  - Dose logs reflected instantly
+  - Success/failure toasts on actions (e.g., "Reminder saved ✔️")
+- **Tactile Sensation (Mobile)**:
+  - Haptic feedback on critical interactions (e.g., logging dose, badge unlock)
+
+---
+
+### 🏅 Gamification Visuals
+
+- **Progress Bars**: Smooth, animated bars showing daily and weekly adherence
+- **Badges**:
+  - Designed with vibrant gradients and metallic effects
+  - Displayed in a dynamic gallery with unlock animations
+- **Level-Up Alerts**: Non-intrusive overlays showing progression in points or streaks
+
+---
+
+### 📱 Responsive & Device-Aware
+
+- **Touch Targets**: Optimized for thumb-reach zones on mobile
+- **Adaptive Layouts**: Auto-scale for phone, tablet, and desktop
+- **Dark Mode (Planned)**: High-contrast theme available for low-light environments
+
+---
+
+By thoughtfully crafting both the **visual clarity** and **emotional feel** of the interface, MedMinder delivers a polished, reassuring experience that builds user confidence, encourages habit formation, and elevates daily health management.
 
 
 --------
