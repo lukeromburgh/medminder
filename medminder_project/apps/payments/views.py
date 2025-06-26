@@ -1,16 +1,17 @@
 # payments/views.py
 
 import stripe
+import os
+from dotenv import load_dotenv
+load_dotenv()
 import logging
 import json
-from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt # Only for simplicity in this example
+from django.views.decorators.csrf import csrf_exempt # Only for simplicity
 from django.db import transaction
 
-from django.conf import settings # new
 from django.http.response import JsonResponse # new
 from django.views.decorators.csrf import csrf_exempt # new
 from django.views.generic.base import TemplateView
@@ -19,13 +20,12 @@ from apps.accounts.models import Tier, User, UserSettings
 
 
 logger = logging.getLogger(__name__)
-# Configure logger at the top of the file
+# Configure logger 
 logger = logging.getLogger('stripe.webhook')
 
-# Initialize Stripe with your secret key
-stripe.api_key = settings.STRIPE_SECRET_KEY
+# Initialize Stripe with secret key
+stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
 
-# Replace this with your actual Price ID from the Stripe Dashboard
 HEALTH_HERO_PRICE_ID = 'price_1RUnxqFRa8uCnmTD91rvnTpe' # <<< IMPORTANT: Update this!
 
 @csrf_exempt
@@ -43,7 +43,7 @@ def create_checkout_session(request):
                     'user_id': request.user.id,  # Add metadata to track the user
                 },
                 line_items=[{
-                    'price': settings.HEALTH_HERO_PRICE_ID,
+                    'price': HEALTH_HERO_PRICE_ID,
                     'quantity': 1,
                 }]
             )
@@ -60,7 +60,7 @@ def payment_success_view(request):
     session = None
     customer_email = None
     if session_id:
-        stripe.api_key = settings.STRIPE_SECRET_KEY
+        stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
         try:
             session = stripe.checkout.Session.retrieve(session_id)
             customer_email = session.get('customer_details', {}).get('email')
@@ -79,7 +79,7 @@ def payment_cancel_view(request):
 def product_landing_page_view(request):
     # A simple page to initiate the payment
     context = {
-        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
+        'stripe_publishable_key': os.environ.get("STRIPE_PUBLISHABLE_KEY"),
         'health_hero_price_id': HEALTH_HERO_PRICE_ID
     }
     return render(request, 'payments/product_page.html', context)
@@ -87,7 +87,7 @@ def product_landing_page_view(request):
 @csrf_exempt
 def stripe_config(request):
     if request.method == 'GET':
-        stripe_config = {'publicKey': settings.STRIPE_PUBLISHABLE_KEY}
+        stripe_config = {'publicKey': os.environ.get("STRIPE_PUBLISHABLE_KEY")}
         return JsonResponse(stripe_config, safe=False)
 
 @csrf_exempt
@@ -107,7 +107,7 @@ def stripe_webhook(request):
     
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            payload, sig_header, os.environ.get("STRIPE_WEBHOOK_SECRET")
         )
         logger.info(f"✅ Event constructed successfully: {event['type']}")
         logger.debug(f"Full event data: {json.dumps(event, indent=2)}")
