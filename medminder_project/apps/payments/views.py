@@ -31,7 +31,7 @@ HEALTH_HERO_PRICE_ID = 'price_1RUnxqFRa8uCnmTD91rvnTpe' # <<< IMPORTANT: Update 
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == 'GET':
-        domain_url = 'http://localhost:8000'
+        domain_url = 'https://medminder-fhhw.onrender.com/'
         try:
             checkout_session = stripe.checkout.Session.create(
                 success_url=f"{domain_url}/payments/success/?session_id={{CHECKOUT_SESSION_ID}}",
