@@ -17,4 +17,6 @@ urlpatterns = [
     path('structure-plane', views.structure_plane, name='structure-plane'),
     path('skeleton-plane', views.skeleton_plane, name='skeleton-plane'),
     path('surface-plane', views.surface_plane, name='surface-plane'),
+
+    path('user-stories', views.user_stories, name='user-stories')
 ]
