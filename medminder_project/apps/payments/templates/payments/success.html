@@ -2,13 +2,8 @@
 {% load static %}
 
 {% block title %}Health Hero Premium | MedMinder{% endblock %}
-{% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Health Hero | MedMinder</title>
+
+    {% block extra_head %}
     <style>
         * {
             margin: 0;
@@ -423,8 +418,9 @@
             }
         }
     </style>
-</head>
-<body>
+    {% endblock extra_head %}
+
+    {% block content %}
     <div class="floating-particles">
         <div class="particle"></div>
         <div class="particle"></div>
@@ -495,6 +491,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
 {% endblock content %}
