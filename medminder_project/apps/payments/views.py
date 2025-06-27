@@ -28,7 +28,7 @@ stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
 
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
-HEALTH_HERO_PRICE_ID = 'price_1RUDo3FSaExQ9wThw9bW3ebR#'
+HEALTH_HERO_PRICE_ID = 'price_1RUDo3FSaExQ9wThw9bW3ebR' # <<< IMPORTANT: Update this!
 
 @csrf_exempt
 def create_checkout_session(request):
@@ -59,17 +59,15 @@ def create_checkout_session(request):
 
 def payment_success_view(request):
     session_id = request.GET.get('session_id')
+    session = None
     customer_email = None
-    logger.info(f"Success page hit with session_id: {session_id}")
     if session_id:
+        stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
         try:
-            logger.info(f"Attempting to retrieve session {session_id} with key {stripe.api_key}")
             session = stripe.checkout.Session.retrieve(session_id)
-            logger.info(f"Stripe session retrieved: {session}")
             customer_email = session.get('customer_details', {}).get('email')
         except Exception as e:
-            logger.error(f"Error retrieving Stripe session: {e}")
-            customer_email = None
+            session = None
 
     return render(request, 'payments/success.html', {
         'session_id': session_id,
