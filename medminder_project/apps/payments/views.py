@@ -26,6 +26,8 @@ logger = logging.getLogger('stripe.webhook')
 # Initialize Stripe with secret key
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
 
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+
 HEALTH_HERO_PRICE_ID = 'price_1RUnxqFRa8uCnmTD91rvnTpe' # <<< IMPORTANT: Update this!
 
 @csrf_exempt
