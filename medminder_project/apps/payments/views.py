@@ -95,25 +95,18 @@ def stripe_config(request):
 @csrf_exempt
 def stripe_webhook(request):
     logger.info("⭐️ Webhook endpoint called")
-    logger.debug(f"Request method: {request.method}")
-    logger.debug(f"Headers: {dict(request.headers)}")
-    
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-    
+
     if not sig_header:
         logger.error("❌ No Stripe signature found in headers")
         return HttpResponse(status=400)
-    
-    logger.info(f"📝 Signature header found: {sig_header[:20]}...")
-    
+
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, os.environ.get("STRIPE_WEBHOOK_SECRET")
         )
         logger.info(f"✅ Event constructed successfully: {event['type']}")
-        logger.debug(f"Full event data: {json.dumps(event, indent=2)}")
-        
     except ValueError as e:
         logger.error(f"❌ Invalid payload: {str(e)}")
         return HttpResponse(status=400)
@@ -122,66 +115,43 @@ def stripe_webhook(request):
         return HttpResponse(status=400)
 
     if event['type'] == 'checkout.session.completed':
-            logger.info("🎉 Processing checkout.session.completed event")
-            session = event['data']['object']
-            
-            # Get customer email from session
-            customer_email = session.get('customer_details', {}).get('email')
-            if not customer_email:
-                logger.error("❌ No customer email found in session")
-                return HttpResponse(status=200)
-                
-            logger.info(f"📧 Found customer email: {customer_email}")
-            
-            try:
-                with transaction.atomic():
-                    # Get user and settings by email
-                    logger.info(f"Looking up user with email: {customer_email}")
-                    user = User.objects.select_for_update().get(email=customer_email)
-                    logger.info(f"Found user: {user.username} ({user.id})")
-                    
-                    logger.info("Getting user settings")
-                    usersettings = UserSettings.objects.select_for_update().get(user=user)
-                    logger.info("Found user settings")
-                    
-                    logger.info("Getting or creating Premium tier")
-                    premium_tier, created = Tier.objects.get_or_create(
-                        name="Premium",
-                        defaults={
-                            'description': "Premium subscription with all features",
-                            'priority': 1,
-                            'is_default': False,
-                            'max_reminders': None,
-                            'max_viewers': None,
-                            'can_use_sms_reminders': True
-                        }
-                    )
-                    logger.info(f"Premium tier {'created' if created else 'found'}")
-                    
-                    # Update settings with explicit values
-                    logger.info("Updating user settings")
-                    usersettings.account_tier = premium_tier
-                    usersettings.subscription_status = 'premium'
-                    usersettings.payment_customer_id = session.get('customer')
-                    usersettings.payment_subscription_id = session.get('subscription')
-                    
-                    logger.info("About to save user settings")
-                    usersettings.save()
-                    logger.info("User settings saved successfully")
-                    
-                    # Verify the update immediately after save
-                    refreshed_settings = UserSettings.objects.get(user=user)
-                    logger.info(f"Verified settings after save: tier={refreshed_settings.account_tier}, status={refreshed_settings.subscription_status}")
+        logger.info("🎉 Processing checkout.session.completed event")
+        session = event['data']['object']
+        customer_email = session.get('customer_details', {}).get('email')
+        if not customer_email:
+            logger.error("❌ No customer email found in session")
+            return HttpResponse(status=200)
+        logger.info(f"📧 Found customer email: {customer_email}")
 
-            except User.DoesNotExist:
-                logger.error(f"❌ User with email {customer_email} not found")
-            except UserSettings.DoesNotExist:
-                logger.error(f"❌ UserSettings for user {user.username} not found")
-            except Exception as e:
-                logger.error(f"❌ Error updating user settings: {str(e)}", exc_info=True)
-            
-            except Exception as e:
-                logger.error(f"❌ Webhook processing failed: {str(e)}", exc_info=True)
-            return HttpResponse(status=400)
+        try:
+            with transaction.atomic():
+                user = User.objects.select_for_update().get(email=customer_email)
+                usersettings = UserSettings.objects.select_for_update().get(user=user)
+                premium_tier, created = Tier.objects.get_or_create(
+                    name="Premium",
+                    defaults={
+                        'description': "Premium subscription with all features",
+                        'priority': 1,
+                        'is_default': False,
+                        'max_reminders': None,
+                        'max_viewers': None,
+                        'can_use_sms_reminders': True
+                    }
+                )
+                usersettings.account_tier = premium_tier
+                usersettings.subscription_status = 'premium'
+                usersettings.payment_customer_id = session.get('customer')
+                usersettings.payment_subscription_id = session.get('subscription')
+                usersettings.save()
+                logger.info("User settings saved successfully")
+        except User.DoesNotExist:
+            logger.error(f"❌ User with email {customer_email} not found")
+            return HttpResponse(status=200)
+        except UserSettings.DoesNotExist:
+            logger.error(f"❌ UserSettings for user {customer_email} not found")
+            return HttpResponse(status=200)
+        except Exception as e:
+            logger.error(f"❌ Error updating user settings: {str(e)}", exc_info=True)
+            return HttpResponse(status=500)
 
     return HttpResponse(status=200)
