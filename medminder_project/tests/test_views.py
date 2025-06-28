@@ -1,10 +1,14 @@
 import json
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.accounts.models import ReceiveUpdates
 from unittest.mock import patch, MagicMock
 from django.http import JsonResponse
+
+from django.utils import timezone
+from datetime import time, timedelta, date
+
 from apps.accounts.models import UserSettings, Tier
 
 User = get_user_model()
@@ -77,7 +81,7 @@ class PaymentViewsTests(TestCase):
         self.assertTemplateUsed(response, 'payments/cancel.html')
 
     def test_product_landing_page_view(self):
-        response = self.client.get(reverse('payments:product_landing_page'))
+        response = self.client.get('/payments/')
         self.assertTemplateUsed(response, 'payments/product_page.html')
         self.assertIn('stripe_publishable_key', response.context)
         self.assertIn('health_hero_price_id', response.context)
@@ -243,13 +247,6 @@ class AccountViewsTests(TestCase):
 
 #  ---------------------------------------------------------------------------------------- #
 #----------------- Reminder Views Tests -----------------#
-
-from django.test import TestCase, RequestFactory
-from django.contrib.auth import get_user_model
-from django.utils import timezone
-from datetime import time, timedelta, date
-from unittest.mock import patch
-from django.urls import reverse
 
 from apps.reminders.models import Medication, Dosage, Schedule, Reminder, DailyReminderLog, UserStats
 from apps.reminders.views import dashboard_today
