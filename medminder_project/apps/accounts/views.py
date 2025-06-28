@@ -69,7 +69,7 @@ def login_user(request):
     else:
         print("GET request to login, rendering login page")  # Debug
         form = LoginForm()
-        return render(request, 'login_page.html', {'form': form})
+        return render(request, 'accounts/login_page.html', {'form': form})
     
 def logout_view(request):
     # Log the user out.
