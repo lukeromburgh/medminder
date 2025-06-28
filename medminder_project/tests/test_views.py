@@ -152,12 +152,250 @@ class StripeWebhookTests(TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
-    # @patch('stripe.Webhook.construct_event', side_effect=Exception("Unexpected error"))
-    # def test_webhook_generic_error(self, mock_construct):
-    #     response = self.client.post(
-    #         reverse('payments:stripe-webhook'),
-    #         data=json.dumps({}),
-    #         content_type='application/json',
-    #         HTTP_STRIPE_SIGNATURE='dummy_signature'
-    #     )
-    #     self.assertEqual(response.status_code, 400)
+
+class AccountViewsTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.signup_url = reverse("accounts:signup_user")
+        self.login_url = reverse("accounts:login_user")
+        self.logout_url = reverse("accounts:logout")
+        self.signup_page_url = reverse("accounts:signup")
+        self.login_page_url = reverse("accounts:login")
+        self.manage_plan_url = reverse("accounts:manage_plan")
+
+        self.valid_user_data = {
+            "username": "test@example.com",
+            "email": "test@example.com",
+            "password": "StrongPass123!",  # Single password field
+        }
+
+
+        self.valid_login_data = {
+            "username": self.valid_user_data["email"],
+            "password": self.valid_user_data["password"],
+        }
+
+    def test_signup_page_renders(self):
+        response = self.client.get(self.signup_page_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/signup_page.html")
+
+    def test_login_page_renders(self):
+        response = self.client.get(self.login_page_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/login_page.html")
+
+    def test_manage_plan_redirects(self):
+        User.objects.create_user(
+            username="testuser",
+            email=self.valid_user_data["email"],
+            password=self.valid_user_data["password"]
+        )
+        self.client.login(
+            username=self.valid_user_data["email"],
+            password=self.valid_user_data["password"]
+        )
+        response = self.client.get(self.manage_plan_url)
+        self.assertEqual(response.status_code, 302)  # Redirect is expected
+        # Optional: assert destination URL if you know it
+        # self.assertRedirects(response, expected_url)
+
+    def test_signup_user_valid_post(self):
+        response = self.client.post(self.signup_url, data=self.valid_user_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {
+            "success": True,
+            "redirect": reverse("medminder:dashboard")
+        })
+        self.assertTrue(User.objects.filter(email=self.valid_user_data["email"]).exists())
+
+    def test_login_user_valid(self):
+        User.objects.create_user(
+            username=self.valid_user_data["username"],
+            email=self.valid_user_data["email"],
+            password=self.valid_user_data["password"]
+        )
+        response = self.client.post(self.login_url, data=self.valid_login_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {
+            "success": True,
+            "redirect": reverse("medminder:dashboard")
+        })
+
+    def test_login_user_invalid_credentials(self):
+        response = self.client.post(self.login_url, data={
+            "username": "wrong@example.com",
+            "password": "wrongpass"
+        })
+        self.assertEqual(response.status_code, 200)
+        json = response.json()
+        self.assertFalse(json["success"])
+        self.assertIn("errors", json)
+
+    def test_login_user_invalid_form(self):
+        response = self.client.post(self.login_url, data={"username": "only@example.com"})
+        self.assertEqual(response.status_code, 200)
+        json = response.json()
+        self.assertFalse(json["success"])
+        self.assertIn("errors", json)
+
+
+#  ---------------------------------------------------------------------------------------- #
+#----------------- Reminder Views Tests -----------------#
+
+from django.test import TestCase, RequestFactory
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import time, timedelta, date
+from unittest.mock import patch
+from django.urls import reverse
+
+from apps.reminders.models import Medication, Dosage, Schedule, Reminder, DailyReminderLog, UserStats
+from apps.reminders.views import dashboard_today
+from apps.reminders.views import get_user_tier, calculate_current_adherence_streak  # Assuming these exist
+
+User = get_user_model()
+
+class DashboardTodayViewTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(username='testuser', password='pass')
+        self.med = Medication.objects.create(medication_name='MedA')
+        self.dosage = Dosage.objects.create(dosage='10mg')
+
+        self.today = timezone.localdate()
+        self.now = timezone.localtime(timezone.now()).time()
+
+    def create_schedule(self, **kwargs):
+        defaults = {
+            'repeat_type': 'daily',
+            'time_of_day': time(9, 0),
+            'start_date': self.today - timedelta(days=1),
+            'end_date': None,
+            'weekly_days': '',
+            'monthly_dates': '',
+        }
+        defaults.update(kwargs)
+        return Schedule.objects.create(**defaults)
+
+    def create_reminder(self, schedule, is_active=True):
+        return Reminder.objects.create(
+            user=self.user,
+            medication=self.med,
+            dosage=self.dosage,
+            schedule=schedule,
+            is_active=is_active,
+        )
+
+    def make_request(self):
+        request = self.factory.get('/dashboard/today/')
+        request.user = self.user
+        return request
+
+    @patch('django.urls.reverse', return_value='/fake-url/')
+    def test_daily_reminder_creates_log(self):
+        schedule = self.create_schedule(repeat_type='daily')
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        response = dashboard_today(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        logs = DailyReminderLog.objects.filter(user=self.user, due_date=self.today)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.count(), 1)
+        self.assertEqual(logs.first().reminder, reminder)
+        self.assertEqual(logs.first().status, 'pending')
+
+    @patch('django.urls.reverse', return_value='/fake-url/')
+    def test_weekly_reminder_due_today_creates_log(self, mock_reverse):
+        # Set weekly_days to include today's weekday
+        weekday_str = str(self.today.weekday())
+        schedule = self.create_schedule(repeat_type='weekly', weekly_days=weekday_str)
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(user=self.user, due_date=self.today, reminder=reminder)
+        self.assertTrue(logs.exists())
+
+    @patch('django.urls.reverse', return_value='/fake-url/')
+    def test_weekly_reminder_not_due_today_no_log(self, mock_reverse):
+        # weekly_days does not include today's weekday
+        other_day = (self.today.weekday() + 1) % 7
+        schedule = self.create_schedule(repeat_type='weekly', weekly_days=str(other_day))
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(user=self.user, due_date=self.today, reminder=reminder)
+        self.assertFalse(logs.exists())
+
+    def test_monthly_reminder_due_today_creates_log(self):
+        schedule = self.create_schedule(repeat_type='monthly', monthly_dates=str(self.today.day))
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(user=self.user, due_date=self.today, reminder=reminder)
+        self.assertTrue(logs.exists())
+
+    def test_monthly_reminder_not_due_today_no_log(self):
+        # monthly_dates does not include today
+        schedule = self.create_schedule(repeat_type='monthly', monthly_dates='1')  # If today is not 1st
+        if self.today.day == 1:
+            schedule.monthly_dates = '2'
+            schedule.save()
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(user=self.user, due_date=self.today, reminder=reminder)
+        self.assertFalse(logs.exists())
+
+    def test_reminder_past_end_date_no_log(self):
+        schedule = self.create_schedule(end_date=self.today - timedelta(days=1))
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(user=self.user, due_date=self.today, reminder=reminder)
+        self.assertFalse(logs.exists())
+
+    def test_reminder_with_invalid_weekly_days_no_log(self):
+        schedule = self.create_schedule(repeat_type='weekly', weekly_days='a,b,c')
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(user=self.user, due_date=self.today, reminder=reminder)
+        self.assertFalse(logs.exists())
+
+    def test_next_reminder_returns_correct_log(self):
+        schedule = self.create_schedule(repeat_type='daily', time_of_day=(timezone.localtime(timezone.now()) + timedelta(hours=1)).time())
+        reminder = self.create_reminder(schedule)
+
+        # Create a DailyReminderLog with due_time after now
+        log = DailyReminderLog.objects.create(
+            user=self.user,
+            reminder=reminder,
+            due_date=self.today,
+            due_time=schedule.time_of_day,
+            status='pending'
+        )
+
+        request = self.make_request()
+        response = dashboard_today(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('next_reminder', response.context)
+        self.assertEqual(response.context['next_reminder'], log)
+
+    # Add more tests for adherence, achievement points, streak, etc. as needed
