@@ -541,14 +541,13 @@ def complete_reminder(request, reminder_id):
                 'points_earned_today': 0,
                 'final_status': status_display, # Send current status
                 'action_time': log_entry.action_timestamp.strftime('%H:%M') if log_entry.action_timestamp else None,
-                }, status=400) # Bad request - cannot complete non-pending item
+                }, status=202) # Bad request - cannot complete non-pending item
+                #facing errors in production, so using 202 to indicate no change
 
-    # If not a POST request, redirect (or return error if API endpoint)
     return redirect('medminder:dashboard_today')
 
 
-# --- check_streak function operating on ReminderStats as requested ---
-# --- check_streak function operating on ReminderStats as requested ---
+# --- check_streak function operating on ReminderStats ---
 def check_streak(user, days):
     """
     Checks if the user has a consecutive streak of days where *at least one*
@@ -754,8 +753,8 @@ def dashboard_calendar(request):
         return render(request, 'reminders/dashboard_calendar.html', context)
     else:
         print(f"Access denied. Status: {user_settings.subscription_status}")
-        messages.warning(request, "You need a Premium subscription to access the calendar view.")
-        messages.error(request, "You need a Premium subscription to access the calendar.")
+        # messages.warning(request, "You need a Premium subscription to access the calendar view.")
+        # messages.error(request, "You need a Premium subscription to access the calendar.")
         return render(request, 'reminders/calendar_paywall.html')  
 
 @login_required
