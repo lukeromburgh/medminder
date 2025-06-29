@@ -173,7 +173,7 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')  # Your default from e
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  # Your SendGrid username
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # Your SendGrid password
 
-SITE_URL = 'http://127.0.0.1:8000/'
+SITE_URL = 'https://medminder-fhhw.onrender.com/'
 
 # Use app passwords for security, not your main Gmail password
 # EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
