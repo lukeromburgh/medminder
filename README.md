@@ -768,6 +768,11 @@ This section details the functional requirements of the MedMinder application, p
 * **Subscription Management:** As a user, I want to easily manage my subscription and payment details, so that I have full control over my premium features.
 
 
+
+# Database Schema and Django Models
+
+## Account related
+
 ```
 from django.db import models
 
@@ -816,6 +821,11 @@ class AccountsUsersettings(models.Model):
         managed = False
         db_table = 'accounts_usersettings'
 
+```
+
+## Auth Related
+
+```
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
@@ -885,6 +895,12 @@ class AuthUserUserPermissions(models.Model):
         db_table = 'auth_user_user_permissions'
         unique_together = (('user', 'permission'),)
 
+```
+
+## Django Related
+
+```
+
 
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
@@ -930,6 +946,12 @@ class DjangoSession(models.Model):
         managed = False
         db_table = 'django_session'
 
+```
+
+## Documentation Related
+
+```
+
 
 class DocumentationDocscategory(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -952,6 +974,13 @@ class DocumentationDocstopic(models.Model):
     class Meta:
         managed = False
         db_table = 'documentation_docstopic'
+
+```
+
+## Reminders Related
+
+
+```
 
 
 class RemindersDailyreminderlog(models.Model):
@@ -1060,3 +1089,7 @@ class RemindersViewer(models.Model):
         db_table = 'reminders_viewer'
 
 ```
+
+![alt text](<Diagram from dbdiagram.png>)
+![alt text](<Diagram from dbdiagram (1).png>)
+![alt text](<Diagram from dbdiagram (2).png>)
