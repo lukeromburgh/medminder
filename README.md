@@ -16,6 +16,8 @@ Smart medication tracker built with Django.
 [![License](https://img.shields.io/github/license/lukeromburgh/medminder)](https://github.com/lukeromburgh/medminder/blob/main/LICENSE)
 
 
+![alt text](<Animated Web Screens Remix.gif>)
+
 ---
 
 ## 📘 Documentation
