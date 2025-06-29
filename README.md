@@ -773,7 +773,7 @@ This section details the functional requirements of the MedMinder application, p
 
 ## Account related
 
-```
+```python
 from django.db import models
 
 
@@ -825,7 +825,7 @@ class AccountsUsersettings(models.Model):
 
 ## Auth Related
 
-```
+```python
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
@@ -899,7 +899,7 @@ class AuthUserUserPermissions(models.Model):
 
 ## Django Related
 
-```
+```python
 
 
 class DjangoAdminLog(models.Model):
@@ -950,7 +950,7 @@ class DjangoSession(models.Model):
 
 ## Documentation Related
 
-```
+```python
 
 
 class DocumentationDocscategory(models.Model):
@@ -980,7 +980,7 @@ class DocumentationDocstopic(models.Model):
 ## Reminders Related
 
 
-```
+```python
 
 
 class RemindersDailyreminderlog(models.Model):
