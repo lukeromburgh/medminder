@@ -8,18 +8,39 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0004_rename_bg_color_usersettings_avatar_bg_color_and_more'),
+        ("accounts", "0004_rename_bg_color_usersettings_avatar_bg_color_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ReceiveUpdates',
+            name="ReceiveUpdates",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=255, unique=True)),
-                ('notifications', models.BooleanField(default=True, help_text='Receive notifications about updates and new features.')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='waitlist', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("email", models.EmailField(max_length=255, unique=True)),
+                (
+                    "notifications",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Receive notifications about updates and new features.",
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="waitlist",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

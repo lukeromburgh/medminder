@@ -9,89 +9,133 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reminders', '0002_userstats_achievement_points'),
+        ("reminders", "0002_userstats_achievement_points"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='reminder',
-            name='completed',
+            model_name="reminder",
+            name="completed",
         ),
         migrations.RemoveField(
-            model_name='reminder',
-            name='due_date',
+            model_name="reminder",
+            name="due_date",
         ),
         migrations.RemoveField(
-            model_name='reminder',
-            name='due_time',
+            model_name="reminder",
+            name="due_time",
         ),
         migrations.RemoveField(
-            model_name='schedule',
-            name='at_time',
+            model_name="schedule",
+            name="at_time",
         ),
         migrations.RemoveField(
-            model_name='schedule',
-            name='repeat',
+            model_name="schedule",
+            name="repeat",
         ),
         migrations.RemoveField(
-            model_name='schedule',
-            name='until_date',
+            model_name="schedule",
+            name="until_date",
         ),
         migrations.AddField(
-            model_name='reminder',
-            name='is_active',
+            model_name="reminder",
+            name="is_active",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='schedule',
-            name='end_date',
+            model_name="schedule",
+            name="end_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='schedule',
-            name='monthly_dates',
+            model_name="schedule",
+            name="monthly_dates",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
         migrations.AddField(
-            model_name='schedule',
-            name='repeat_type',
-            field=models.CharField(choices=[('', 'Never'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')], default='', max_length=10),
+            model_name="schedule",
+            name="repeat_type",
+            field=models.CharField(
+                choices=[
+                    ("", "Never"),
+                    ("daily", "Daily"),
+                    ("weekly", "Weekly"),
+                    ("monthly", "Monthly"),
+                ],
+                default="",
+                max_length=10,
+            ),
         ),
         migrations.AddField(
-            model_name='schedule',
-            name='start_date',
+            model_name="schedule",
+            name="start_date",
             field=models.DateField(default=django.utils.timezone.now),
         ),
         migrations.AddField(
-            model_name='schedule',
-            name='time_of_day',
+            model_name="schedule",
+            name="time_of_day",
             field=models.TimeField(default=django.utils.timezone.now),
         ),
         migrations.AddField(
-            model_name='schedule',
-            name='weekly_days',
+            model_name="schedule",
+            name="weekly_days",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
         migrations.AlterField(
-            model_name='reminder',
-            name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="reminder",
+            name="id",
+            field=models.BigAutoField(
+                auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+            ),
         ),
         migrations.CreateModel(
-            name='DailyReminderLog',
+            name="DailyReminderLog",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('due_date', models.DateField(db_index=True)),
-                ('due_time', models.TimeField()),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed'), ('skipped', 'Skipped')], db_index=True, default='pending', max_length=15)),
-                ('completion_timestamp', models.DateTimeField(blank=True, null=True)),
-                ('reminder', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='logs', to='reminders.reminder')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("due_date", models.DateField(db_index=True)),
+                ("due_time", models.TimeField()),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending"),
+                            ("completed", "Completed"),
+                            ("skipped", "Skipped"),
+                        ],
+                        db_index=True,
+                        default="pending",
+                        max_length=15,
+                    ),
+                ),
+                ("completion_timestamp", models.DateTimeField(blank=True, null=True)),
+                (
+                    "reminder",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="logs",
+                        to="reminders.reminder",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['due_date', 'due_time'],
-                'unique_together': {('reminder', 'due_date')},
+                "ordering": ["due_date", "due_time"],
+                "unique_together": {("reminder", "due_date")},
             },
         ),
     ]

@@ -7,30 +7,32 @@ from django.shortcuts import render
 #     """
 #     return render(request, 'documentation/overview.html')
 
+
 def home(request):
     """
     Function-based view for documentation home page.
     """
     context = {
-        'page_title': 'MedMinder Documentation',
-        'meta_description': 'Comprehensive documentation for MedMinder - the gamified medical reminder platform. Explore design, development, and technical guides.',
+        "page_title": "MedMinder Documentation",
+        "meta_description": "Comprehensive documentation for MedMinder - the gamified medical reminder platform. Explore design, development, and technical guides.",
     }
-    
-    return render(request, 'documentation/doc_home.html', context)
+
+    return render(request, "documentation/doc_home.html", context)
+
 
 def overview(request):
     context = {
-        'page_title': 'MedMinder Documentation',
-        'background_color': "#FFFFFF",
-        'text_color': "#171717",
-        'left_title': 'Project Overview',
-        'left_subtitle': (
+        "page_title": "MedMinder Documentation",
+        "background_color": "#FFFFFF",
+        "text_color": "#171717",
+        "left_title": "Project Overview",
+        "left_subtitle": (
             "MedMinder is a modern, gamified medication management platform built with Django. "
             "It empowers users to take control of their health by providing smart reminders, adherence tracking, "
             "and a beautiful calendar view—all tailored to each user’s timezone and schedule."
         ),
-        'right_title': 'Key Features',
-        'body_1': """
+        "right_title": "Key Features",
+        "body_1": """
 <ul class="list-disc pl-6 space-y-2">
   <li><b>Smart Medication Reminders:</b> Set up complex schedules (daily, weekly, monthly, or custom), receive reminders via email or SMS, and never miss a dose.</li>
   <li><b>Gamified Adherence:</b> Earn points, streaks, badges, and ranks for consistent medication adherence, making health management engaging and rewarding.</li>
@@ -41,7 +43,7 @@ def overview(request):
   <li><b>Secure & Scalable:</b> Built on Django with robust authentication and secure data handling.</li>
 </ul>
 """,
-        'body_2': """
+        "body_2": """
         <br>
 <h3 class="text-lg font-semibold mb-2">Technical Highlights</h3>
 <ul class="list-disc pl-6 space-y-1 mb-4">
@@ -52,18 +54,19 @@ def overview(request):
   <li><b>Extensible:</b> Easily add new features, integrations, or notification channels.</li>
 </ul>
 """,
-'banner_url': '/static/images/documentation/readme-header.png',  # Adjust the path as needed
+        "banner_url": "/static/images/documentation/readme-header.png",  # Adjust the path as needed
     }
-    return render(request, 'documentation/partials/section_template.html', context)
+    return render(request, "documentation/partials/section_template.html", context)
+
 
 def the_why(request):
     context = {
-        'page_title': 'MedMinder Documentation',
-        'background_color': "#FFFFFF",
-        'text_color': "#171717",
-        'banner_url': '/static/images/medminder.png',  # Adjust the path as needed
-        'left_title': 'Why I Built MedMinder',
-        'left_subtitle': """
+        "page_title": "MedMinder Documentation",
+        "background_color": "#FFFFFF",
+        "text_color": "#171717",
+        "banner_url": "/static/images/medminder.png",  # Adjust the path as needed
+        "left_title": "Why I Built MedMinder",
+        "left_subtitle": """
 <ul class="list-disc pl-6 space-y-2">
   <li>
     <b>Real-World Inspiration:</b>
@@ -85,8 +88,8 @@ def the_why(request):
   </li>
 </ul>
 """,
-        'right_title': 'Beyond the Obvious: Gamification for Broader Appeal',
-        'body_1': """
+        "right_title": "Beyond the Obvious: Gamification for Broader Appeal",
+        "body_1": """
 <ul class="list-disc pl-6 space-y-2">
   <li>
     <b>Broader Impact:</b>
@@ -108,19 +111,20 @@ def the_why(request):
   </li>
 </ul>
 """,
-        'body_2': ""  # Optionally add more here
+        "body_2": "",  # Optionally add more here
     }
-    return render(request, 'documentation/partials/section_template.html', context)
+    return render(request, "documentation/partials/section_template.html", context)
+
 
 def under_the_hood(request):
     context = {
-        'page_title': 'Under the Hood',
-        'background_color': "#FFFFFF",
-        'text_color': "#1A202C",
-        'left_title': 'Under the Hood',
-        'left_subtitle': 'A technical deep dive into how MedMinder works behind the scenes.',
-        'right_title': 'Architecture & Key Components',
-        'body_1': """
+        "page_title": "Under the Hood",
+        "background_color": "#FFFFFF",
+        "text_color": "#1A202C",
+        "left_title": "Under the Hood",
+        "left_subtitle": "A technical deep dive into how MedMinder works behind the scenes.",
+        "right_title": "Architecture & Key Components",
+        "body_1": """
 <p>MedMinder is built with a modular Django architecture, separating concerns into distinct apps such as <code>accounts</code>, <code>reminders</code>, <code>payments</code>, and <code>core</code>. This ensures maintainability and scalability.</p>
 <pre>
 medminder_project/
@@ -135,7 +139,7 @@ medminder_project/
 </pre>
 <p>Each app encapsulates its own models, views, and logic. For example, <code>reminders</code> handles all scheduling, adherence tracking, and calendar logic, while <code>payments</code> manages Stripe integration and premium access.</p>
 """,
-        'body_2': """
+        "body_2": """
 <h3 class="text-lg font-semibold mb-2">Key Technologies & Patterns</h3>
 <ul class="list-disc pl-6 mb-4">
   <li><b>Django ORM:</b> For robust, relational data modeling and queries.</li>
@@ -159,20 +163,21 @@ reminder = Reminder.objects.create(
 <p>MedMinder’s backend is designed for extensibility, allowing new features (like SMS, analytics, or integrations) to be added with minimal friction.</p>
 """,
     }
-    return render(request, 'documentation/partials/section_template.html', context)
+    return render(request, "documentation/partials/section_template.html", context)
 
 
 # --------------------------------------------------------------------------------#
 
+
 def design_deep_dive(request):
     context = {
-        'page_title': 'Design Deep Dive',
-        'background_color': "#FF6200",
-        'text_color': "#01070E",
-        'left_title': 'Design',
-        'left_subtitle': 'MedMinder’s design is grounded in user needs and business goals (Strategy), delivers clear features and content (Scope), organizes them for intuitive use (Structure), presents them with clarity and ease (Skeleton), and wraps it all in a modern, engaging interface (Surface).',
-        'right_title': 'User-Centric Design Principles',
-        'body_1': """
+        "page_title": "Design Deep Dive",
+        "background_color": "#FF6200",
+        "text_color": "#01070E",
+        "left_title": "Design",
+        "left_subtitle": "MedMinder’s design is grounded in user needs and business goals (Strategy), delivers clear features and content (Scope), organizes them for intuitive use (Structure), presents them with clarity and ease (Skeleton), and wraps it all in a modern, engaging interface (Surface).",
+        "right_title": "User-Centric Design Principles",
+        "body_1": """
 <p>At MedMinder, we believe that design is not just about aesthetics; it's about creating a seamless, intuitive experience that empowers users to take control of their health. Our design philosophy is rooted in understanding user needs, simplifying complex tasks, and making medication management engaging and rewarding.</p>
 <h3 class="text-lg font-semibold mb-2">Key Design Principles</h3>
 <ul class="list-disc pl-6 mb-4">
@@ -201,17 +206,18 @@ def design_deep_dive(request):
 <p>By focusing on these design principles and user experiences, MedMinder aims to create a medication management app that is not only functional but also enjoyable to use, ultimately improving health outcomes for our users.</p>
 """,
     }
-    return render(request, 'documentation/partials/introduction_template.html', context)
+    return render(request, "documentation/partials/introduction_template.html", context)
+
 
 def strategy_plane(request):
     context = {
-        'page_title': 'Strategy Plane',
-        'background_color': "#F7FAFC",
-        'text_color': "#2D3748",
-        'left_title': 'Strategy Plane',
-        'left_subtitle': 'Defining the foundation of MedMinder’s purpose and direction.',
-        'right_title': 'User Needs & Business Objectives',
-        'body_1': f"""
+        "page_title": "Strategy Plane",
+        "background_color": "#F7FAFC",
+        "text_color": "#2D3748",
+        "left_title": "Strategy Plane",
+        "left_subtitle": "Defining the foundation of MedMinder’s purpose and direction.",
+        "right_title": "User Needs & Business Objectives",
+        "body_1": f"""
 <p>The Strategy Plane is the foundation of MedMinder, aligning every decision with a clear understanding of our users' needs and our core business objectives. It ensures we are building the right product for the right people, creating a sustainable and impactful business.</p>
 <br>
 <h3 class="text-xl font-semibold mb-2">1.1 User Needs: The "Why"</h3>
@@ -257,7 +263,7 @@ Non-adherence to medication is a critical and widespread health issue. The conse
 <br>
 
 """,
-        'body_2': f"""
+        "body_2": f"""
         <br>
 <hr>
 <br>
@@ -296,18 +302,18 @@ MedMinder operates on a freemium subscription model, offering essential features
 </ul>
 """,
     }
-    return render(request, 'documentation/partials/section_template.html', context)
+    return render(request, "documentation/partials/section_template.html", context)
 
 
 def scope_plane(request):
     context = {
-        'page_title': 'Scope Plane',
-        'background_color': "#F9FAFB",
-        'text_color': "#1F2937",
-        'left_title': 'Scope Plane',
-        'left_subtitle': 'Defining the functional and content requirements that drive development.',
-        'right_title': 'Requirements & Structure',
-        'body_1': """
+        "page_title": "Scope Plane",
+        "background_color": "#F9FAFB",
+        "text_color": "#1F2937",
+        "left_title": "Scope Plane",
+        "left_subtitle": "Defining the functional and content requirements that drive development.",
+        "right_title": "Requirements & Structure",
+        "body_1": """
 <p>The Scope Plane translates our strategic goals into a tangible set of functional and content requirements. It explicitly defines the features, functions, and content that will be created, providing a detailed blueprint for the MedMinder application.</p>
 
 <hr class="my-4">
@@ -374,7 +380,7 @@ def scope_plane(request):
   </li>
 </ul>
 """,
-        'body_2': """
+        "body_2": """
 <h4 class="font-semibold mt-4">Epic 4: Gamification & Engagement</h4>
 <p><b>Description:</b> Motivates users through rewarding feedback loops.</p>
 <ul class="list-disc pl-6">
@@ -473,17 +479,18 @@ def scope_plane(request):
 </ul>
 """,
     }
-    return render(request, 'documentation/partials/section_template.html', context)
+    return render(request, "documentation/partials/section_template.html", context)
+
 
 def structure_plane(request):
     context = {
-        'page_title': 'Structure Plane',
-        'background_color': "#F9FAFB",
-        'text_color': "#111827",
-        'left_title': 'Structure Plane',
-        'left_subtitle': 'Information Architecture and Interaction Design of the MedMinder App.',
-        'right_title': 'App Layout & User Interaction',
-        'body_1': """
+        "page_title": "Structure Plane",
+        "background_color": "#F9FAFB",
+        "text_color": "#111827",
+        "left_title": "Structure Plane",
+        "left_subtitle": "Information Architecture and Interaction Design of the MedMinder App.",
+        "right_title": "App Layout & User Interaction",
+        "body_1": """
 <p><strong>3. Structure Plane</strong></p>
 <p>The Structure Plane defines the app's backbone, dictating how it is organised and how users interact with its features. It focuses on creating a logical <strong>Information Architecture (IA)</strong> and a deliberate, frictionless <strong>Interaction Design (IxD)</strong> to guide users seamlessly toward their goals.</p>
 
@@ -523,7 +530,7 @@ def structure_plane(request):
     └── 5.6 Logout
 </pre>
 """,
-        'body_2': """
+        "body_2": """
 <p><strong>3.2 Interaction Design (IxD)</strong></p>
 <p>IxD defines how users interact with the system. Our design will be guided by principles of clarity, feedback, and consistency, making the user journey feel intuitive and supportive.</p>
 
@@ -580,19 +587,20 @@ def structure_plane(request):
   <li>Consistency: UI elements follow consistent design (typography, buttons, icons).</li>
 </ul>
 """,
-'image_url': '/static/images/documentation/structure.png',  # Adjust the path as needed
+        "image_url": "/static/images/documentation/structure.png",  # Adjust the path as needed
     }
-    return render(request, 'documentation/partials/section_template.html', context)
+    return render(request, "documentation/partials/section_template.html", context)
+
 
 def skeleton_plane(request):
     context = {
-        'page_title': 'Skeleton Plane',
-        'background_color': "#F9FAFB",
-        'text_color': "#111827",
-        'left_title': 'Skeleton Plane',
-        'left_subtitle': 'Interface, Navigation, and Information Design of the MedMinder App.',
-        'right_title': 'Interface Blueprint & UI Logic',
-        'body_1': """
+        "page_title": "Skeleton Plane",
+        "background_color": "#F9FAFB",
+        "text_color": "#111827",
+        "left_title": "Skeleton Plane",
+        "left_subtitle": "Interface, Navigation, and Information Design of the MedMinder App.",
+        "right_title": "Interface Blueprint & UI Logic",
+        "body_1": """
 <p><strong>4. Skeleton Plane</strong></p>
 <p>The Skeleton Plane meticulously outlines the application's interface, navigation, and information design, ensuring a seamless and intuitive user experience.</p>
 
@@ -602,7 +610,7 @@ def skeleton_plane(request):
 <p>Our interface prioritizes a clean, responsive, and modern aesthetic achieved through the strategic implementation of <strong>Tailwind CSS</strong>. This utility-first framework allows for rapid development of highly customizable and adaptable layouts that look excellent on any device.</p>
 <p>A <strong>persistent sidebar navigation</strong> will provide users with quick and easy access to all core features and comprehensive documentation, minimizing the need for extensive searching and improving overall efficiency.</p>
 """,
-        'body_2': """
+        "body_2": """
 <p><strong>Navigation Design</strong></p>
 <p>The navigation structure is designed for ultimate clarity and ease of use. Features are logically grouped into intuitive categories such as <em>Reminders</em>, <em>Calendar</em>, <em>Analytics</em>, and <em>Account</em>, mirroring common user mental models.</p>
 <p>This organization ensures that users can effortlessly locate the tools they need.</p>
@@ -618,19 +626,20 @@ def skeleton_plane(request):
   <li><strong>Color:</strong> Utilizing a consistent and meaningful color palette to highlight important information, differentiate elements, and guide the user's eye.</li>
   <li><strong>Spacing:</strong> Applying appropriate white space and padding to create visual breaks, improve readability, and prevent information overload, ensuring a clean and uncluttered presentation.</li>
 </ul>
-"""
+""",
     }
-    return render(request, 'documentation/partials/section_template.html', context)
+    return render(request, "documentation/partials/section_template.html", context)
+
 
 def surface_plane(request):
     context = {
-        'page_title': 'Surface Plane',
-        'background_color': "#F9FAFB",
-        'text_color': "#111827",
-        'left_title': 'Surface Plane',
-        'left_subtitle': 'The final layer—what the user sees, feels, and interacts with.',
-        'right_title': 'Visual & Sensory Experience',
-        'body_1': """
+        "page_title": "Surface Plane",
+        "background_color": "#F9FAFB",
+        "text_color": "#111827",
+        "left_title": "Surface Plane",
+        "left_subtitle": "The final layer—what the user sees, feels, and interacts with.",
+        "right_title": "Visual & Sensory Experience",
+        "body_1": """
 <p><strong>5. Surface Plane</strong></p>
 <p>The Surface Plane focuses on the application's aesthetic and sensory experience, ensuring a delightful and intuitive interaction for every user.</p>
 
@@ -642,33 +651,34 @@ def surface_plane(request):
 <p>We'll maintain consistent <strong>typography</strong> and <strong>iconography</strong> throughout the application, creating a cohesive and professional look that reinforces brand identity.</p>
 <p>For our documentation, we're drawing inspiration from <strong>Stripe's</strong> renowned documentation pages, incorporating clear code blocks and informative callouts to make complex information easily digestible and actionable for developers.</p>
 """,
-        'body_2': """
+        "body_2": """
         <br>
 <p><strong>Sensory Design</strong></p>
 <br>
 <p>Beyond just looking good, the application will <em>feel</em> good to use. We'll implement <strong>subtle animations</strong>, such as smooth page fade transitions, to create a fluid and engaging user experience without being distracting.</p>
 <p><strong>Responsive feedback</strong> on user actions will be immediate and clear, whether it's a button click or a form submission, providing users with confidence and a sense of control.</p>
 <p>To further boost engagement, we'll integrate <strong>engaging gamification visuals</strong>, including visually appealing <em>badges</em> and intuitive <em>progress bars</em>, to motivate users and celebrate their achievements within the application.</p>
-"""
+""",
     }
-    return render(request, 'documentation/partials/section_template.html', context)
+    return render(request, "documentation/partials/section_template.html", context)
 
 
-#--------------------------------------------------------------------------------#
+# --------------------------------------------------------------------------------#
+
 
 def user_stories(request):
     context = {
-        'page_title': 'User Stories',
-        'background_color': "#FFFFFF",
-        'text_color': "#171717",
-        'left_title': 'User Stories: MedMinder Application',
-        'left_subtitle': (
+        "page_title": "User Stories",
+        "background_color": "#FFFFFF",
+        "text_color": "#171717",
+        "left_title": "User Stories: MedMinder Application",
+        "left_subtitle": (
             "This section details the functional requirements of the MedMinder application, presented as user stories "
             "from the perspective of key personas. Each story outlines a user's role, their desired action, and the "
             "specific benefit derived from that action."
         ),
-        'right_title': 'Personas & Requirements',
-        'body_1': """
+        "right_title": "Personas & Requirements",
+        "body_1": """
 <h3 class="text-xl font-bold mb-3">Persona 1: The Busy Professional (Elena, 34)</h3>
 <p class="mb-4 text-gray-600">Elena requires efficient and private medication management to fit her demanding schedule.</p>
 
@@ -793,6 +803,6 @@ def user_stories(request):
     <li><b>Subscription Management:</b> As a user, I want to easily manage my subscription and payment details, so that I have full control over my premium features.</li>
 </ul>
         """,
-        'body_2': "",
+        "body_2": "",
     }
-    return render(request, 'documentation/partials/section_template.html', context)
+    return render(request, "documentation/partials/section_template.html", context)

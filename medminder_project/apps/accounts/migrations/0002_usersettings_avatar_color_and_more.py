@@ -6,18 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0001_initial'),
+        ("accounts", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='usersettings',
-            name='avatar_color',
-            field=models.CharField(default='(#000000, #FFFFFF)', help_text='Background and text color tuple for avatar in hex format', max_length=20),
+            model_name="usersettings",
+            name="avatar_color",
+            field=models.CharField(
+                default="(#000000, #FFFFFF)",
+                help_text="Background and text color tuple for avatar in hex format",
+                max_length=20,
+            ),
         ),
         migrations.AddField(
-            model_name='usersettings',
-            name='receive_sms_reminders',
+            model_name="usersettings",
+            name="receive_sms_reminders",
             field=models.BooleanField(default=False),
         ),
     ]

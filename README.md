@@ -23,6 +23,20 @@ Medminder is a gamified medical reminder app with timezone specificty and a cale
   - [Persona 3: The Newly Diagnosed Teen (Leo, 16)](#persona-3-the-newly-diagnosed-teen-leo-16)
   - [Universal User Stories](#universal-user-stories-applicable-to-all-personas)
 
+[Database Schema and Django Models](#database-schema-and-django-models)
+  - [Account](#account-related)
+  - [Authentication](#auth-related)
+  - [Django](#django-related)
+  - [Documentation](#documentation-related)
+  - [Reminders](#reminders-related)
+
+[Testing](#testing)
+  - [Clean code](#clean-code)
+  - [Lighthouse](#lighthouse-accessibility-testing)
+  - [Unit Testing](#unit-tests)
+      - [URL's](#urls)
+      - [VIEWS](#views)
+
 
 # MedMinder: A Gamified Medication Management Platform
 
@@ -766,3 +780,985 @@ This section details the functional requirements of the MedMinder application, p
 ### Premium Features
 * **Premium Access:** As a user, I want to upgrade to a premium subscription, so that I can access advanced analytics, calendar integrations, and priority support.
 * **Subscription Management:** As a user, I want to easily manage my subscription and payment details, so that I have full control over my premium features.
+
+
+
+# Database Schema and Django Models
+
+## Account related
+
+```python
+from django.db import models
+
+
+class AccountsReceiveupdates(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    email = models.CharField(unique=True, max_length=255)
+    notifications = models.BooleanField()
+    user = models.OneToOneField('AuthUser', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'accounts_receiveupdates'
+
+
+class AccountsTier(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(unique=True, max_length=50)
+    description = models.TextField()
+    priority = models.IntegerField()
+    is_default = models.BooleanField()
+    max_reminders = models.IntegerField(blank=True, null=True)
+    max_viewers = models.IntegerField(blank=True, null=True)
+    can_use_sms_reminders = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'accounts_tier'
+
+
+class AccountsUsersettings(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    receive_email_reminders = models.BooleanField()
+    subscription_status = models.CharField(max_length=50)
+    payment_customer_id = models.CharField(unique=True, max_length=100, blank=True, null=True)
+    payment_subscription_id = models.CharField(unique=True, max_length=100, blank=True, null=True)
+    subscription_end_date = models.DateField(blank=True, null=True)
+    account_tier = models.ForeignKey(AccountsTier, models.DO_NOTHING, blank=True, null=True)
+    user = models.OneToOneField('AuthUser', models.DO_NOTHING)
+    receive_sms_reminders = models.BooleanField()
+    avatar_bg_color = models.CharField(max_length=50)
+    avatar_text_color = models.CharField(max_length=50)
+    timezone = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'accounts_usersettings'
+
+```
+
+## Auth Related
+
+```python
+
+class AuthGroup(models.Model):
+    name = models.CharField(unique=True, max_length=150)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_group'
+
+
+class AuthGroupPermissions(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_group_permissions'
+        unique_together = (('group', 'permission'),)
+
+
+class AuthPermission(models.Model):
+    name = models.CharField(max_length=255)
+    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
+    codename = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_permission'
+        unique_together = (('content_type', 'codename'),)
+
+
+class AuthUser(models.Model):
+    password = models.CharField(max_length=128)
+    last_login = models.DateTimeField(blank=True, null=True)
+    is_superuser = models.BooleanField()
+    username = models.CharField(unique=True, max_length=150)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.CharField(max_length=254)
+    is_staff = models.BooleanField()
+    is_active = models.BooleanField()
+    date_joined = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'auth_user'
+
+
+class AuthUserGroups(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_user_groups'
+        unique_together = (('user', 'group'),)
+
+
+class AuthUserUserPermissions(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_user_user_permissions'
+        unique_together = (('user', 'permission'),)
+
+```
+
+## Django Related
+
+```python
+
+
+class DjangoAdminLog(models.Model):
+    action_time = models.DateTimeField()
+    object_id = models.TextField(blank=True, null=True)
+    object_repr = models.CharField(max_length=200)
+    action_flag = models.SmallIntegerField()
+    change_message = models.TextField()
+    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'django_admin_log'
+
+
+class DjangoContentType(models.Model):
+    app_label = models.CharField(max_length=100)
+    model = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'django_content_type'
+        unique_together = (('app_label', 'model'),)
+
+
+class DjangoMigrations(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    app = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    applied = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'django_migrations'
+
+
+class DjangoSession(models.Model):
+    session_key = models.CharField(primary_key=True, max_length=40)
+    session_data = models.TextField()
+    expire_date = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'django_session'
+
+```
+
+## Documentation Related
+
+```python
+
+
+class DocumentationDocscategory(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    order = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'documentation_docscategory'
+
+
+class DocumentationDocstopic(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title = models.CharField(max_length=200)
+    slug = models.CharField(unique=True, max_length=50)
+    content = models.TextField()
+    order_in_category = models.IntegerField()
+    category = models.ForeignKey(DocumentationDocscategory, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'documentation_docstopic'
+
+```
+
+## Reminders Related
+
+
+```python
+
+
+class RemindersDailyreminderlog(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    due_date = models.DateField()
+    due_time = models.TimeField()
+    status = models.CharField(max_length=15)
+    reminder = models.ForeignKey('RemindersReminder', models.DO_NOTHING)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    is_notified = models.BooleanField()
+    action_timestamp = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'reminders_dailyreminderlog'
+        unique_together = (('reminder', 'due_date'),)
+
+
+class RemindersDosage(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    dosage = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'reminders_dosage'
+
+
+class RemindersMedication(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    medication_name = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'reminders_medication'
+
+
+class RemindersReminder(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    created_at = models.DateTimeField()
+    dosage = models.ForeignKey(RemindersDosage, models.DO_NOTHING)
+    medication = models.ForeignKey(RemindersMedication, models.DO_NOTHING)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    schedule = models.ForeignKey('RemindersSchedule', models.DO_NOTHING)
+    is_active = models.BooleanField()
+    grace_period = models.DurationField()
+
+    class Meta:
+        managed = False
+        db_table = 'reminders_reminder'
+
+
+class RemindersReminderstats(models.Model):
+    reminder_stat_id = models.AutoField(primary_key=True)
+    date = models.DateField()
+    completed = models.BooleanField()
+    skipped = models.BooleanField()
+    completion_time = models.TimeField(blank=True, null=True)
+    reminder = models.ForeignKey(RemindersReminder, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'reminders_reminderstats'
+
+
+class RemindersSchedule(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    end_date = models.DateField(blank=True, null=True)
+    monthly_dates = models.CharField(max_length=100, blank=True, null=True)
+    repeat_type = models.CharField(max_length=10)
+    start_date = models.DateField()
+    time_of_day = models.TimeField()
+    weekly_days = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'reminders_schedule'
+
+
+class RemindersUserstats(models.Model):
+    stat_id = models.AutoField(primary_key=True)
+    date = models.DateField()
+    reminders_completed = models.IntegerField()
+    reminders_skipped = models.IntegerField()
+    average_compliance = models.FloatField()
+    other_stats = models.JSONField(blank=True, null=True)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    achievement_points = models.IntegerField()
+    last_lost_streak_notification_date = models.DateField(blank=True, null=True)
+    last_streak_notification_date = models.DateField(blank=True, null=True)
+    previous_streak = models.IntegerField()
+    last_inactivity_notification_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'reminders_userstats'
+
+
+class RemindersViewer(models.Model):
+    viewer_id = models.AutoField(primary_key=True)
+    access_granted_at = models.DateTimeField()
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    viewer_user = models.ForeignKey(AuthUser, models.DO_NOTHING, related_name='remindersviewer_viewer_user_set')
+
+    class Meta:
+        managed = False
+        db_table = 'reminders_viewer'
+
+```
+
+![alt text](<Diagram from dbdiagram.png>)
+![alt text](<Diagram from dbdiagram (1).png>)
+![alt text](<Diagram from dbdiagram (2).png>)
+
+
+---
+---
+---
+
+# Testing
+
+## Clean code
+
+All python files were formatted using Black python formatter
+
+https://pypi.org/project/black/
+
+
+## Lighthouse Accessibility Testing
+
+### Desktop 
+
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
+![alt text](image-4.png)
+![alt text](image-5.png)
+![alt text](image-6.png)
+![alt text](image-7.png)
+
+### Mobile
+
+![alt text](image-8.png)
+![alt text](image-9.png)
+![alt text](image-10.png)
+![alt text](image-11.png)
+![alt text](image-12.png)
+
+## Unit Tests
+
+I set out to use a DRY approach to unit tests.
+
+All tests were placed in a Tests folder in the project root. The unit tests were seperated in namespaced files like test_url.py and test_views.py.
+
+### URL's
+
+```python
+
+from django.test import TestCase, Client
+from django.urls import NoReverseMatch, reverse, resolve
+from django.contrib.admin.sites import site as admin_site
+from apps.reminders import views as reminders_views
+from apps.payments import views as payments_views
+from apps.accounts import views as accounts_views
+
+
+class MainURLTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_admin_url_resolves(self):
+        resolver = resolve("/admin/")
+        self.assertEqual(resolver.func.__module__, admin_site.__class__.__module__)
+
+    def test_core_urls(self):
+        response = self.client.get("/")
+        self.assertIn(response.status_code, [200, 302])
+
+    def test_accounts_urls(self):
+        response = self.client.get("/accounts/")
+        self.assertIn(response.status_code, [200, 302, 404])
+
+    def test_reminders_urls(self):
+        response = self.client.get("/medminder/")
+        self.assertIn(response.status_code, [200, 302, 404])
+
+    def test_browser_reload(self):
+        response = self.client.get("/__reload__/")
+        self.assertIn(response.status_code, [200, 404])
+
+    def test_payments_urls(self):
+        response = self.client.get("/payments/")
+        self.assertIn(response.status_code, [200, 302, 404])
+
+    def test_documentation_urls(self):
+        response = self.client.get("/documentation/")
+        self.assertIn(response.status_code, [200, 302, 404])
+
+    def test_all_documentation_urls(self):
+        urls = [
+            "home",
+            "overview",
+            "the-why",
+            "design-deep-dive",
+            "under-the-hood",
+            "strategy-plane",
+            "scope-plane",
+            "structure-plane",
+            "skeleton-plane",
+            "surface-plane",
+            "user-stories",
+        ]
+        for url_name in urls:
+            with self.subTest(url=url_name):
+                try:
+                    url = reverse(f"documentation:{url_name}")
+                    response = self.client.get(url)
+                    self.assertIn(
+                        response.status_code,
+                        [200, 302, 404],
+                        msg=f"URL documentation:{url_name} returned {response.status_code}",
+                    )
+                except NoReverseMatch:
+                    self.fail(f"Reverse match failed for documentation:{url_name}")
+
+
+class MedminderURLTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.dummy_reminder_id = (
+            1  # You may need to create a real object depending on your view logic
+        )
+
+        self.urls = [
+            ("medminder:dashboard", None),
+            ("medminder:new_plan", None),
+            ("medminder:add_reminder", None),
+            ("medminder:reminder_success", None),
+            ("medminder:complete_reminder", [self.dummy_reminder_id]),
+            ("medminder:medications", None),
+            ("medminder:dashboard_calendar", None),
+            ("medminder:account_page", None),
+            ("medminder:update_user_settings", None),
+            ("medminder:manage_plan", None),
+            ("medminder:delete_reminder", [self.dummy_reminder_id]),
+            ("medminder:viewers", None),
+        ]
+
+    def test_all_urls(self):
+        for name, args in self.urls:
+            with self.subTest(url=name):
+                try:
+                    url = reverse(name, args=args) if args else reverse(name)
+                    response = self.client.get(url)
+                    self.assertIn(
+                        response.status_code,
+                        [200, 302, 403, 404],
+                        msg=f"{name} returned {response.status_code}",
+                    )
+                except NoReverseMatch:
+                    self.fail(f"Reverse match failed for {name}")
+
+
+class PaymentsURLTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.urls = [
+            ("payments:create_checkout_session", None),
+            ("payments:product_landing_page", None),
+            ("payments:payment_success", None),
+            ("payments:payment_cancel", None),
+            ("payments:stripe_config", None),
+            ("payments:stripe-webhook", None),
+        ]
+
+    def test_all_payments_urls(self):
+        for name, args in self.urls:
+            with self.subTest(url=name):
+                try:
+                    url = reverse(name, args=args) if args else reverse(name)
+                    response = self.client.get(url)
+                    self.assertIn(
+                        response.status_code,
+                        [200, 302, 403, 400, 404],
+                        msg=f"{name} returned unexpected status code {response.status_code}.",
+                    )
+                except NoReverseMatch:
+                    self.fail(f"Reverse match failed for {name}")
+
+
+class AccountsURLTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.urls = [
+            ("accounts:login", None),
+            ("accounts:login_user", None),
+            ("accounts:manage_plan", None),
+        ]
+
+    def test_accounts_urls(self):
+        for name, args in self.urls:
+            with self.subTest(url=name):
+                try:
+                    url = reverse(name, args=args) if args else reverse(name)
+                    response = self.client.get(url)
+                    self.assertIn(
+                        response.status_code,
+                        [200, 302, 403, 400, 404],
+                        msg=f"{name} returned unexpected status code {response.status_code}.",
+                    )
+                except NoReverseMatch:
+                    self.fail(f"Reverse match failed for {name}")
+
+
+```
+
+### VIEWS 
+
+```python 
+
+import json
+from django.test import TestCase, Client, RequestFactory
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from apps.accounts.models import ReceiveUpdates
+from unittest.mock import patch, MagicMock
+from django.http import JsonResponse
+
+from django.utils import timezone
+from datetime import time, timedelta, date
+
+from apps.accounts.models import UserSettings, Tier
+
+User = get_user_model()
+
+
+class CoreViewsTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(
+            username="testuser", password="testpass", email="test@example.com"
+        )
+
+    def test_landing_page_redirects_authenticated_user(self):
+        self.client.login(username="testuser", password="testpass")
+        response = self.client.get(reverse("core:home"))
+        # Should redirect to LOGIN_REDIRECT_URL or dashboard
+        self.assertEqual(response.status_code, 200)
+
+    def test_landing_page_get_anonymous(self):
+        response = self.client.get(reverse("core:home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/landing_page.html")
+
+    def test_home_post_requires_login(self):
+        response = self.client.post(reverse("core:home"), {"email": "anon@example.com"})
+        self.assertContains(response, "You must be logged in to sign up for updates.")
+
+    def test_home_post_valid_for_logged_in_user(self):
+        self.client.login(username="testuser", password="testpass")
+        response = self.client.post(reverse("core:home"), {"email": "test@example.com"})
+        # Should redirect after successful signup
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(ReceiveUpdates.objects.filter(user=self.user).exists())
+
+    def test_home_post_invalid_email(self):
+        self.client.login(username="testuser", password="testpass")
+        response = self.client.post(reverse("core:home"), {"email": "not-an-email"})
+        self.assertContains(response, "Please enter a valid email address.")
+
+
+class PaymentViewsTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="password"
+        )
+        self.client.force_login(self.user)
+
+    @patch("stripe.checkout.Session.create")
+    def test_create_checkout_session_success(self, mock_create):
+        mock_create.return_value.id = "cs_test_123"
+        response = self.client.get(reverse("payments:create_checkout_session"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("sessionId", response.json())
+
+    def test_create_checkout_session_invalid_method(self):
+        response = self.client.post(reverse("payments:create_checkout_session"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("error", response.json())
+
+    @patch("stripe.checkout.Session.retrieve")
+    def test_payment_success_view_with_session(self, mock_retrieve):
+        mock_retrieve.return_value = {"customer_details": {"email": "test@example.com"}}
+        response = self.client.get(
+            reverse("payments:payment_success") + "?session_id=cs_test_123"
+        )
+        self.assertTemplateUsed(response, "payments/success.html")
+        self.assertIn("customer_email", response.context)
+
+    def test_payment_success_view_without_session(self):
+        response = self.client.get(reverse("payments:payment_success"))
+        self.assertTemplateUsed(response, "payments/success.html")
+        self.assertIsNone(response.context["customer_email"])
+
+    def test_payment_cancel_view(self):
+        response = self.client.get(reverse("payments:payment_cancel"))
+        self.assertTemplateUsed(response, "payments/cancel.html")
+
+    def test_product_landing_page_view(self):
+        response = self.client.get("/payments/")
+        self.assertTemplateUsed(response, "payments/product_page.html")
+        self.assertIn("stripe_publishable_key", response.context)
+        self.assertIn("health_hero_price_id", response.context)
+
+    def test_stripe_config_get(self):
+        response = self.client.get(reverse("payments:stripe_config"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("publicKey", response.json())
+
+
+class StripeWebhookTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="password"
+        )
+        self.usersettings, _ = UserSettings.objects.get_or_create(user=self.user)
+        self.secret = "whsec_test"
+
+    @patch("stripe.Webhook.construct_event")
+    def test_webhook_checkout_session_completed_updates_user(self, mock_construct):
+        mock_event = {
+            "type": "checkout.session.completed",
+            "data": {
+                "object": {
+                    "customer_details": {"email": self.user.email},
+                    "customer": "cus_123",
+                    "subscription": "sub_456",
+                }
+            },
+        }
+        mock_construct.return_value = mock_event
+
+        response = self.client.post(
+            reverse("payments:stripe-webhook"),
+            data=json.dumps(mock_event),
+            content_type="application/json",
+            HTTP_STRIPE_SIGNATURE="dummy_signature",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.usersettings.refresh_from_db()
+        self.assertEqual(self.usersettings.subscription_status, "premium")
+        self.assertEqual(self.usersettings.payment_customer_id, "cus_123")
+        self.assertEqual(self.usersettings.payment_subscription_id, "sub_456")
+        self.assertEqual(self.usersettings.account_tier.name, "Premium")
+
+    def test_webhook_without_signature(self):
+        response = self.client.post(
+            reverse("payments:stripe-webhook"),
+            data=json.dumps({"dummy": "data"}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    @patch("stripe.Webhook.construct_event")
+    def test_webhook_invalid_event_type(self, mock_construct):
+        mock_construct.return_value = {"type": "other.event"}
+        response = self.client.post(
+            reverse("payments:stripe-webhook"),
+            data=json.dumps({}),
+            content_type="application/json",
+            HTTP_STRIPE_SIGNATURE="dummy_signature",
+        )
+        self.assertEqual(response.status_code, 200)
+
+    @patch("stripe.Webhook.construct_event", side_effect=ValueError("Invalid payload"))
+    def test_webhook_invalid_payload(self, mock_construct):
+        response = self.client.post(
+            reverse("payments:stripe-webhook"),
+            data="invalid json",
+            content_type="application/json",
+            HTTP_STRIPE_SIGNATURE="dummy_signature",
+        )
+        self.assertEqual(response.status_code, 400)
+
+
+class AccountViewsTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.signup_url = reverse("accounts:signup_user")
+        self.login_url = reverse("accounts:login_user")
+        self.logout_url = reverse("accounts:logout")
+        self.signup_page_url = reverse("accounts:signup")
+        self.login_page_url = reverse("accounts:login")
+        self.manage_plan_url = reverse("accounts:manage_plan")
+
+        self.valid_user_data = {
+            "username": "test@example.com",
+            "email": "test@example.com",
+            "password": "StrongPass123!",  # Single password field
+        }
+
+        self.valid_login_data = {
+            "username": self.valid_user_data["email"],
+            "password": self.valid_user_data["password"],
+        }
+
+    def test_signup_page_renders(self):
+        response = self.client.get(self.signup_page_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/signup_page.html")
+
+    def test_login_page_renders(self):
+        response = self.client.get(self.login_page_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/login_page.html")
+
+    def test_manage_plan_redirects(self):
+        User.objects.create_user(
+            username="testuser",
+            email=self.valid_user_data["email"],
+            password=self.valid_user_data["password"],
+        )
+        self.client.login(
+            username=self.valid_user_data["email"],
+            password=self.valid_user_data["password"],
+        )
+        response = self.client.get(self.manage_plan_url)
+        self.assertEqual(response.status_code, 302)  # Redirect is expected
+        # Optional: assert destination URL if you know it
+        # self.assertRedirects(response, expected_url)
+
+    def test_signup_user_valid_post(self):
+        response = self.client.post(self.signup_url, data=self.valid_user_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            response.content,
+            {"success": True, "redirect": reverse("medminder:dashboard")},
+        )
+        self.assertTrue(
+            User.objects.filter(email=self.valid_user_data["email"]).exists()
+        )
+
+    def test_login_user_valid(self):
+        User.objects.create_user(
+            username=self.valid_user_data["username"],
+            email=self.valid_user_data["email"],
+            password=self.valid_user_data["password"],
+        )
+        response = self.client.post(self.login_url, data=self.valid_login_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            response.content,
+            {"success": True, "redirect": reverse("medminder:dashboard")},
+        )
+
+    def test_login_user_invalid_credentials(self):
+        response = self.client.post(
+            self.login_url,
+            data={"username": "wrong@example.com", "password": "wrongpass"},
+        )
+        self.assertEqual(response.status_code, 200)
+        json = response.json()
+        self.assertFalse(json["success"])
+        self.assertIn("errors", json)
+
+    def test_login_user_invalid_form(self):
+        response = self.client.post(
+            self.login_url, data={"username": "only@example.com"}
+        )
+        self.assertEqual(response.status_code, 200)
+        json = response.json()
+        self.assertFalse(json["success"])
+        self.assertIn("errors", json)
+
+
+#  ---------------------------------------------------------------------------------------- #
+# ----------------- Reminder Views Tests -----------------#
+
+from apps.reminders.models import (
+    Medication,
+    Dosage,
+    Schedule,
+    Reminder,
+    DailyReminderLog,
+    UserStats,
+)
+from apps.reminders.views import dashboard_today
+from apps.reminders.views import (
+    get_user_tier,
+    calculate_current_adherence_streak,
+)  # Assuming these exist
+
+User = get_user_model()
+
+
+class DashboardTodayViewTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(username="testuser", password="pass")
+        self.med = Medication.objects.create(medication_name="MedA")
+        self.dosage = Dosage.objects.create(dosage="10mg")
+
+        self.today = timezone.localdate()
+        self.now = timezone.localtime(timezone.now()).time()
+
+    def create_schedule(self, **kwargs):
+        defaults = {
+            "repeat_type": "daily",
+            "time_of_day": time(9, 0),
+            "start_date": self.today - timedelta(days=1),
+            "end_date": None,
+            "weekly_days": "",
+            "monthly_dates": "",
+        }
+        defaults.update(kwargs)
+        return Schedule.objects.create(**defaults)
+
+    def create_reminder(self, schedule, is_active=True):
+        return Reminder.objects.create(
+            user=self.user,
+            medication=self.med,
+            dosage=self.dosage,
+            schedule=schedule,
+            is_active=is_active,
+        )
+
+    def make_request(self):
+        request = self.factory.get("/dashboard/today/")
+        request.user = self.user
+        return request
+
+    @patch("django.urls.reverse", return_value="/fake-url/")
+    def test_daily_reminder_creates_log(self):
+        schedule = self.create_schedule(repeat_type="daily")
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        response = dashboard_today(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        logs = DailyReminderLog.objects.filter(user=self.user, due_date=self.today)
+        self.assertTrue(logs.exists())
+        self.assertEqual(logs.count(), 1)
+        self.assertEqual(logs.first().reminder, reminder)
+        self.assertEqual(logs.first().status, "pending")
+
+    @patch("django.urls.reverse", return_value="/fake-url/")
+    def test_weekly_reminder_due_today_creates_log(self, mock_reverse):
+        # Set weekly_days to include today's weekday
+        weekday_str = str(self.today.weekday())
+        schedule = self.create_schedule(repeat_type="weekly", weekly_days=weekday_str)
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(
+            user=self.user, due_date=self.today, reminder=reminder
+        )
+        self.assertTrue(logs.exists())
+
+    @patch("django.urls.reverse", return_value="/fake-url/")
+    def test_weekly_reminder_not_due_today_no_log(self, mock_reverse):
+        # weekly_days does not include today's weekday
+        other_day = (self.today.weekday() + 1) % 7
+        schedule = self.create_schedule(
+            repeat_type="weekly", weekly_days=str(other_day)
+        )
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(
+            user=self.user, due_date=self.today, reminder=reminder
+        )
+        self.assertFalse(logs.exists())
+
+    def test_monthly_reminder_due_today_creates_log(self):
+        schedule = self.create_schedule(
+            repeat_type="monthly", monthly_dates=str(self.today.day)
+        )
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(
+            user=self.user, due_date=self.today, reminder=reminder
+        )
+        self.assertTrue(logs.exists())
+
+    def test_monthly_reminder_not_due_today_no_log(self):
+        # monthly_dates does not include today
+        schedule = self.create_schedule(
+            repeat_type="monthly", monthly_dates="1"
+        )  # If today is not 1st
+        if self.today.day == 1:
+            schedule.monthly_dates = "2"
+            schedule.save()
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(
+            user=self.user, due_date=self.today, reminder=reminder
+        )
+        self.assertFalse(logs.exists())
+
+    def test_reminder_past_end_date_no_log(self):
+        schedule = self.create_schedule(end_date=self.today - timedelta(days=1))
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(
+            user=self.user, due_date=self.today, reminder=reminder
+        )
+        self.assertFalse(logs.exists())
+
+    def test_reminder_with_invalid_weekly_days_no_log(self):
+        schedule = self.create_schedule(repeat_type="weekly", weekly_days="a,b,c")
+        reminder = self.create_reminder(schedule)
+
+        request = self.make_request()
+        dashboard_today(request)
+
+        logs = DailyReminderLog.objects.filter(
+            user=self.user, due_date=self.today, reminder=reminder
+        )
+        self.assertFalse(logs.exists())
+
+    def test_next_reminder_returns_correct_log(self):
+        schedule = self.create_schedule(
+            repeat_type="daily",
+            time_of_day=(
+                timezone.localtime(timezone.now()) + timedelta(hours=1)
+            ).time(),
+        )
+        reminder = self.create_reminder(schedule)
+
+        # Create a DailyReminderLog with due_time after now
+        log = DailyReminderLog.objects.create(
+            user=self.user,
+            reminder=reminder,
+            due_date=self.today,
+            due_time=schedule.time_of_day,
+            status="pending",
+        )
+
+        request = self.make_request()
+        response = dashboard_today(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("next_reminder", response.context)
+        self.assertEqual(response.context["next_reminder"], log)
+
+    # Add more tests for adherence, achievement points, streak, etc. as needed
+
+
+```
