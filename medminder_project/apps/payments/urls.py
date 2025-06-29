@@ -8,6 +8,9 @@ from .views import (
     stripe_webhook,
 )
 
+app_name = "payments"
+
+
 urlpatterns = [
     # path('create-checkout-session/', CreateCheckoutSessionView.as_view(), name='create_checkout_session'),
     path(

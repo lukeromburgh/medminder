@@ -314,7 +314,7 @@ class DashboardTodayViewTests(TestCase):
         return request
 
     @patch("django.urls.reverse", return_value="/fake-url/")
-    def test_daily_reminder_creates_log(self):
+    def test_daily_reminder_creates_log(self, mock_reverse):
         schedule = self.create_schedule(repeat_type="daily")
         reminder = self.create_reminder(schedule)
 
@@ -328,6 +328,7 @@ class DashboardTodayViewTests(TestCase):
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs.first().reminder, reminder)
         self.assertEqual(logs.first().status, "pending")
+
 
     @patch("django.urls.reverse", return_value="/fake-url/")
     def test_weekly_reminder_due_today_creates_log(self, mock_reverse):
@@ -420,13 +421,10 @@ class DashboardTodayViewTests(TestCase):
     def test_next_reminder_returns_correct_log(self):
         schedule = self.create_schedule(
             repeat_type="daily",
-            time_of_day=(
-                timezone.localtime(timezone.now()) + timedelta(hours=1)
-            ).time(),
+            time_of_day=(timezone.localtime(timezone.now()) + timedelta(hours=1)).time(),
         )
         reminder = self.create_reminder(schedule)
 
-        # Create a DailyReminderLog with due_time after now
         log = DailyReminderLog.objects.create(
             user=self.user,
             reminder=reminder,
@@ -435,10 +433,12 @@ class DashboardTodayViewTests(TestCase):
             status="pending",
         )
 
-        request = self.make_request()
-        response = dashboard_today(request)
+        self.client.force_login(self.user)  # Needed if your view uses login_required
+        response = self.client.get(reverse("medminder:dashboard"))  # Uses the URL name
+
         self.assertEqual(response.status_code, 200)
         self.assertIn("next_reminder", response.context)
         self.assertEqual(response.context["next_reminder"], log)
+
 
     # Add more tests for adherence, achievement points, streak, etc. as needed
