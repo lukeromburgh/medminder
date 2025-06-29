@@ -4,6 +4,11 @@
 
 Medminder is a gamified medical reminder app with timezone specificty and a calendar view 📆
 
+## 📘 Documentation
+
+For detailed API usage, setup instructions, and more, please visit our [Live Documentation](https://medminder-fhhw.onrender.com/documentation/).
+
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://medminder-fhhw.onrender.com/documentation/)
 
 ## Table of Contents
 
@@ -1858,3 +1863,13 @@ How to test
 ```bash
 python manage.py test
 ```
+
+
+---
+---
+
+## 📘 Documentation
+
+For detailed API usage, setup instructions, and more, please visit our [Live Documentation](https://medminder-fhhw.onrender.com/documentation/).
+
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://medminder-fhhw.onrender.com/documentation/)
