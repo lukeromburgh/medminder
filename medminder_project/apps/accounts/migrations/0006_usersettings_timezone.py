@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0005_receiveupdates'),
+        ("accounts", "0005_receiveupdates"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='usersettings',
-            name='timezone',
-            field=models.CharField(default='UTC', help_text="User's preferred timezone.", max_length=50),
+            model_name="usersettings",
+            name="timezone",
+            field=models.CharField(
+                default="UTC", help_text="User's preferred timezone.", max_length=50
+            ),
         ),
     ]

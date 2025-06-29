@@ -6,18 +6,18 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0003_remove_usersettings_avatar_color_and_more'),
+        ("accounts", "0003_remove_usersettings_avatar_color_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='usersettings',
-            old_name='bg_color',
-            new_name='avatar_bg_color',
+            model_name="usersettings",
+            old_name="bg_color",
+            new_name="avatar_bg_color",
         ),
         migrations.RenameField(
-            model_name='usersettings',
-            old_name='text_color',
-            new_name='avatar_text_color',
+            model_name="usersettings",
+            old_name="text_color",
+            new_name="avatar_text_color",
         ),
     ]

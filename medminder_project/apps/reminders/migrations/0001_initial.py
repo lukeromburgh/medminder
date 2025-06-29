@@ -15,72 +15,166 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Dosage',
+            name="Dosage",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('dosage', models.CharField(max_length=255, verbose_name='Dosage')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("dosage", models.CharField(max_length=255, verbose_name="Dosage")),
             ],
         ),
         migrations.CreateModel(
-            name='Medication',
+            name="Medication",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('medication_name', models.CharField(max_length=255, verbose_name='Medication Name')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "medication_name",
+                    models.CharField(max_length=255, verbose_name="Medication Name"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Schedule',
+            name="Schedule",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('repeat', models.CharField(choices=[('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')], max_length=10, verbose_name='Repeat')),
-                ('at_time', models.TimeField(verbose_name='At')),
-                ('until_date', models.DateField(blank=True, null=True, verbose_name='Until')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "repeat",
+                    models.CharField(
+                        choices=[
+                            ("daily", "Daily"),
+                            ("weekly", "Weekly"),
+                            ("monthly", "Monthly"),
+                        ],
+                        max_length=10,
+                        verbose_name="Repeat",
+                    ),
+                ),
+                ("at_time", models.TimeField(verbose_name="At")),
+                (
+                    "until_date",
+                    models.DateField(blank=True, null=True, verbose_name="Until"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Reminder',
+            name="Reminder",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('due_date', models.DateField()),
-                ('due_time', models.TimeField()),
-                ('completed', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('dosage', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='reminders.dosage')),
-                ('medication', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='reminders.medication')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('schedule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='reminders.schedule')),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("due_date", models.DateField()),
+                ("due_time", models.TimeField()),
+                ("completed", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "dosage",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="reminders.dosage",
+                    ),
+                ),
+                (
+                    "medication",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="reminders.medication",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "schedule",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="reminders.schedule",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ReminderStats',
+            name="ReminderStats",
             fields=[
-                ('reminder_stat_id', models.AutoField(primary_key=True, serialize=False)),
-                ('date', models.DateField()),
-                ('completed', models.BooleanField(default=False)),
-                ('skipped', models.BooleanField(default=False)),
-                ('completion_time', models.TimeField(blank=True, null=True)),
-                ('reminder', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='reminders.reminder')),
+                (
+                    "reminder_stat_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
+                ("date", models.DateField()),
+                ("completed", models.BooleanField(default=False)),
+                ("skipped", models.BooleanField(default=False)),
+                ("completion_time", models.TimeField(blank=True, null=True)),
+                (
+                    "reminder",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="reminders.reminder",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserStats',
+            name="UserStats",
             fields=[
-                ('stat_id', models.AutoField(primary_key=True, serialize=False)),
-                ('date', models.DateField()),
-                ('reminders_completed', models.IntegerField(default=0)),
-                ('reminders_skipped', models.IntegerField(default=0)),
-                ('average_compliance', models.FloatField(default=0.0)),
-                ('other_stats', models.JSONField(blank=True, null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ("stat_id", models.AutoField(primary_key=True, serialize=False)),
+                ("date", models.DateField()),
+                ("reminders_completed", models.IntegerField(default=0)),
+                ("reminders_skipped", models.IntegerField(default=0)),
+                ("average_compliance", models.FloatField(default=0.0)),
+                ("other_stats", models.JSONField(blank=True, null=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Viewer',
+            name="Viewer",
             fields=[
-                ('viewer_id', models.AutoField(primary_key=True, serialize=False)),
-                ('access_granted_at', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='viewed_user', to=settings.AUTH_USER_MODEL)),
-                ('viewer_user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='viewer', to=settings.AUTH_USER_MODEL)),
+                ("viewer_id", models.AutoField(primary_key=True, serialize=False)),
+                ("access_granted_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="viewed_user",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "viewer_user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="viewer",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]
