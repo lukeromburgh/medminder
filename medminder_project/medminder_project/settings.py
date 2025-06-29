@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     "django_crontab",
     "apps.payments",
     "apps.documentation",
-    "django_extensions",
 ]
 
 TAILWIND_APP_NAME = "theme"
