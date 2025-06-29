@@ -117,6 +117,8 @@ Please check [here](https://www.figma.com/design/sTxl2pHrnf8gDOPc5BNvZj/Untitled
 
 ---
 
+![alt text](<List 16-9 Exported.gif>)
+
 # MedMinder Design Overview
 
 ## Design Philosophy
@@ -730,6 +732,8 @@ By thoughtfully crafting both the **visual clarity** and **emotional feel** of t
 
 --------
 
+![alt text](<Frame 32.gif>)
+
 
 # MedMinder Application: User Stories
 
@@ -829,7 +833,7 @@ This section details the functional requirements of the MedMinder application, p
 * **Premium Access:** As a user, I want to upgrade to a premium subscription, so that I can access advanced analytics, calendar integrations, and priority support.
 * **Subscription Management:** As a user, I want to easily manage my subscription and payment details, so that I have full control over my premium features.
 
-
+![alt text](<Website Promo Remix.gif>)
 
 # Database Schema and Django Models
 
