@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
     <title>{% block title %}{% endblock %} - MedMinder</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script
@@ -12,6 +13,7 @@
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
     {% block extra_css %}{% endblock %}
+    {% block extra_head %}{% endblock %}
     <style>
       [x-cloak] { display: none !important; }
       .premium-tag {

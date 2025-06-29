@@ -69,13 +69,13 @@ def login_user(request):
     else:
         print("GET request to login, rendering login page")  # Debug
         form = LoginForm()
-        return render(request, 'login_page.html', {'form': form})
+        return render(request, 'accounts/login_page.html', {'form': form})
     
 def logout_view(request):
     # Log the user out.
     logout(request)
     # Redirect to a landing page or login page after logout.
-    return redirect(reverse('signup_page'))
+    return redirect(reverse('accounts:signup_page'))
     
 # def redirect_to_core(request):
 #     """
@@ -90,4 +90,4 @@ def manage_plan(request):
     Render the manage plan page.
     """
     print("Rendering manage plan page")  # Debug
-    return render(request, 'accounts/user_plan.html')
+    return redirect('payments:product_landing_page')

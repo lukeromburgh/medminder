@@ -19,10 +19,10 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('apps.core.urls')),  # Include the URLs from the accounts app
-    path('accounts/', include('apps.accounts.urls')),  # Include the URLs from the accounts app
-    path('medminder/', include('apps.reminders.urls')),
+    path('', include(('apps.core.urls', 'core'), namespace='core')),
+    path('accounts/', include(('apps.accounts.urls', 'accounts'), namespace='accounts')),
+    path('medminder/', include(('apps.reminders.urls', 'medminder'), namespace='medminder')),
+    path('payments/', include(('apps.payments.urls', 'payments'), namespace='payments')),
+    path('documentation/', include(('apps.documentation.urls', 'documentation'), namespace='documentation')),
     path("__reload__/", include("django_browser_reload.urls")),
-    path('payments/', include('apps.payments.urls')),  # Include the URLs from the payments app
-    path('documentation/', include('apps.documentation.urls')),  # Include the URLs from the documentation app
 ]
