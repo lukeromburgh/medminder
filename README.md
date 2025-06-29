@@ -92,15 +92,27 @@ MedMinder is a modern, gamified medication management platform built with Django
 
 
 ---
----
----
 
 # Wireframes and design concepts 🎨
 
 Please check [here](https://www.figma.com/design/sTxl2pHrnf8gDOPc5BNvZj/Untitled?t=IHXE1nx8XzxMzeSS-1) for a view into my original figma file for the app. It includes interface design, the UX flow of forms, some components, the logo, email template ideas and a custom icon set for the Medminder ranking system.
 
----
----
+# Some fun facts on the Medminder Project
+
+  - 1. The gamification aspect focues on achievements, and points which ultimately lead to ranking up and unlocking badges. The badge system was designed by me from scratch using Figma.
+
+  ![alt text](image-13.png)
+
+  - 2. The rank up modal makes use of [confetti js](https://confettijs.org/)
+
+  - 3. The emails are sent using Twilio Sendgrid and a Gmail SMTP
+
+  - 4. I estimate there to be around 15,000 lines of code in this Django project.
+
+  - 5. Medminder makes use of [Alpine JS](https://alpinejs.dev/) for ajax calls and more interactive templates.
+
+  - 6. A special thanks to [Penguin](https://www.penguinui.com/components/sidebar) as I used his sidebar has a foundation to create my own base template for the main section of my app!
+
 ---
 
 # MedMinder Design Overview
