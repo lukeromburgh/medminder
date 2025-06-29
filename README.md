@@ -28,6 +28,8 @@ For detailed API usage, setup instructions, and more, please visit our [Live Doc
 
 [Overview](#-project-overview)
 
+[Access to Wireframes]
+
 [Design](#medminder-design-overview)
   - [The 5 Planes](#-strategy-plane)
     - [Strategy Plane](#-strategy-plane)
@@ -88,6 +90,12 @@ MedMinder is a modern, gamified medication management platform built with Django
 * **Responsive UI:** Modern, mobile-friendly templates using Tailwind CSS and Alpine.js.
 * **Extensible:** Easily add new features, integrations, or notification channels.
 
+
+---
+
+# Wireframes and design concepts
+
+Please check [here](https://www.figma.com/design/sTxl2pHrnf8gDOPc5BNvZj/Untitled?t=IHXE1nx8XzxMzeSS-1) for a view into my original figma file for the app. It includes interface design, the UX flow of forms, some components, the logo, email template ideas and a custom icon set for the Medminder ranking system.
 
 ---
 
