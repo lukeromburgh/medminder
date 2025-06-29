@@ -30,7 +30,9 @@ For detailed API usage, setup instructions, and more, please visit our [Live Doc
 
 [Overview](#-project-overview)
 
-[Access to Wireframes]
+[Access to Wireframes](#wireframes-and-design-concepts-)
+
+[Important Notes!!!](#Important)
 
 [Design](#medminder-design-overview)
   - [The 5 Planes](#-strategy-plane)
@@ -93,6 +95,25 @@ MedMinder is a modern, gamified medication management platform built with Django
 * **Extensible:** Easily add new features, integrations, or notification channels.
 
 
+---
+
+# Important
+
+This is currently running on a trial version of SendGrid limiting the app to around 30 emails per month. **NO MATTER WHAT THEY WILL END UP IN SPAM DUE TO SENDING THROUGH GMAIL SMTP**. I have just renewed my trial in order to allow for email delivery for first marking. If you are marking this at the tailend of the the month and emails are not coming through to your inbox, please **CHECK YOUR SPAM**, if they aren't there then the SendGrid account has likely hit its monthly limit.
+
+The images in the email templates will often fail to render due to the same issue as mentioned above, this is fixable but comes at a financial cost to mysely... which as of right now, I am unable to pay. 
+
+The Stripe payments are connected to a Test Sandbox so please use **4242 4242 4242 4242** as your card number when purchasing the premium version.
+
+The app is also running on a free version of Render, meaning that there will be a spin up process after the web app has experienced an idle period.
+
+The documentation side of my live site is still in progress 🚧 Please note that not all the sidebar links will be active, they will be slowly populated along with a new **Tutorial** item available site wide where I will explain some of the more complex features of the app and even go into some code snippets.
+
+```
+Thanks a bunch!
+
+- Luke
+```
 ---
 
 # Wireframes and design concepts 🎨
