@@ -1,4 +1,4 @@
-![alt text](github-img/readme-header.png)
+![alt text](readme-header.png)
 
 # MedMinder
 
@@ -1148,7 +1148,7 @@ https://pypi.org/project/black/
 
 ### Desktop 
 
-![alt text](github-img/image.png)
+![alt text](image.png)
 ![alt text](image-1.png)
 ![alt text](image-2.png)
 ![alt text](image-3.png)
