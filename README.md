@@ -37,6 +37,7 @@ Medminder is a gamified medical reminder app with timezone specificty and a cale
       - [URL's](#urls)
       - [VIEWS](#views)
 
+[Deployment and Development](#deployment-and-development)
 
 # MedMinder: A Gamified Medication Management Platform
 
@@ -1761,4 +1762,93 @@ class DashboardTodayViewTests(TestCase):
     # Add more tests for adherence, achievement points, streak, etc. as needed
 
 
+```
+
+# Deployment and Development 
+
+# 🛠️ Steps to Deploy on Render
+
+## 1. Push your code to GitHub
+Ensure your Django app and `requirements.txt` are committed and pushed to a public or private GitHub repo.
+
+## 2. Create a new Web Service on Render
+- Go to your **Render Dashboard**.
+- Click "**New Web Service**".
+- Connect your GitHub repository.
+
+Fill in the following:
+
+- **Environment**: Python
+- **Build Command**:
+  ```bash
+  pip install -r requirements.txt && npm install && npm run build
+  ```
+- **Start Command**:
+  ```bash
+  gunicorn your_project_name.wsgi:application
+  ```
+  > **Note**: Replace `your_project_name` with the name of your Django project (the folder containing `wsgi.py`).
+
+## 3. Add your Environment Variables
+Set the following Render environment variables:
+
+- `DJANGO_SETTINGS_MODULE=your_project_name.settings`
+- `SECRET_KEY=your_django_secret_key`
+- `DATABASE_URL=your_postgres_url` (Render will auto-inject this if you are using Render PostgreSQL)
+- `DEBUG=False`
+- `ALLOWED_HOSTS=.onrender.com`
+- `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, etc. (if using an email service like SendGrid)
+
+## 4. Tailwind CSS Integration
+Ensure you have Tailwind configured via `postcss.config.js` and `tailwind.config.js`.
+
+Add `npm run build` to your **Build Command** to generate static files. In your `package.json`, you should have a script like this:
+
+```json
+"scripts": {
+  "build": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify"
+}
+```
+
+## 5. Static Files
+Make sure `collectstatic` is run. You can append it to the **Build Command** if needed:
+
+```bash
+python manage.py collectstatic --noinput
+```
+
+Use `whitenoise` in your `MIDDLEWARE` to serve static files. In your `settings.py`:
+```python
+MIDDLEWARE = [
+    # ... other middleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # ... other middleware
+]
+```
+
+## 6. Deploy
+Render will automatically build and deploy the app after each push to the branch you've connected.
+
+---
+
+## 🧪 Optional: Manual Testing Locally Before Pushing
+
+```bash
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Install Node.js dependencies and build Tailwind CSS
+npm install
+npm run build
+
+# Run database migrations and collect static files
+python manage.py migrate
+python manage.py collectstatic
+
+# Run the local development server
+python manage.py runserver
 ```
