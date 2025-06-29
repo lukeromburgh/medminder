@@ -8,33 +8,65 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='DocsCategory',
+            name="DocsCategory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('order', models.PositiveIntegerField(default=0)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("order", models.PositiveIntegerField(default=0)),
             ],
             options={
-                'ordering': ['order'],
+                "ordering": ["order"],
             },
         ),
         migrations.CreateModel(
-            name='DocsTopic',
+            name="DocsTopic",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200)),
-                ('slug', models.SlugField(help_text='A URL-friendly version of the title.', unique=True)),
-                ('content', models.TextField(help_text='Main content of the topic. Can use HTML or Markdown.')),
-                ('order_in_category', models.PositiveIntegerField(default=0)),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='topics', to='documentation.docscategory')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                (
+                    "slug",
+                    models.SlugField(
+                        help_text="A URL-friendly version of the title.", unique=True
+                    ),
+                ),
+                (
+                    "content",
+                    models.TextField(
+                        help_text="Main content of the topic. Can use HTML or Markdown."
+                    ),
+                ),
+                ("order_in_category", models.PositiveIntegerField(default=0)),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="topics",
+                        to="documentation.docscategory",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['category__order', 'order_in_category'],
+                "ordering": ["category__order", "order_in_category"],
             },
         ),
     ]

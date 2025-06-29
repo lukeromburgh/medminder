@@ -8,32 +8,52 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reminders', '0004_dailyreminderlog_is_notified'),
+        ("reminders", "0004_dailyreminderlog_is_notified"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='dailyreminderlog',
-            name='completion_timestamp',
+            model_name="dailyreminderlog",
+            name="completion_timestamp",
         ),
         migrations.AddField(
-            model_name='dailyreminderlog',
-            name='action_timestamp',
-            field=models.DateTimeField(blank=True, help_text='Timestamp when the reminder was marked completed, skipped, or taken late.', null=True),
+            model_name="dailyreminderlog",
+            name="action_timestamp",
+            field=models.DateTimeField(
+                blank=True,
+                help_text="Timestamp when the reminder was marked completed, skipped, or taken late.",
+                null=True,
+            ),
         ),
         migrations.AddField(
-            model_name='reminder',
-            name='grace_period',
-            field=models.DurationField(default=datetime.timedelta(seconds=900), help_text='Grace period after due time before marking as missed (e.g., 15 minutes).'),
+            model_name="reminder",
+            name="grace_period",
+            field=models.DurationField(
+                default=datetime.timedelta(seconds=900),
+                help_text="Grace period after due time before marking as missed (e.g., 15 minutes).",
+            ),
         ),
         migrations.AlterField(
-            model_name='dailyreminderlog',
-            name='status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed'), ('skipped', 'Skipped'), ('missed', 'Missed'), ('taken_late', 'Taken Late')], db_index=True, default='pending', max_length=15),
+            model_name="dailyreminderlog",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending"),
+                    ("completed", "Completed"),
+                    ("skipped", "Skipped"),
+                    ("missed", "Missed"),
+                    ("taken_late", "Taken Late"),
+                ],
+                db_index=True,
+                default="pending",
+                max_length=15,
+            ),
         ),
         migrations.AddIndex(
-            model_name='dailyreminderlog',
-            index=models.Index(fields=['due_date', 'status'], name='reminders_d_due_dat_eed50c_idx'),
+            model_name="dailyreminderlog",
+            index=models.Index(
+                fields=["due_date", "status"], name="reminders_d_due_dat_eed50c_idx"
+            ),
         ),
     ]

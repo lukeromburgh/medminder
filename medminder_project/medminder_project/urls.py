@@ -14,15 +14,28 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include(('apps.core.urls', 'core'), namespace='core')),
-    path('accounts/', include(('apps.accounts.urls', 'accounts'), namespace='accounts')),
-    path('medminder/', include(('apps.reminders.urls', 'medminder'), namespace='medminder')),
-    path('payments/', include(('apps.payments.urls', 'payments'), namespace='payments')),
-    path('documentation/', include(('apps.documentation.urls', 'documentation'), namespace='documentation')),
+    path("admin/", admin.site.urls),
+    path("", include(("apps.core.urls", "core"), namespace="core")),
+    path(
+        "accounts/", include(("apps.accounts.urls", "accounts"), namespace="accounts")
+    ),
+    path(
+        "medminder/",
+        include(("apps.reminders.urls", "medminder"), namespace="medminder"),
+    ),
+    path(
+        "payments/", include(("apps.payments.urls", "payments"), namespace="payments")
+    ),
+    path(
+        "documentation/",
+        include(
+            ("apps.documentation.urls", "documentation"), namespace="documentation"
+        ),
+    ),
     path("__reload__/", include("django_browser_reload.urls")),
 ]

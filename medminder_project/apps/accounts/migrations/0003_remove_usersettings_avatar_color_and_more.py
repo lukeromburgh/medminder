@@ -6,22 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0002_usersettings_avatar_color_and_more'),
+        ("accounts", "0002_usersettings_avatar_color_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='usersettings',
-            name='avatar_color',
+            model_name="usersettings",
+            name="avatar_color",
         ),
         migrations.AddField(
-            model_name='usersettings',
-            name='bg_color',
-            field=models.CharField(default='bg-gray-200', help_text="Background color for the user's avatar.", max_length=50),
+            model_name="usersettings",
+            name="bg_color",
+            field=models.CharField(
+                default="bg-gray-200",
+                help_text="Background color for the user's avatar.",
+                max_length=50,
+            ),
         ),
         migrations.AddField(
-            model_name='usersettings',
-            name='text_color',
-            field=models.CharField(default='text-gray-800', help_text="Text color for the user's avatar.", max_length=50),
+            model_name="usersettings",
+            name="text_color",
+            field=models.CharField(
+                default="text-gray-800",
+                help_text="Text color for the user's avatar.",
+                max_length=50,
+            ),
         ),
     ]

@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import dj_database_url
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,82 +25,81 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)9m#&d*s0+rmpo2*@z7c3w1gr+lgv(vi5u_&q6xv(*eab*cdd^'
+SECRET_KEY = "django-insecure-)9m#&d*s0+rmpo2*@z7c3w1gr+lgv(vi5u_&q6xv(*eab*cdd^"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-TIME_ZONE = 'Europe/London'
+TIME_ZONE = "Europe/London"
 USE_TZ = True
 
 # Application definition
 
 INSTALLED_APPS = [
-    'unfold',
-    'unfold.contrib.filters',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'formtools',
-    'tailwind',
-    'theme',
-    'django_browser_reload',
-    'apps.accounts',
-    'apps.core',
-    'apps.reminders.apps.RemindersConfig',
-    'django_crontab',
-    'apps.payments',
-    'apps.documentation',
-    
+    "unfold",
+    "unfold.contrib.filters",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "formtools",
+    "tailwind",
+    "theme",
+    "django_browser_reload",
+    "apps.accounts",
+    "apps.core",
+    "apps.reminders.apps.RemindersConfig",
+    "django_crontab",
+    "apps.payments",
+    "apps.documentation",
 ]
 
-TAILWIND_APP_NAME = 'theme'
+TAILWIND_APP_NAME = "theme"
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
-ROOT_URLCONF = 'medminder_project.urls'
+ROOT_URLCONF = "medminder_project.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'templates', 
-                 ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            BASE_DIR / "templates",
+        ],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'medminder_project.wsgi.application'
+WSGI_APPLICATION = "medminder_project.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
         conn_max_age=600,
     )
 }
@@ -110,35 +110,35 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'medminder-fhhw.onrender.com']
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "medminder-fhhw.onrender.com"]
 
 # Get the Render external hostname from the environment variable
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
+CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -148,32 +148,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, "static"),
 ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = False
 
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')  # Your default from email address
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  # Your SendGrid username
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # Your SendGrid password
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL"
+)  # Your default from email address
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # Your SendGrid username
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")  # Your SendGrid password
 
-SITE_URL = 'https://medminder-fhhw.onrender.com/'
+SITE_URL = "https://medminder-fhhw.onrender.com/"
 
 # Use app passwords for security, not your main Gmail password
 # EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
@@ -184,64 +186,69 @@ if not DEFAULT_FROM_EMAIL:
 
 if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
     # Corrected message to match the variables being checked
-    print("WARNING: Email credentials (EMAIL_HOST_USER, EMAIL_HOST_PASSWORD) are not set as environment variables!")
+    print(
+        "WARNING: Email credentials (EMAIL_HOST_USER, EMAIL_HOST_PASSWORD) are not set as environment variables!"
+    )
 
-CRONTAB_PYTHON_EXECUTABLE = '/Users/lukedawson/Downloads/medminder_project/venv/bin/python3.10'
+CRONTAB_PYTHON_EXECUTABLE = (
+    "/Users/lukedawson/Downloads/medminder_project/venv/bin/python3.10"
+)
 
 CRONJOBS = [
     # Schedule: At 02:00 AM every day
-    ('0 2 * * *',
-     'apps.reminders.cron.populate_reminder_stats',  # This is the name of your management command
-     [],                         # Optional: list of arguments for the command
-     {},                         # Optional: dict of keyword arguments for the command
-     '>> /Users/lukedawson/Downloads/medminder_project/logs/populate_reminder_stats.log 2>&1' # Log output
+    (
+        "0 2 * * *",
+        "apps.reminders.cron.populate_reminder_stats",  # This is the name of your management command
+        [],  # Optional: list of arguments for the command
+        {},  # Optional: dict of keyword arguments for the command
+        ">> /Users/lukedawson/Downloads/medminder_project/logs/populate_reminder_stats.log 2>&1",  # Log output
     ),
-
     # Schedule: At 02:00 AM every day
-    ('0 2 * * *',
-     'apps.reminders.cron.generate_upcoming_reminder_logs',
-     [],
-     {},
-     '>> /Users/lukedawson/Downloads/medminder_project/logs/generate_upcoming_reminder_logs.log 2>&1'
+    (
+        "0 2 * * *",
+        "apps.reminders.cron.generate_upcoming_reminder_logs",
+        [],
+        {},
+        ">> /Users/lukedawson/Downloads/medminder_project/logs/generate_upcoming_reminder_logs.log 2>&1",
     ),
-
     # Schedule: Every 10 minutes
-    ('*/1 * * * *',
-     'apps.reminders.cron.send_reminders',
-     [],
-     {},
-     '>> /Users/lukedawson/Downloads/medminder_project/logs/send_reminders.log 2>&1'
+    (
+        "*/1 * * * *",
+        "apps.reminders.cron.send_reminders",
+        [],
+        {},
+        ">> /Users/lukedawson/Downloads/medminder_project/logs/send_reminders.log 2>&1",
     ),
-
     # Schedule: Every 15 minutes
-    ('*/15 * * * *',
-     'apps.reminders.cron.update_reminders',
-     [],
-     {},
-     '>> /Users/lukedawson/Downloads/medminder_project/logs/update_reminders.log 2>&1'
+    (
+        "*/15 * * * *",
+        "apps.reminders.cron.update_reminders",
+        [],
+        {},
+        ">> /Users/lukedawson/Downloads/medminder_project/logs/update_reminders.log 2>&1",
     ),
-
-    ('0 9 * * *',
-     'apps.reminders.cron.check_and_notify_lost_streaks',
-     [],
-     {},
-     '>> /Users/lukedawson/Downloads/medminder_project/logs/lost_streak_notifications.log 2>&1'
+    (
+        "0 9 * * *",
+        "apps.reminders.cron.check_and_notify_lost_streaks",
+        [],
+        {},
+        ">> /Users/lukedawson/Downloads/medminder_project/logs/lost_streak_notifications.log 2>&1",
     ),
-
     # Check for 7-day streaks daily at 9:00 AM
-    ('0 9 * * *',
-     'apps.reminders.cron.check_and_notify_streaks',
-     [],
-     {},
-     '>> /Users/lukedawson/Downloads/medminder_project/logs/streak_notifications.log 2>&1'
+    (
+        "0 9 * * *",
+        "apps.reminders.cron.check_and_notify_streaks",
+        [],
+        {},
+        ">> /Users/lukedawson/Downloads/medminder_project/logs/streak_notifications.log 2>&1",
     ),
-
     # Check for inactive users every day at 9:00 AM
-    ('0 9 * * *',
-     'apps.reminders.cron.check_and_notify_inactive_users',
-     [],
-     {},
-     '>> /Users/lukedawson/Downloads/medminder_project/logs/inactive_user_notifications.log 2>&1'
+    (
+        "0 9 * * *",
+        "apps.reminders.cron.check_and_notify_inactive_users",
+        [],
+        {},
+        ">> /Users/lukedawson/Downloads/medminder_project/logs/inactive_user_notifications.log 2>&1",
     ),
 ]
 
@@ -249,58 +256,58 @@ import os
 
 # Make sure BASE_DIR is correctly defined
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+LOGS_DIR = os.path.join(BASE_DIR, "logs")
 
 # Create logs directory if it doesn't exist
 os.makedirs(LOGS_DIR, exist_ok=True)
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '[{asctime}] {levelname} {module} {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {module} {message}",
+            "style": "{",
         },
     },
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'cron.log'),
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOGS_DIR, "cron.log"),
         },
-        'payments_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'payments.log'),
-            'formatter': 'verbose',
+        "payments_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOGS_DIR, "payments.log"),
+            "formatter": "verbose",
         },
-        'webhook_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'stripe_webhook.log'),
-            'formatter': 'verbose',
+        "webhook_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOGS_DIR, "stripe_webhook.log"),
+            "formatter": "verbose",
         },
     },
-    'loggers': {
-        'reminders.cron': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
+    "loggers": {
+        "reminders.cron": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
         },
-        'apps.payments': {
-            'handlers': ['payments_file'],
-            'level': 'DEBUG',
-            'propagate': True,
+        "apps.payments": {
+            "handlers": ["payments_file"],
+            "level": "DEBUG",
+            "propagate": True,
         },
-        'stripe.webhook': {
-            'handlers': ['webhook_file'],
-            'level': 'DEBUG',
-            'propagate': True,
+        "stripe.webhook": {
+            "handlers": ["webhook_file"],
+            "level": "DEBUG",
+            "propagate": True,
         },
     },
 }
 
-STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
-STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
-STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")

@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reminders', '0005_remove_dailyreminderlog_completion_timestamp_and_more'),
+        ("reminders", "0005_remove_dailyreminderlog_completion_timestamp_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userstats',
-            name='last_lost_streak_notification_date',
+            model_name="userstats",
+            name="last_lost_streak_notification_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='userstats',
-            name='last_streak_notification_date',
+            model_name="userstats",
+            name="last_streak_notification_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='userstats',
-            name='previous_streak',
+            model_name="userstats",
+            name="previous_streak",
             field=models.IntegerField(default=0),
         ),
     ]
