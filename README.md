@@ -1852,3 +1852,9 @@ python manage.py collectstatic
 # Run the local development server
 python manage.py runserver
 ```
+
+How to test
+
+```bash
+python manage.py test
+```
