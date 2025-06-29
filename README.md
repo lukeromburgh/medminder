@@ -92,11 +92,15 @@ MedMinder is a modern, gamified medication management platform built with Django
 
 
 ---
+---
+---
 
-# Wireframes and design concepts
+# Wireframes and design concepts 🎨
 
 Please check [here](https://www.figma.com/design/sTxl2pHrnf8gDOPc5BNvZj/Untitled?t=IHXE1nx8XzxMzeSS-1) for a view into my original figma file for the app. It includes interface design, the UX flow of forms, some components, the logo, email template ideas and a custom icon set for the Medminder ranking system.
 
+---
+---
 ---
 
 # MedMinder Design Overview
