@@ -4,6 +4,20 @@
 
 Medminder is a gamified medical reminder app with timezone specificty and a calendar view 📆
 
+Smart medication tracker built with Django.
+
+[![Render](https://img.shields.io/badge/hosted%20on-Render-blueviolet)](https://medminder-fhhw.onrender.com)
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://medminder-fhhw.onrender.com/documentation/)
+![Python](https://img.shields.io/badge/python-3.11-blue)
+![Django](https://img.shields.io/badge/framework-Django-green)
+![TailwindCSS](https://img.shields.io/badge/styling-TailwindCSS-38bdf8)
+![PostgreSQL](https://img.shields.io/badge/database-PostgreSQL-blue)
+![Last Commit](https://img.shields.io/github/last-commit/lukeromburgh/medminder)
+[![License](https://img.shields.io/github/license/lukeromburgh/medminder)](https://github.com/lukeromburgh/medminder/blob/main/LICENSE)
+
+
+---
+
 ## 📘 Documentation
 
 For detailed API usage, setup instructions, and more, please visit our [Live Documentation](https://medminder-fhhw.onrender.com/documentation/).
