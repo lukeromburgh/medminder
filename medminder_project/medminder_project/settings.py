@@ -124,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'medminder-fhhw.onrender.com']
 
 # Get the Render external hostname from the environment variable
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
