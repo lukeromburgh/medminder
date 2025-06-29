@@ -58,6 +58,8 @@ For detailed API usage, setup instructions, and more, please visit our [Live Doc
 
 [Deployment and Development](#deployment-and-development)
 
+---
+
 # MedMinder: A Gamified Medication Management Platform
 
 ## 🚀 Project Overview
