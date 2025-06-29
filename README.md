@@ -23,6 +23,20 @@ Medminder is a gamified medical reminder app with timezone specificty and a cale
   - [Persona 3: The Newly Diagnosed Teen (Leo, 16)](#persona-3-the-newly-diagnosed-teen-leo-16)
   - [Universal User Stories](#universal-user-stories-applicable-to-all-personas)
 
+[Database Schema and Django Models](#database-schema-and-django-models)
+  - [Account](#account-related)
+  - [Authentication](#auth-related)
+  - [Django](#django-related)
+  - [Documentation](#documentation-related)
+  - [Reminders](#reminders-related)
+
+[Testing](#testing)
+  - [Clean code](#clean-code)
+  - [Lighthouse](#lighthouse-accessibility-testing)
+  - [Unit Testing](#unit-tests)
+      - [URL's](#urls)
+      - [VIEWS](#views)
+
 
 # MedMinder: A Gamified Medication Management Platform
 
