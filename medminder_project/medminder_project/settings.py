@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)9m#&d*s0+rmpo2*@z7c3w1gr+lgv(vi5u_&q6xv(*eab*cdd^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -173,7 +173,7 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')  # Your default from e
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  # Your SendGrid username
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # Your SendGrid password
 
-SITE_URL = 'http://127.0.0.1:8000/'
+SITE_URL = 'https://medminder-fhhw.onrender.com/'
 
 # Use app passwords for security, not your main Gmail password
 # EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')

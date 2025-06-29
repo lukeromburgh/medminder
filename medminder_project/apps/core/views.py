@@ -65,7 +65,7 @@ def home (request):
 
                 # Redirect to the same page or a success page after successful submission/handling
                 # This prevents form resubmission on page refresh
-                return redirect('landing_page') # Use the URL name defined in urls.py
+                return redirect('core:home') # Use the URL name defined in urls.py
 
             else:
                 # Form is not valid (e.g., email format is wrong)
